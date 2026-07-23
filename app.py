@@ -389,8 +389,8 @@ with tab_sheet2:
                 key="dp_net",
             )
 
-        # 2️⃣ 옵션 1: INDV 발권 전환 조건 & T/A 판매 수입 입력
-        with st.expander("2️⃣ [옵션 1] INDV 발권 전환 시 조건", expanded=True):
+        # 2️⃣ Option 1: INDV 발권 전환 조건 & T/A 판매 수입 입력
+        with st.expander("2️⃣ [Option 1] INDV 발권 전환 시 조건", expanded=True):
             c_ifare1, c_ifare2, c_ifare3 = st.columns(3)
             indv_fare = c_ifare1.number_input(
                 "1인당 NET FARE",
@@ -437,12 +437,12 @@ with tab_sheet2:
                 "T/A 3 PAX", min_value=0, value=0, key="ta3_pax"
             )
 
-        # 3️⃣ 옵션 2: 그룹 블록 유지 조건 (T/A 판매 내역 자동 반영 안내)
+        # 3️⃣ Option 2: 그룹 블록 유지 조건 (T/A 판매 내역 자동 반영 안내)
         with st.expander(
-            "3️⃣ [옵션 2] 그룹 블록 유지 시 조건 (T/A 수입 연동)", expanded=True
+            "3️⃣ [Option 2] 그룹 블록 유지 시 조건 (T/A 수입 연동)", expanded=True
         ):
             st.info(
-                "💡 **T/A 1, T/A 2, T/A 3 조건은 위 [옵션 1]에서 입력한 값과 자동으로 100% 동일하게 연동됩니다.**"
+                "💡 **T/A 1, T/A 2, T/A 3 조건은 위 [Option 1]에서 입력한 값과 자동으로 100% 동일하게 연동됩니다.**"
             )
             st.markdown(
                 f"- **T/A 1**: `{ta1_net:,.0f}원` / `{ta1_pax}명`\n"
@@ -469,19 +469,19 @@ with tab_sheet2:
 
     depo_refund_amount = depo_refund_pax * depo_per_pax
 
-    # 공통 T/A 매출 계산 (옵션 1, 2 동일하게 적용)
+    # 공통 T/A 매출 계산 (Option 1, 2 동일하게 적용)
     ta1_ttl = ta1_net * ta1_pax
     ta2_ttl = ta2_net * ta2_pax
     ta3_ttl = ta3_net * ta3_pax
     ta_total_revenue = ta1_ttl + ta2_ttl + ta3_ttl
 
-    # --- 옵션 1 연산 ---
+    # --- Option 1 연산 ---
     depo_loss_a = depo_total_entry - depo_refund_amount
     indv_ticket_ttl = (indv_fare + indv_baggage) * indv_pax
     indv_plus_depo = indv_ticket_ttl + depo_loss_a
     path_a_total_loss = ta_total_revenue - indv_plus_depo
 
-    # --- 옵션 2 연산 ---
+    # --- Option 2 연산 ---
     gv10_pax = 10
     gv10_total_amount = gv10_pax * depo_net
 
@@ -521,24 +521,24 @@ with tab_sheet2:
         else:
             if path_a_total_loss > path_b_ttl_profit:
                 st.success(
-                    "💡 **시뮬레이션 추천: [옵션 1] INDV 발권 전환 유효**\n\n"
-                    f"* **옵션 1 손익**: `{path_a_total_loss:,.0f}원`\n"
-                    f"* **옵션 2 현 손익**: `{path_b_ttl_profit:,.0f}원`\n\n"
+                    "💡 **시뮬레이션 추천: [Option 1] INDV 발권 전환 유효**\n\n"
+                    f"* **Option 1 손익**: `{path_a_total_loss:,.0f}원`\n"
+                    f"* **Option 2 현 손익**: `{path_b_ttl_profit:,.0f}원`\n\n"
                     f"👉 INDV 전환이 현시점 그룹 블록 유지 대비 **{abs(path_a_total_loss - path_b_ttl_profit):,.0f}원** 손실을 줄일 수 있습니다."
                 )
             else:
                 st.info(
-                    "💡 **시뮬레이션 추천: [옵션 2] 그룹 블록 유지 및 운영 유효**\n\n"
-                    f"* **옵션 2 남은 {remaining_pax}석 최소 판매 필요 단가**: `{min_selling_price_b:,.0f}원`\n"
-                    f"👉 나머지 {remaining_pax}석을 1인당 **{min_selling_price_b:,.0f}원 이상**으로 판매 시 옵션 1보다 유효하거나 손실을 완전 상쇄할 수 있습니다."
+                    "💡 **시뮬레이션 추천: [Option 2] 그룹 블록 유지 및 운영 유효**\n\n"
+                    f"* **Option 2 남은 {remaining_pax}석 최소 판매 필요 단가**: `{min_selling_price_b:,.0f}원`\n"
+                    f"👉 나머지 {remaining_pax}석을 1인당 **{min_selling_price_b:,.0f}원 이상**으로 판매 시 Option 1보다 유효하거나 손실을 완전 상쇄할 수 있습니다."
                 )
 
         st.markdown("---")
 
         # ==================================================================
-        # 1️⃣ [옵션 1] 결과 출력
+        # 1️⃣ [Option 1] 결과 출력
         # ==================================================================
-        st.markdown("##### 1️⃣ [옵션 1] INDV 발권 전환 손익표")
+        st.markdown("##### 1️⃣ [Option 1] INDV 발권 전환 손익표")
         
         # 📌 [핵심 요약 표] 노란색 하이라이트 항목만 항상 표시
         df_a_summary = pd.DataFrame({
@@ -550,7 +550,7 @@ with tab_sheet2:
         st.dataframe(df_a_summary, use_container_width=True, hide_index=True)
 
         # 📂 [상세 내역] 숨김/펼침 (Expander)
-        with st.expander("🔍 [옵션 1] 세부 내역 보기 / 접기", expanded=False):
+        with st.expander("🔍 [Option 1] 세부 내역 보기 / 접기", expanded=False):
             df_a_detail = pd.DataFrame({
                 "항목": [
                     "DEPO 들어간 금액",
@@ -602,9 +602,9 @@ with tab_sheet2:
         st.markdown("---")
 
         # ==================================================================
-        # 2️⃣ [옵션 2] 결과 출력
+        # 2️⃣ [Option 2] 결과 출력
         # ==================================================================
-        st.markdown("##### 2️⃣ [옵션 2] 여행사 최소 판매 금액 / 블록 유지 (ABS 적용)")
+        st.markdown("##### 2️⃣ [Option 2] 여행사 최소 판매 금액 / 블록 유지 (ABS 적용)")
 
         # 📌 [핵심 요약 표] 노란색 하이라이트 항목만 항상 표시
         df_b_summary = pd.DataFrame({
@@ -616,7 +616,7 @@ with tab_sheet2:
         st.dataframe(df_b_summary, use_container_width=True, hide_index=True)
 
         # 📂 [상세 내역] 숨김/펼침 (Expander)
-        with st.expander("🔍 [옵션 2] 세부 내역 보기 / 접기", expanded=False):
+        with st.expander("🔍 [Option 2] 세부 내역 보기 / 접기", expanded=False):
             df_b_detail = pd.DataFrame({
                 "구분 / 항목": [
                     "GV10 원가",
