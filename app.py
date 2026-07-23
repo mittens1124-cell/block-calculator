@@ -199,17 +199,12 @@ with col_result:
     # --------------------------------------------------------------------------
     # 🔗 네이버 실시간 동적 URL 생성 및 버튼 표시 (AI 리포트 바로 위)
     # --------------------------------------------------------------------------
- st.markdown("---")
+    st.markdown("---")
+    st.info(f"✈️ **네이버 항공권 검색 조건:** 출발지 `서울/인천(ICN)` ➔ 도착지 `{route_code}` | 출발일 **`{flight_date.strftime('%Y-%m-%d')}`** (성인 1명 / 편도)")
     
-    # YYYYMMDD 포맷 (예: 20260807)
-    date_str_compact = flight_date.strftime("%Y%m%d")
-    
-    # 🟢 네이버 항공권 정확한 검색 URL (입력한 날짜/노선 자동 세팅)
-    naver_url = f"https://flight.naver.com/flights/oneWay/SEL-{route_code}-{date_str_compact}?adult=1&isDirect=true&fareType=Y"
-    
-    # 네이버 항공권 단독 큰 버튼 출력
+    naver_url = "https://flight.naver.com/"
     st.markdown(
-        f'<a href="{naver_url}" target="_blank" class="naver-btn">🟢 네이버 항공권 실시간 조회 ({route_code} {flight_date}) ↗</a>',
+        f'<a href="{naver_url}" target="_blank" class="naver-btn">🟢 네이버 항공권 실시간 조회하러 가기 ↗</a>',
         unsafe_allow_html=True
     )
     # 7. AI 종합 전략 리포트
