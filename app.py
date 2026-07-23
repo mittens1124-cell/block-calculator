@@ -92,7 +92,7 @@ tab_sheet1, tab_sheet2 = st.tabs(
 # ==========================================================================
 # 📋 [1번 탭] DEPO 전 시뮬레이터
 # ==========================================================================
-   with tab_sheet1:
+with tab_sheet1:
     col_input1, col_result1 = st.columns([1, 1.2], gap="large")
 
     with col_input1:
@@ -104,64 +104,64 @@ tab_sheet1, tab_sheet2 = st.tabs(
             selected_route = st.selectbox(
                 "목적지 노선 선택", options=route_options, index=0, key="pre_route"
             )
+            route_code1 = selected_route.split(" ")[0]
 
-    with st.expander("2️⃣ 출발/운항 날짜 설정", expanded=True):
-      flight_date1 = st.date_input(
-          "출발/운항 날짜", datetime.date.today(), key="d1"
-      )
-      month1 = flight_date1.month
+        # 2️⃣ 출발/운항 날짜 설정
+        with st.expander("2️⃣ 출발/운항 날짜 설정", expanded=True):
+            flight_date1 = st.date_input(
+                "출발/운항 날짜", datetime.date.today(), key="d1"
+            )
+            month1 = flight_date1.month
 
-      weekday_num1 = flight_date1.weekday()
-      weekday_kr1 = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"][
-          weekday_num1
-      ]
-      is_weekend1 = weekday_num1 in [4, 5, 6]
+            weekday_num1 = flight_date1.weekday()
+            weekday_kr1 = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"][
+                weekday_num1
+            ]
+            is_weekend1 = weekday_num1 in [4, 5, 6]
 
-      kr_holidays1 = holidays.KR(years=flight_date1.year)
-      vn_holidays1 = holidays.VN(years=flight_date1.year)
+            kr_holidays1 = holidays.KR(years=flight_date1.year)
+            vn_holidays1 = holidays.VN(years=flight_date1.year)
 
-      is_kr_holiday1 = flight_date1 in kr_holidays1
-      kr_holiday_name1 = (
-          kr_holidays1.get(flight_date1) if is_kr_holiday1 else ""
-      )
+            is_kr_holiday1 = flight_date1 in kr_holidays1
+            kr_holiday_name1 = (
+                kr_holidays1.get(flight_date1) if is_kr_holiday1 else ""
+            )
 
-      is_vn_holiday1 = flight_date1 in vn_holidays1
-      vn_holiday_name1 = (
-          vn_holidays1.get(flight_date1) if is_vn_holiday1 else ""
-      )
+            is_vn_holiday1 = flight_date1 in vn_holidays1
+            vn_holiday_name1 = (
+                vn_holidays1.get(flight_date1) if is_vn_holiday1 else ""
+            )
 
-      # 기후 로직
-      is_dry1 = False
-      season_name1, season_desc1 = "", ""
-      if route_code1 == "PQC":
-        is_dry1 = month1 in [11, 12, 1, 2, 3, 4]
-        season_name1 = "건기 (최고 성수기)" if is_dry1 else "우기 (비수기)"
-        season_desc1 = (
-            "휴양지 특성상 건기 시즌 모객 집중도가 매우 높은 노선입니다."
-            if is_dry1
-            else "우기 시즌으로 강수량이 많아 모객 속도가 더딜 수 있습니다."
-        )
-      elif route_code1 == "CXR":
-        is_dry1 = month1 in [1, 2, 3, 4, 5, 6, 7, 8]
-        season_name1 = "건기 (성수기)" if is_dry1 else "우기 (우천/태풍 주의)"
-        season_desc1 = (
-            "가족/휴양 객단가가 안정적으로 형성되는 시즌입니다."
-            if is_dry1
-            else "Late Rainy Season으로 우천 변동성이 있습니다."
-        )
-      else:
-        is_dry1 = month1 in [1, 2, 3, 4, 11, 12]
-        season_name1 = "건기 시즌" if is_dry1 else "우기 시즌"
-        season_desc1 = "정규 건기/우기 스케줄에 맞춰 대응하세요."
+            # 기후 로직
+            is_dry1 = False
+            season_name1, season_desc1 = "", ""
+            if route_code1 == "PQC":
+                is_dry1 = month1 in [11, 12, 1, 2, 3, 4]
+                season_name1 = "건기 (최고 성수기)" if is_dry1 else "우기 (비수기)"
+                season_desc1 = (
+                    "휴양지 특성상 건기 시즌 모객 집중도가 매우 높은 노선입니다."
+                    if is_dry1
+                    else "우기 시즌으로 강수량이 많아 모객 속도가 더딜 수 있습니다."
+                )
+            elif route_code1 == "CXR":
+                is_dry1 = month1 in [1, 2, 3, 4, 5, 6, 7, 8]
+                season_name1 = "건기 (성수기)" if is_dry1 else "우기 (우천/태풍 주의)"
+                season_desc1 = (
+                    "가족/휴양 객단가가 안정적으로 형성되는 시즌입니다."
+                    if is_dry1
+                    else "Late Rainy Season으로 우천 변동성이 있습니다."
+                )
+            else:
+                is_dry1 = month1 in [1, 2, 3, 4, 11, 12]
+                season_name1 = "건기 시즌" if is_dry1 else "우기 시즌"
+                season_desc1 = "정규 건기/우기 스케줄에 맞춰 대응하세요."
 
-    with st.expander("3️⃣ 실모객 및 판매가 설정", expanded=True):
-    
-
-    with st.expander("4️⃣ INDV 발권 조건", expanded=True):
-        actual_pax = st.number_input(
+        # 3️⃣ 실모객 및 판매가 설정 (초기값 0)
+        with st.expander("3️⃣ 실모객 및 판매가 설정", expanded=True):
+            pax1 = st.number_input(
                 "실모객 인원 (PAX)", min_value=0, value=0, step=1, key="pre_pax"
             )
-            selling_price = st.number_input(
+            selling_price1 = st.number_input(
                 "1인당 판매가 (KRW)",
                 min_value=0.0,
                 value=0.0,
@@ -169,162 +169,165 @@ tab_sheet1, tab_sheet2 = st.tabs(
                 format="%.0f",
                 key="pre_price",
             )
-      indiv_net1 = st.number_input(
-          "INDV 1인당 NET FARE (KRW)",
-          min_value=0,
-          value=1069000,
-          step=10000,
-          key="inet1",
-      )
 
-    with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
-      group_net1 = st.number_input(
-          "그룹 1인당 NET FARE (KRW)",
-          min_value=0.0,
-          value=587457.1,
-          step=1000.0,
-          key="gnet1",
-      )
-      depo_seats1 = st.number_input(
-          "DEPO 유지/보장 좌석 수",
-          min_value=1,
-          max_value=100,
-          value=11,
-          step=1,
-          key="gseats1",
-      )
+        # 4️⃣ INDV 발권 조건 (초기값 0)
+        with st.expander("4️⃣ INDV 발권 조건", expanded=True):
+            indiv_net1 = st.number_input(
+                "INDV 1인당 NET FARE (KRW)",
+                min_value=0.0,
+                value=0.0,
+                step=10000.0,
+                format="%.0f",
+                key="inet1",
+            )
 
-  # 계산
-  indiv_rev1 = pax1 * selling_price1
-  indiv_cost1 = pax1 * indiv_net1
-  indiv_prof1 = indiv_rev1 - indiv_cost1
+        # 5️⃣ DEPO 그룹 조건 (초기값 0)
+        with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
+            group_net1 = st.number_input(
+                "그룹 1인당 NET FARE (KRW)",
+                min_value=0.0,
+                value=0.0,
+                step=10000.0,
+                format="%.0f",
+                key="gnet1",
+            )
+            depo_seats1 = st.number_input(
+                "DEPO 유지/보장 좌석 수",
+                min_value=0,
+                max_value=100,
+                value=0,
+                step=1,
+                key="gseats1",
+            )
 
-  group_rev1 = pax1 * selling_price1
-  group_cost1 = depo_seats1 * group_net1
-  group_prof1 = group_rev1 - group_cost1
+    # 연산
+    indiv_rev1 = pax1 * selling_price1
+    indiv_cost1 = pax1 * indiv_net1
+    indiv_prof1 = indiv_rev1 - indiv_cost1
 
-  bep_pax1 = group_cost1 / selling_price1 if selling_price1 > 0 else 0
+    group_rev1 = pax1 * selling_price1
+    group_cost1 = depo_seats1 * group_net1
+    group_prof1 = group_rev1 - group_cost1
 
-  with col_result1:
-    st.subheader(f"📊 [{route_code1}] DEPO 전 손익 비교")
+    bep_pax1 = group_cost1 / selling_price1 if selling_price1 > 0 else 0
 
-    if indiv_prof1 > group_prof1:
-      rec1 = "INDV 발권 전환"
-      saved1 = indiv_prof1 - group_prof1
-      st.markdown(
-          '<div class="status-badge-indiv">💡 AI 추천: INDV 발권 전환</div>',
-          unsafe_allow_html=True,
-      )
-    else:
-      rec1 = "DEPO 유지 (그룹 진행)"
-      saved1 = group_prof1 - indiv_prof1
-      st.markdown(
-          '<div class="status-badge-group">💡 AI 추천: DEPO 유지 (그룹 진행)</div>',
-          unsafe_allow_html=True,
-      )
+    with col_result1:
+        st.subheader(f"📊 [{route_code1}] DEPO 전 손익 비교")
 
-    st.write("")
-    c1, c2 = st.columns(2)
-    c1.metric(
-        "INDV 발권 시 손익",
-        f"{indiv_prof1:,.0f} 원",
-        delta=f"원가 {indiv_cost1:,.0f}원",
-        delta_color="off",
-    )
-    c2.metric(
-        "DEPO 그룹 유지 손익",
-        f"{group_prof1:,.0f} 원",
-        delta=f"원가 {group_cost1:,.0f}원",
-        delta_color="off",
-    )
+        if pax1 == 0 and depo_seats1 == 0:
+            st.warning("👈 왼쪽 입력창에서 **실모객 인원 및 조건**을 입력해주시면 시뮬레이션 결과가 표시됩니다.")
+        else:
+            if indiv_prof1 > group_prof1:
+                rec1 = "INDV 발권 전환"
+                saved1 = indiv_prof1 - group_prof1
+                st.markdown(
+                    '<div class="status-badge-indiv">💡 AI 추천: INDV 발권 전환</div>',
+                    unsafe_allow_html=True,
+                )
+            else:
+                rec1 = "DEPO 유지 (그룹 진행)"
+                saved1 = group_prof1 - indiv_prof1
+                st.markdown(
+                    '<div class="status-badge-group">💡 AI 추천: DEPO 유지 (그룹 진행)</div>',
+                    unsafe_allow_html=True,
+                )
 
-    st.success(
-        f"**최종 판단:** {rec1} (상대 선택 대비 **약 {saved1:,.0f}원** 손실"
-        " 절감 가능)"
-    )
+            st.write("")
+            c1, c2 = st.columns(2)
+            c1.metric(
+                "INDV 발권 시 손익",
+                f"{indiv_prof1:,.0f} 원",
+                delta=f"원가 {indiv_cost1:,.0f}원",
+                delta_color="off",
+            )
+            c2.metric(
+                "DEPO 그룹 유지 손익",
+                f"{group_prof1:,.0f} 원",
+                delta=f"원가 {group_cost1:,.0f}원",
+                delta_color="off",
+            )
 
-    df_sum1 = pd.DataFrame({
-        "구분": ["INDV 발권", "DEPO 그룹 유지"],
-        "적용 좌석": [f"{pax1}석", f"{depo_seats1}석"],
-        "총 매출": [f"{indiv_rev1:,.0f}원", f"{group_rev1:,.0f}원"],
-        "총 원가": [f"{indiv_cost1:,.0f}원", f"{group_cost1:,.0f}원"],
-        "최종 손익": [f"{indiv_prof1:,.0f}원", f"{group_prof1:,.0f}원"],
-    })
-    st.dataframe(df_sum1, use_container_width=True, hide_index=True)
+            st.success(
+                f"**최종 판단:** {rec1} (상대 선택 대비 **약 {saved1:,.0f}원** 손실 절감 가능)"
+            )
 
-    st.markdown("---")
-    st.subheader(f"🗺️ [{route_code1} 노선] 기후 및 달력 특성")
+            df_sum1 = pd.DataFrame({
+                "구분": ["INDV 발권", "DEPO 그룹 유지"],
+                "적용 좌석": [f"{pax1}석", f"{depo_seats1}석"],
+                "총 매출": [f"{indiv_rev1:,.0f}원", f"{group_rev1:,.0f}원"],
+                "총 원가": [f"{indiv_cost1:,.0f}원", f"{group_cost1:,.0f}원"],
+                "최종 손익": [f"{indiv_prof1:,.0f}원", f"{group_prof1:,.0f}원"],
+            })
+            st.dataframe(df_sum1, use_container_width=True, hide_index=True)
 
-    col_d1, col_d2 = st.columns(2)
-    with col_d1:
-      st.write(f"🏖️ **노선 기후**: **{season_name1}** ({flight_date1.month}월)")
-      st.caption(f"• {season_desc1}")
+            st.markdown("---")
+            st.subheader(f"🗺️ [{route_code1} 노선] 기후 및 달력 특성")
 
-    with col_d2:
-      st.write(
-          "📆 **운항일**:"
-          f" **{flight_date1.strftime('%Y-%m-%d')} ({weekday_kr1})**"
-      )
-      holiday_tags1 = []
-      if is_kr_holiday1:
-        holiday_tags1.append(f"🇰🇷 {kr_holiday_name1}")
-      if is_vn_holiday1:
-        holiday_tags1.append(f"🇻🇳 {vn_holiday_name1}")
+            col_d1, col_d2 = st.columns(2)
+            with col_d1:
+                st.write(f"🏖️ **노선 기후**: **{season_name1}** ({flight_date1.month}월)")
+                st.caption(f"• {season_desc1}")
 
-      if holiday_tags1:
-        st.warning(f"🎉 **공휴일 태그**: {', '.join(holiday_tags1)}")
-      elif is_weekend1:
-        st.info(f"🔥 **주말 패턴**: {weekday_kr1} 운항 (주말 출국 선호)")
-      else:
-        st.caption("💼 일반 주중 평일 패턴")
+            with col_d2:
+                st.write(
+                    "📆 **운항일**:"
+                    f" **{flight_date1.strftime('%Y-%m-%d')} ({weekday_kr1})**"
+                )
+                holiday_tags1 = []
+                if is_kr_holiday1:
+                    holiday_tags1.append(f"🇰🇷 {kr_holiday_name1}")
+                if is_vn_holiday1:
+                    holiday_tags1.append(f"🇻🇳 {vn_holiday_name1}")
 
-    st.markdown("---")
-    naver_url1 = "https://flight.naver.com/"
-    st.markdown(
-        f'<a href="{naver_url1}" target="_blank" class="naver-btn">🟢 네이버'
-        " 항공권 실시간 조회하러 가기 ↗</a>",
-        unsafe_allow_html=True,
-    )
+                if holiday_tags1:
+                    st.warning(f"🎉 **공휴일 태그**: {', '.join(holiday_tags1)}")
+                elif is_weekend1:
+                    st.info(f"🔥 **주말 패턴**: {weekday_kr1} 운항 (주말 출국 선호)")
+                else:
+                    st.caption("💼 일반 주중 평일 패턴")
 
-    st.subheader("🤖 AI 종합 전략 리포트 (Comment)")
+            st.markdown("---")
+            naver_url1 = "https://flight.naver.com/"
+            st.markdown(
+                f'<a href="{naver_url1}" target="_blank" class="naver-btn">🟢 네이버 항공권 실시간 조회하러 가기 ↗</a>',
+                unsafe_allow_html=True,
+            )
 
-    climate_comment1 = f"• **[{route_code1} {season_name1}]** {season_desc1}"
-    if is_dry1:
-      climate_comment1 += (
-          " (건기 특수로 D-10 시점까지 추가 모객 가능성이 높습니다.)"
-      )
-    else:
-      climate_comment1 += (
-          " (우기 시즌이므로 모객 속도가 느릴 수 있으니 무리한 그룹 유지보다는"
-          " 보수적 대응이 유리합니다.)"
-      )
+            st.subheader("🤖 AI 종합 전략 리포트 (Comment)")
 
-    date_comment1 = []
-    if is_kr_holiday1:
-      date_comment1.append(
-          f"• **[한국 연휴 특수]** 한국 {kr_holiday_name1} 연휴로 출국 수요 폭증"
-          " 구간입니다."
-      )
-    elif is_weekend1:
-      date_comment1.append(
-          f"• **[주말 패턴]** {weekday_kr1} 출발 건으로 주말 선호 모객 우수가"
-          " 예상됩니다."
-      )
+            climate_comment1 = f"• **[{route_code1} {season_name1}]** {season_desc1}"
+            if is_dry1:
+                climate_comment1 += (
+                    " (건기 특수로 D-10 시점까지 추가 모객 가능성이 높습니다.)"
+                )
+            else:
+                climate_comment1 += (
+                    " (우기 시즌이므로 모객 속도가 느릴 수 있으니 무리한 그룹 유지보다는 보수적 대응이 유리합니다.)"
+                )
 
-    if is_vn_holiday1:
-      date_comment1.append(
-          f"• **[베트남 현지 연휴]** 현지 {vn_holiday_name1} 기간으로 현지 지상비 및"
-          " 인바운드 상황을 체크하세요."
-      )
+            date_comment1 = []
+            if is_kr_holiday1:
+                date_comment1.append(
+                    f"• **[한국 연휴 특수]** 한국 {kr_holiday_name1} 연휴로 출국 수요 폭증 구간입니다."
+                )
+            elif is_weekend1:
+                date_comment1.append(
+                    f"• **[주말 패턴]** {weekday_kr1} 출발 건으로 주말 선호 모객 우수가 예상됩니다."
+                )
 
-    date_comment_str1 = (
-        "\n".join(date_comment1)
-        if date_comment1
-        else "• **[일반 날짜]** 특이 공휴일 없는 평일 노선입니다."
-    )
+            if is_vn_holiday1:
+                date_comment1.append(
+                    f"• **[베트남 현지 연휴]** 현지 {vn_holiday_name1} 기간으로 현지 지상비 및 인바운드 상황을 체크하세요."
+                )
 
-    if indiv_prof1 > group_prof1:
-      comment_text1 = f"""
+            date_comment_str1 = (
+                "\n".join(date_comment1)
+                if date_comment1
+                else "• **[일반 날짜]** 특이 공휴일 없는 평일 노선입니다."
+            )
+
+            if indiv_prof1 > group_prof1:
+                comment_text1 = f"""
 **[AI 분석 의견: INDV 전환 강력 권장]**
 
 • **손익분기점 분석:** 현재 실모객({pax1}명)은 손익분기점({bep_pax1:.1f}명) 미달 상태입니다.
@@ -336,10 +339,10 @@ tab_sheet1, tab_sheet2 = st.tabs(
 **🌤️ 노선 기후 & 🗓️ 공휴일 반영 추가 전략:**
 {climate_comment1}
 {date_comment_str1}
-            """
-      st.warning(comment_text1)
-    else:
-      comment_text1 = f"""
+"""
+                st.warning(comment_text1)
+            else:
+                comment_text1 = f"""
 **[AI 분석 의견: DEPO 유지 및 그룹 진행 권장]**
 
 • **손익분기점 분석:** 현재 실모객({pax1}명)이 손익분기점({bep_pax1:.1f}명) 이상이거나, INDV 운임이 매우 비쌉니다.
@@ -351,11 +354,11 @@ tab_sheet1, tab_sheet2 = st.tabs(
 **🌤️ 노선 기후 & 🗓️ 공휴일 반영 추가 전략:**
 {climate_comment1}
 {date_comment_str1}
-            """
-      st.success(comment_text1)
+"""
+                st.success(comment_text1)
 
 # ==========================================================================
-# 📦 [2번 탭] DEPO 후 시뮬레이터 (T/A ↔ INV 연동 & 차감 수식 수정 완료)
+# 📦 [2번 탭] DEPO 후 시뮬레이터
 # ==========================================================================
 with tab_sheet2:
     col_input2, col_result2 = st.columns([1, 1.2], gap="large")
@@ -386,6 +389,7 @@ with tab_sheet2:
                 min_value=0.0,
                 value=0.0,
                 step=10000.0,
+                format="%.0f",
                 key="post_ifare",
             )
             indv_baggage = c_ifare2.number_input(
@@ -393,6 +397,7 @@ with tab_sheet2:
                 min_value=0.0,
                 value=0.0,
                 step=5000.0,
+                format="%.0f",
                 key="post_ibag",
             )
             indv_pax = c_ifare3.number_input(
@@ -404,7 +409,7 @@ with tab_sheet2:
             
             c_ta1_1, c_ta1_2 = st.columns(2)
             ta1_net = c_ta1_1.number_input(
-                "T/A 1 단가", min_value=0.0, value=0.0, step=10000.0, key="ta1_net"
+                "T/A 1 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta1_net"
             )
             ta1_pax = c_ta1_2.number_input(
                 "T/A 1 PAX", min_value=0, value=0, key="ta1_pax"
@@ -412,7 +417,7 @@ with tab_sheet2:
 
             c_ta2_1, c_ta2_2 = st.columns(2)
             ta2_net = c_ta2_1.number_input(
-                "T/A 2 단가", min_value=0.0, value=0.0, step=10000.0, key="ta2_net"
+                "T/A 2 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta2_net"
             )
             ta2_pax = c_ta2_2.number_input(
                 "T/A 2 PAX", min_value=0, value=0, key="ta2_pax"
@@ -420,7 +425,7 @@ with tab_sheet2:
 
             c_ta3_1, c_ta3_2 = st.columns(2)
             ta3_net = c_ta3_1.number_input(
-                "T/A 3 단가", min_value=0.0, value=0.0, step=10000.0, key="ta3_net"
+                "T/A 3 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta3_net"
             )
             ta3_pax = c_ta3_2.number_input(
                 "T/A 3 PAX", min_value=0, value=0, key="ta3_pax"
@@ -458,7 +463,6 @@ with tab_sheet2:
 
     depo_refund_amount = depo_refund_pax * depo_per_pax
 
-    # 공통 T/A 매출 계산 (Option 1, 2 동일하게 적용)
     ta1_ttl = ta1_net * ta1_pax
     ta2_ttl = ta2_net * ta2_pax
     ta3_ttl = ta3_net * ta3_pax
@@ -481,7 +485,6 @@ with tab_sheet2:
     )
     depo_non_refund_amount = depo_non_refund_pax * depo_per_pax
 
-    # F/P TTL = GV10 원가 - DEPO 환불 가능액 + DEPO 환불 불가액
     fp_ttl = gv10_total_amount - depo_refund_amount + depo_non_refund_amount
 
     sold_pax = ta1_pax + ta2_pax + ta3_pax
@@ -497,6 +500,7 @@ with tab_sheet2:
         )
     else:
         min_selling_price_b = 0.0
+
     # ----------------------------------------------------------------------
     # 📊 결과 출력
     # ----------------------------------------------------------------------
@@ -529,7 +533,6 @@ with tab_sheet2:
         # ==================================================================
         st.markdown("##### 1️⃣ [Option 1] INDV 발권 전환 손익표")
         
-        # 📌 [핵심 요약 표] 노란색 하이라이트 항목만 항상 표시
         df_a_summary = pd.DataFrame({
             "항목": ["총 손실"],
             "PAX": ["-"],
@@ -538,7 +541,6 @@ with tab_sheet2:
         })
         st.dataframe(df_a_summary, use_container_width=True, hide_index=True)
 
-        # 📂 [상세 내역] 숨김/펼침 (Expander)
         with st.expander("🔍 [Option 1] 세부 내역 보기 / 접기", expanded=False):
             df_a_detail = pd.DataFrame({
                 "항목": [
@@ -595,7 +597,6 @@ with tab_sheet2:
         # ==================================================================
         st.markdown("##### 2️⃣ [Option 2] 여행사 최소 판매 금액 / 블록 유지 (ABS 적용)")
 
-        # 📌 [핵심 요약 표] 노란색 하이라이트 항목만 항상 표시
         df_b_summary = pd.DataFrame({
             "구분 / 항목": ["여행사 최소 판매 요청 금액", "TTL 손익"],
             "PAX": [f"🌸 {remaining_pax}명", "-"],
@@ -604,7 +605,6 @@ with tab_sheet2:
         })
         st.dataframe(df_b_summary, use_container_width=True, hide_index=True)
 
-        # 📂 [상세 내역] 숨김/펼침 (Expander)
         with st.expander("🔍 [Option 2] 세부 내역 보기 / 접기", expanded=False):
             df_b_detail = pd.DataFrame({
                 "구분 / 항목": [
