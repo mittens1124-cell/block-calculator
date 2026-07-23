@@ -508,96 +508,159 @@ with tab_sheet2:
         )
     else:
         min_selling_price_b = 0.0
+    # ----------------------------------------------------------------------
+    # 📊 결과 출력
+    # ----------------------------------------------------------------------
+    with col_result2:
+        st.subheader("📊 DEPO 후 최종 의사결정 시뮬레이션")
 
-# ----------------------------------------------------------------------
-# 📊 결과 출력
-# ----------------------------------------------------------------------
-with col_result2:
-    st.subheader("📊 DEPO 후 최종 의사결정 시뮬레이션")
-    ...
+        if depo_pax == 0:
+            st.warning(
+                "👈 왼쪽 입력창에서 **DEPO 인원 및 조건**을 입력해주시면 시뮬레이션 비교 결과가 표시됩니다."
+            )
+        else:
+            if path_a_total_loss > path_b_ttl_profit:
+                st.success(
+                    "💡 **시뮬레이션 추천: [경로 A] INDV 발권 전환 유효**\n\n"
+                    f"* **경로 A 손익**: `{path_a_total_loss:,.0f}원`\n"
+                    f"* **경로 B 현 손익**: `{path_b_ttl_profit:,.0f}원`\n\n"
+                    f"👉 INDV 전환이 현시점 그룹 블록 유지 대비 **{abs(path_a_total_loss - path_b_ttl_profit):,.0f}원** 손실을 줄일 수 있습니다."
+                )
+            else:
+                st.info(
+                    "💡 **시뮬레이션 추천: [경로 B] 그룹 블록 유지 및 운영 유효**\n\n"
+                    f"* **경로 B 남은 {remaining_pax}석 최소 판매 필요 단가**: `{min_selling_price_b:,.0f}원`\n"
+                    f"👉 나머지 {remaining_pax}석을 1인당 **{min_selling_price_b:,.0f}원 이상**으로 판매 시 경로 A보다 유효하거나 손실을 완전 상쇄할 수 있습니다."
+                )
 
-    st.markdown("---")
+        st.markdown("---")
 
-    # =========================
-    # 경로 A 표 (멀티셀렉트 적용)
-    # =========================
-    st.markdown("##### 1️⃣ [경로 A] INDV 발권 전환 손익표")
+        # ==================================================================
+        # 1️⃣ [경로 A] 결과 출력
+        # ==================================================================
+        st.markdown("##### 1️⃣ [경로 A] INDV 발권 전환 손익표")
+        
+        # 📌 [핵심 요약 표] 노란색 하이라이트 항목만 항상 표시
+        df_a_summary = pd.DataFrame({
+            "항목": ["총 손실"],
+            "PAX": ["-"],
+            "NET / 단가": ["-"],
+            "금액 (KRW)": [f"{path_a_total_loss:,.0f} 원"]
+        })
+        st.dataframe(df_a_summary, use_container_width=True, hide_index=True)
 
-    items_a = [
-        "DEPO 들어간 금액",
-        "DEPO 환불금",
-        "DEPO 손실액",
-        "INDV FARE",
-        "INDV 발권금 + DEPO 손실금",
-        "T/A 1 수입",
-        "T/A 2 수입",
-        "T/A 3 수입",
-        "총 손실",
-    ]
-    selected_items_a = st.multiselect(
-        "표시할 항목 선택 (경로 A)", options=items_a, default=items_a
-    )
+        # 📂 [상세 내역] 숨김/펼침 (Expander)
+        with st.expander("🔍 [경로 A] 세부 내역 보기 / 접기", expanded=False):
+            df_a_detail = pd.DataFrame({
+                "항목": [
+                    "DEPO 들어간 금액",
+                    "DEPO 환불금",
+                    "DEPO 손실액",
+                    "INDV FARE",
+                    "INDV 발권금 + DEPO 손실금",
+                    "T/A 1 수입",
+                    "T/A 2 수입",
+                    "T/A 3 수입",
+                    "총 손실"
+                ],
+                "PAX": [
+                    f"{depo_pax}명",
+                    f"{depo_refund_pax}명",
+                    f"{max(0, depo_pax-depo_refund_pax)}명",
+                    f"{indv_pax}명",
+                    "-",
+                    f"{ta1_pax}명",
+                    f"{ta2_pax}명",
+                    f"{ta3_pax}명",
+                    "-"
+                ],
+                "NET / 단가": [
+                    f"{depo_net:,.0f}원",
+                    "-",
+                    "-",
+                    f"{indv_fare:,.0f}원",
+                    "-",
+                    f"{ta1_net:,.0f}원",
+                    f"{ta2_net:,.0f}원",
+                    f"{ta3_net:,.0f}원",
+                    "-"
+                ],
+                "금액 (KRW)": [
+                    f"{depo_total_entry:,.0f} 원",
+                    f"{depo_refund_amount:,.0f} 원",
+                    f"{depo_loss_a:,.0f} 원",
+                    f"{indv_ticket_ttl:,.0f} 원",
+                    f"{indv_plus_depo:,.0f} 원",
+                    f"{ta1_ttl:,.0f} 원",
+                    f"{ta2_ttl:,.0f} 원",
+                    f"{ta3_ttl:,.0f} 원",
+                    f"{path_a_total_loss:,.0f} 원"
+                ]
+            })
+            st.dataframe(df_a_detail, use_container_width=True, hide_index=True)
 
-    df_a = pd.DataFrame({
-        "항목": [
-            "DEPO 들어간 금액",
-            "DEPO 환불금",
-            "DEPO 손실액",
-            "INDV FARE",
-            "INDV 발권금 + DEPO 손실금",
-            "T/A 1 수입",
-            "T/A 2 수입",
-            "T/A 3 수입",
-            "총 손실",
-        ],
-        "PAX": [...],          # 기존 로직 그대로
-        "NET / 단가": [...],   # 기존 로직 그대로
-        "금액 (KRW)": [...],   # 기존 로직 그대로
-    })
+        st.markdown("---")
 
-    df_a_filtered = df_a[df_a["항목"].isin(selected_items_a)]
-    st.dataframe(df_a_filtered, use_container_width=True, hide_index=True)
+        # ==================================================================
+        # 2️⃣ [경로 B] 결과 출력
+        # ==================================================================
+        st.markdown("##### 2️⃣ [경로 B] 여행사 최소 판매 금액 / 블록 유지 (ABS 적용)")
 
-    st.markdown("---")
+        # 📌 [핵심 요약 표] 노란색 하이라이트 항목만 항상 표시
+        df_b_summary = pd.DataFrame({
+            "구분 / 항목": ["여행사 최소 판매 요청 금액", "TTL 손익"],
+            "PAX": [f"🌸 {remaining_pax}명", "-"],
+            "NET / 단가": [f"{min_selling_price_b:,.0f}원", "-"],
+            "TTL (금액)": ["-", f"{path_b_ttl_profit:,.0f} 원"]
+        })
+        st.dataframe(df_b_summary, use_container_width=True, hide_index=True)
 
-    # =========================
-    # 경로 B 표 (멀티셀렉트 적용)
-    # =========================
-    st.markdown("##### 2️⃣ [경로 B] 여행사 최소 판매 금액 / 블록 유지 (ABS 적용)")
-
-    items_b = [
-        "GV10 원가",
-        "DEPO 환불 가능",
-        "DEPO 환불 불가",
-        "F/P TTL (탑업 차감금)",
-        "T/A 1 판매",
-        "T/A 2 판매",
-        "T/A 3 판매",
-        "여행사 최소 판매 요청 금액",
-        "TTL 손익",
-    ]
-    selected_items_b = st.multiselect(
-        "표시할 항목 선택 (경로 B)", options=items_b, default=items_b
-    )
-
-    df_b = pd.DataFrame({
-        "구분 / 항목": [
-            "GV10 원가",
-            "DEPO 환불 가능",
-            "DEPO 환불 불가",
-            "F/P TTL (탑업 차감금)",
-            "T/A 1 판매",
-            "T/A 2 판매",
-            "T/A 3 판매",
-            "여행사 최소 판매 요청 금액",
-            "TTL 손익",
-        ],
-        "PAX": [...],          # 기존 로직 그대로
-        "NET / 단가": [...],   # 기존 로직 그대로
-        "TTL (금액)": [...],   # 기존 로직 그대로
-    })
-
-    df_b_filtered = df_b[df_b["구분 / 항목"].isin(selected_items_b)]
-    st.dataframe(df_b_filtered, use_container_width=True, hide_index=True)
-
-   
+        # 📂 [상세 내역] 숨김/펼침 (Expander)
+        with st.expander("🔍 [경로 B] 세부 내역 보기 / 접기", expanded=False):
+            df_b_detail = pd.DataFrame({
+                "구분 / 항목": [
+                    "GV10 원가",
+                    "DEPO 환불 가능",
+                    "DEPO 환불 불가",
+                    "F/P TTL (탑업 차감금)",
+                    "T/A 1 판매",
+                    "T/A 2 판매",
+                    "T/A 3 판매",
+                    "여행사 최소 판매 요청 금액",
+                    "TTL 손익"
+                ],
+                "PAX": [
+                    f"{gv10_pax}명",
+                    f"{depo_refund_pax}명",
+                    f"{depo_non_refund_pax}명",
+                    "-",
+                    f"{ta1_pax}명",
+                    f"{ta2_pax}명",
+                    f"{ta3_pax}명",
+                    f"🌸 {remaining_pax}명",
+                    "-"
+                ],
+                "NET / 단가": [
+                    f"{depo_net:,.0f}원",
+                    f"{depo_net:,.0f}원",
+                    f"{depo_net:,.0f}원",
+                    "-",
+                    f"{ta1_net:,.0f}원",
+                    f"{ta2_net:,.0f}원",
+                    f"{ta3_net:,.0f}원",
+                    f"{min_selling_price_b:,.0f}원",
+                    "-"
+                ],
+                "TTL (금액)": [
+                    f"{gv10_total_amount:,.0f} 원",
+                    f"{depo_refund_amount:,.0f} 원",
+                    f"{depo_non_refund_amount:,.0f} 원",
+                    f"{fp_ttl:,.0f} 원",
+                    f"{ta1_ttl:,.0f} 원",
+                    f"{ta2_ttl:,.0f} 원",
+                    f"{ta3_ttl:,.0f} 원",
+                    "-",
+                    f"{path_b_ttl_profit:,.0f} 원"
+                ]
+            })
+            st.dataframe(df_b_detail, use_container_width=True, hide_index=True)
