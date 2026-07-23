@@ -342,29 +342,36 @@ with tab_sheet2:
 
     # --- [경로 B 수식] 그룹 블록 유지 ---
     gv10_pax = 10
-    gv10_total_amount = gv10_pax * depo_net                     # GV10 10명 원가
-    
-    # 환불 불가 인원 = 전체 - GV10(10) - 환불가능
-    depo_non_refund_pax = max(0, depo_pax - gv10_pax - depo_refund_pax) if depo_pax >= gv10_pax else 0
-    depo_non_refund_amount = depo_non_refund_pax * depo_per_pax # DEPO 환불 불가 금액
+gv10_total_amount = gv10_pax * depo_net  # GV10 10명 원가 (5,955,787.40)
 
-    fp_ttl = gv10_total_amount + depo_non_refund_amount          # F/P TTL (탑업 차감금)
+depo_refund_amount = depo_refund_pax * depo_per_pax  # DEPO 환불 가능 금액 (119,115.75)
+depo_non_refund_pax = (
+    max(0, depo_pax - gv10_pax - depo_refund_pax) if depo_pax >= gv10_pax else 0
+)
+depo_non_refund_amount = (
+    depo_non_refund_pax * depo_per_pax
+)  # DEPO 환불 불가 금액 (0.00)
 
-    inv1_ttl = inv1_net * inv1_pax
-    inv2_ttl = inv2_net * inv2_pax
-    inv3_ttl = inv3_net * inv3_pax
-    inv_total_revenue = inv1_ttl + inv2_ttl + inv3_ttl           # INV 수입 합계
+# 2. 💡 [수정] F/P TTL (탑업 차감금) = GV10 원가 + DEPO 환불 가능액 + DEPO 환불 불가액
+fp_ttl = gv10_total_amount + depo_refund_amount + depo_non_refund_amount
+# (결과: 5,955,787.40 + 119,115.75 + 0 = 6,074,903.15 원)
 
-    sold_pax = inv1_pax + inv2_pax + inv3_pax                   # 이미 판매된 인원
-    remaining_pax = max(0, gv10_pax - sold_pax)                 # 남은 소진 필요 인원
-    
-    path_b_ttl_profit = inv_total_revenue - fp_ttl              # 경로 B 현시점 TTL 손익 (음수)
+# 3. INV 수입 및 손익 연산
+inv1_ttl = inv1_net * inv1_pax
+inv2_ttl = inv2_net * inv2_pax
+inv3_ttl = inv3_net * inv3_pax
+inv_total_revenue = inv1_ttl + inv2_ttl + inv3_ttl  # INV 수입 합계
 
-    # ABS 기반 남은 좌석 최소 판매 요청 금액
-    if remaining_pax > 0:
-        min_selling_price_b = abs(path_b_ttl_profit) / remaining_pax
-    else:
-        min_selling_price_b = 0.0
+sold_pax = inv1_pax + inv2_pax + inv3_pax  # 이미 판매된 인원
+remaining_pax = max(0, gv10_pax - sold_pax)  # 남은 소진 필요 인원
+
+path_b_ttl_profit = inv_total_revenue - fp_ttl  # TTL 손익
+
+# ABS 기반 남은 좌석 최소 판매 요청 금액
+if remaining_pax > 0:
+  min_selling_price_b = abs(path_b_ttl_profit) / remaining_pax
+else:
+  min_selling_price_b = 0.0
 
     # ----------------------------------------------------------------------
     # 📊 시뮬레이션 결과 및 비교 판단
