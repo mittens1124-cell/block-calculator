@@ -589,7 +589,7 @@ with tab_sheet2:
                 f"{depo_refund_amount:,.0f} 원",
                 f"{depo_loss_a:,.0f} 원",
                 f"{indv_ticket_ttl:,.0f} 원",
-                f":**{indv_plus_depo:,.0f} 원**",
+                f"**{indv_plus_depo:,.0f} 원**",
                 f"{ta1_ttl:,.0f} 원",
                 f"{ta2_ttl:,.0f} 원",
                 f"{ta3_ttl:,.0f} 원",
@@ -639,7 +639,7 @@ with tab_sheet2:
                 f"{ta1_net:,.0f}원",
                 f"{ta2_net:,.0f}원",
                 f"{ta3_net:,.0f}원",
-                f":**{min_selling_price_b:,.0f}원**",
+                f"**{min_selling_price_b:,.0f}원**",
                 "-",
             ],
             "TTL (금액)": [
