@@ -166,7 +166,7 @@ with tab_sheet1:
                 min_value=0,
                 value=0,
                 step=10000,
-                format="%.0f",
+                format=",.0f",
                 key="pre_price",
             )
 
@@ -652,4 +652,4 @@ with tab_sheet2:
                     f"{path_b_ttl_profit:,.0f} 원"
                 ]
             })
-            st.dataframe(df_b_detail, use_container_width=True, hide_index=True)
+            st.dataframe(df_b_detail, use_container_width=True, hide_index
