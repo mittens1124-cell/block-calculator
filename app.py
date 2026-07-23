@@ -204,10 +204,8 @@ with tab_sheet1:
             else:
                 st.caption("💼 일반 주중 평일 패턴")
 
-        # 7. 네이버 항공권 안내 및 링크
+        # 7. 네이버 항공권 조회 버튼만 바로 표시 (검색 조건 텍스트 박스 삭제 완료)
         st.markdown("---")
-        st.info(f"✈️ **네이버 항공권 검색 조건:** 출발지 `서울/인천(ICN)` ➔ 도착지 `{route_code1}` | 출발일 **`{flight_date1.strftime('%Y-%m-%d')}`** (성인 1명 / 편도)")
-        
         naver_url1 = "https://flight.naver.com/"
         st.markdown(
             f'<a href="{naver_url1}" target="_blank" class="naver-btn">🟢 네이버 항공권 실시간 조회하러 가기 ↗</a>',
