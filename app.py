@@ -163,9 +163,9 @@ with tab_sheet1:
             )
             selling_price1 = st.number_input(
                 "1인당 판매가 (KRW)",
-                min_value=0.0,
-                value=0.0,
-                step=10000.0,
+                min_value=0,
+                value=0,
+                step=10000,
                 format="%d",
                 key="pre_price",
             )
