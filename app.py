@@ -199,15 +199,19 @@ with col_result:
     # --------------------------------------------------------------------------
     # 🔗 네이버 실시간 동적 URL 생성 및 버튼 표시 (AI 리포트 바로 위)
     # --------------------------------------------------------------------------
-    st.markdown("---")
-    date_str_compact = flight_date.strftime("%Y%m%d")  # YYYYMMDD
-    naver_url = f"https://flight.naver.com/flights/oneWay/ICN-{route_code}-{date_str_compact}?gal=1&fareType=Y"
+ st.markdown("---")
     
+    # YYYYMMDD 포맷 (예: 20260807)
+    date_str_compact = flight_date.strftime("%Y%m%d")
+    
+    # 🟢 네이버 항공권 정확한 검색 URL (입력한 날짜/노선 자동 세팅)
+    naver_url = f"https://flight.naver.com/flights/oneWay/SEL-{route_code}-{date_str_compact}?adult=1&isDirect=true&fareType=Y"
+    
+    # 네이버 항공권 단독 큰 버튼 출력
     st.markdown(
         f'<a href="{naver_url}" target="_blank" class="naver-btn">🟢 네이버 항공권 실시간 조회 ({route_code} {flight_date}) ↗</a>',
         unsafe_allow_html=True
     )
-
     # 7. AI 종합 전략 리포트
     st.subheader("🤖 AI 종합 전략 리포트 (Comment)")
     
