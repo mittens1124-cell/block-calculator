@@ -545,7 +545,7 @@ with tab_sheet2:
         # 경로 A 표
         st.markdown("##### 1️⃣ [경로 A] INDV 발권 전환 손익표")
         loss_display_a = (
-            f":**{path_a_total_loss:,.0f} 원**"
+            f"**{path_a_total_loss:,.0f} 원**"
             if path_a_total_loss < 0
             else f"{path_a_total_loss:,.0f} 원"
         )
@@ -603,7 +603,7 @@ with tab_sheet2:
         # 경로 B 표
         st.markdown("##### 2️⃣ [경로 B] 여행사 최소 판매 금액 / 블록 유지 (ABS 적용)")
         loss_display_b = (
-            f":**{path_b_ttl_profit:,.0f} 원**"
+            f"**{path_b_ttl_profit:,.0f} 원**"
             if path_b_ttl_profit < 0
             else f"{path_b_ttl_profit:,.0f} 원"
         )
