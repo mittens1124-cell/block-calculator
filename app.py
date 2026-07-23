@@ -545,7 +545,7 @@ with tab_sheet2:
         # 경로 A 표
         st.markdown("##### 1️⃣ [경로 A] INDV 발권 전환 손익표")
         loss_display_a = (
-            f":red[**{path_a_total_loss:,.0f} 원**]"
+            f":**{path_a_total_loss:,.0f} 원**"
             if path_a_total_loss < 0
             else f"{path_a_total_loss:,.0f} 원"
         )
@@ -589,7 +589,7 @@ with tab_sheet2:
                 f"{depo_refund_amount:,.0f} 원",
                 f"{depo_loss_a:,.0f} 원",
                 f"{indv_ticket_ttl:,.0f} 원",
-                f":red[**{indv_plus_depo:,.0f} 원**]",
+                f":**{indv_plus_depo:,.0f} 원**",
                 f"{ta1_ttl:,.0f} 원",
                 f"{ta2_ttl:,.0f} 원",
                 f"{ta3_ttl:,.0f} 원",
@@ -603,7 +603,7 @@ with tab_sheet2:
         # 경로 B 표
         st.markdown("##### 2️⃣ [경로 B] 여행사 최소 판매 금액 / 블록 유지 (ABS 적용)")
         loss_display_b = (
-            f":red[**{path_b_ttl_profit:,.0f} 원**]"
+            f":**{path_b_ttl_profit:,.0f} 원**"
             if path_b_ttl_profit < 0
             else f"{path_b_ttl_profit:,.0f} 원"
         )
@@ -639,7 +639,7 @@ with tab_sheet2:
                 f"{ta1_net:,.0f}원",
                 f"{ta2_net:,.0f}원",
                 f"{ta3_net:,.0f}원",
-                f":red[**{min_selling_price_b:,.0f}원**]",
+                f":**{min_selling_price_b:,.0f}원**",
                 "-",
             ],
             "TTL (금액)": [
