@@ -36,25 +36,16 @@ col_input, col_result = st.columns([1, 1.2], gap="large")
 with col_input:
     st.subheader("📌 조건 입력")
     
+    # 1️⃣ 노선 선택
     with st.expander("1️⃣ 노선 선택 (목적지)", expanded=True):
         route = st.selectbox(
             "목적지 노선 선택",
             options=["PQC (푸꾸옥)", "CXR (나트랑)", "DAD (다낭)", "HAN (하노이)", "HPH (하이퐁)", "SAI (사이공/호치민)"]
         )
         route_code = route.split()[0]
-        
-    with st.expander("2️⃣ 실모객 및 판매가 설정", expanded=True):
-        pax = st.number_input("실모객 인원 (PAX)", min_value=1, max_value=100, value=3, step=1)
-        selling_price = st.number_input("1인당 판매가 (KRW)", min_value=0, value=620000, step=10000, format="%d")
-        
-    with st.expander("3️⃣ INDV 발권 조건", expanded=True):
-        indiv_net = st.number_input("INDV 1인당 NET FARE (KRW)", min_value=0, value=1069000, step=10000, format="%d")
-        
-    with st.expander("4️⃣ DEPO 그룹 조건", expanded=True):
-        group_net = st.number_input("그룹 1인당 NET FARE (KRW)", min_value=0.0, value=587457.1, step=1000.0, format="%.2f")
-        depo_seats = st.number_input("DEPO 유지/보장 좌석 수", min_value=1, max_value=100, value=11, step=1)
 
-    with st.expander("5️⃣ 출발/운항 날짜 설정 (요일/공휴일/기후)", expanded=True):
+    # 2️⃣ 출발/운항 날짜 설정 (노선 선택 바로 밑으로 이동!)
+    with st.expander("2️⃣ 출발/운항 날짜 설정 (기후 / 요일 / 공휴일)", expanded=True):
         flight_date = st.date_input("출발/운항 날짜", datetime.date.today())
         month = flight_date.month
         
@@ -102,6 +93,20 @@ with col_input:
             is_dry_season = month in [12, 1, 2, 3, 4]
             season_name = "건기 (성수기)" if is_dry_season else "우기 (스콜성 우천)"
             season_desc = "비즈니스 및 골프/관광 수요가 안정적으로 유지되는 시즌입니다." if is_dry_season else "스콜성 우천이 자주 발생하나 상용 수요는 비교적 꾸준합니다."
+
+    # 3️⃣ 실모객 및 판매가 설정
+    with st.expander("3️⃣ 실모객 및 판매가 설정", expanded=True):
+        pax = st.number_input("실모객 인원 (PAX)", min_value=1, max_value=100, value=3, step=1)
+        selling_price = st.number_input("1인당 판매가 (KRW)", min_value=0, value=620000, step=10000, format="%d")
+        
+    # 4️⃣ INDV 발권 조건
+    with st.expander("4️⃣ INDV 발권 조건", expanded=True):
+        indiv_net = st.number_input("INDV 1인당 NET FARE (KRW)", min_value=0, value=1069000, step=10000, format="%d")
+        
+    # 5️⃣ DEPO 그룹 조건
+    with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
+        group_net = st.number_input("그룹 1인당 NET FARE (KRW)", min_value=0.0, value=587457.1, step=1000.0, format="%.2f")
+        depo_seats = st.number_input("DEPO 유지/보장 좌석 수", min_value=1, max_value=100, value=11, step=1)
 
     st.info("💡 **Tip:** 노선 및 날짜를 변경하면 기후 특성을 반영한 AI 전략이 즉시 업그레이드됩니다.")
 
@@ -174,7 +179,7 @@ with col_result:
     # 7. AI 종합 전략 리포트
     st.subheader("🤖 AI 종합 전략 리포트 (Comment)")
     
-    # 노선 기후 기반 코멘수
+    # 노선 기후 기반 코멘트
     climate_comment = f"• **[{route_code} {season_name}]** {season_desc}"
     if is_dry_season:
         climate_comment += " (건기 특수로 D-10 시점까지 추가 모객 가능성이 높습니다.)"
