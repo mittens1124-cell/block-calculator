@@ -366,7 +366,7 @@ with tab_sheet1:
       st.success(comment_text1)
 
 # ==========================================================================
-# 📦 [2번 탭] DEPO 후 시뮬레이터 (수식 및 들여쓰기 완벽 반영)
+# 📦 [2번 탭] DEPO 후 시뮬레이터 (T/A ↔ INV 연동 & 차감 수식 수정 완료)
 # ==========================================================================
 with tab_sheet2:
   col_input2, col_result2 = st.columns([1, 1.2], gap="large")
@@ -428,32 +428,36 @@ with tab_sheet2:
           "T/A 2 PAX", min_value=0, value=0, key="ta2_pax"
       )
 
-    # 3️⃣ 경로 B: 그룹 블록 유지 조건
+    # 3️⃣ 경로 B: 그룹 블록 유지 조건 (T/A 판매 내역 자동 반영)
     with st.expander(
         "3️⃣ [경로 B] 그룹 블록 유지 시 조건 (INV 수입)", expanded=True
     ):
+      st.caption(
+          "💡 **INV 1 및 INV 2는 경로 A에서 입력한 T/A 1, T/A 2 조건이 자동으로"
+          " 연동됩니다.**"
+      )
       c_inv1_1, c_inv1_2 = st.columns(2)
       inv1_net = c_inv1_1.number_input(
           "INV 1 단가 (NET)",
           min_value=0.0,
-          value=0.0,
+          value=ta1_net,
           step=10000.0,
           key="inv1_net",
       )
       inv1_pax = c_inv1_2.number_input(
-          "INV 1 인원 (PAX)", min_value=0, value=0, key="inv1_pax"
+          "INV 1 인원 (PAX)", min_value=0, value=ta1_pax, key="inv1_pax"
       )
 
       c_inv2_1, c_inv2_2 = st.columns(2)
       inv2_net = c_inv2_1.number_input(
           "INV 2 단가 (NET)",
           min_value=0.0,
-          value=0.0,
+          value=ta2_net,
           step=10000.0,
           key="inv2_net",
       )
       inv2_pax = c_inv2_2.number_input(
-          "INV 2 인원 (PAX)", min_value=0, value=0, key="inv2_pax"
+          "INV 2 인원 (PAX)", min_value=0, value=ta2_pax, key="inv2_pax"
       )
 
       c_inv3_1, c_inv3_2 = st.columns(2)
@@ -495,7 +499,7 @@ with tab_sheet2:
   ta2_ttl = ta2_net * ta2_pax
   path_a_total_loss = (ta1_ttl + ta2_ttl) - indv_plus_depo
 
-  # --- 경로 B (요청 수식 수정 반영) ---
+  # --- 경로 B ---
   gv10_pax = 10
   gv10_total_amount = gv10_pax * depo_net
 
@@ -506,8 +510,8 @@ with tab_sheet2:
   )
   depo_non_refund_amount = depo_non_refund_pax * depo_per_pax
 
-  # 💡 [수정 완료] F/P TTL = GV10 원가 + DEPO 환불 가능액 + DEPO 환불 불가액
-  fp_ttl = gv10_total_amount + depo_refund_amount + depo_non_refund_amount
+  # 💡 [정확한 수식 적용] F/P TTL = GV10 원가 - DEPO 환불 가능액 + DEPO 환불 불가액
+  fp_ttl = gv10_total_amount - depo_refund_amount + depo_non_refund_amount
 
   inv1_ttl = inv1_net * inv1_pax
   inv2_ttl = inv2_net * inv2_pax
