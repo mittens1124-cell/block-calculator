@@ -10,7 +10,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# 2. 커스텀 스타일 적용 (CSS)
+# 2. 커스텀 스타일 적용 (CSS - 네이버 항공권 버튼 스타일 추가)
 st.markdown("""
     <style>
     .main { background-color: #f8f9fa; }
@@ -21,6 +21,25 @@ st.markdown("""
     .status-badge-group {
         background-color: #ebfbee; color: #2b8a3e;
         padding: 10px 18px; border-radius: 20px; font-weight: bold; font-size: 16px;
+    }
+    .naver-btn {
+        display: inline-block;
+        width: 100%;
+        background-color: #03C75A;
+        color: white !important;
+        text-align: center;
+        padding: 12px 20px;
+        font-size: 15px;
+        font-weight: bold;
+        border-radius: 8px;
+        text-decoration: none;
+        margin-top: 10px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .naver-btn:hover {
+        background-color: #02b350;
+        color: white !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -44,7 +63,7 @@ with col_input:
         )
         route_code = route.split()[0]
 
-    # 2️⃣ 출발/운항 날짜 설정 (노선 선택 바로 밑으로 이동!)
+    # 2️⃣ 출발/운항 날짜 설정
     with st.expander("2️⃣ 출발/운항 날짜 설정 (기후 / 요일 / 공휴일)", expanded=True):
         flight_date = st.date_input("출발/운항 날짜", datetime.date.today())
         month = flight_date.month
@@ -69,27 +88,27 @@ with col_input:
         season_name = ""
         season_desc = ""
 
-        if route_code == "PQC": # 푸꾸옥: 11~4월 건기
+        if route_code == "PQC":
             is_dry_season = month in [11, 12, 1, 2, 3, 4]
             season_name = "건기 (최고 성수기)" if is_dry_season else "우기 (비수기)"
             season_desc = "휴양지 특성상 건기 시즌 모객 집중도가 매우 높은 노선입니다." if is_dry_season else "우기 시즌으로 강수량이 많아 모객 속도가 더딜 수 있습니다."
             
-        elif route_code == "CXR": # 나트랑: 1~8월 건기
+        elif route_code == "CXR":
             is_dry_season = month in [1, 2, 3, 4, 5, 6, 7, 8]
             season_name = "건기 (성수기)" if is_dry_season else "우기 (우천/태풍 주의)"
             season_desc = "날씨가 좋아 가족/휴양 객단가가 안정적으로 형성되는 시즌입니다." if is_dry_season else "Late Rainy Season으로 단기 우천에 따른 모객 변동성이 있습니다."
             
-        elif route_code == "DAD": # 다낭: 2~8월 건기
+        elif route_code == "DAD":
             is_dry_season = month in [2, 3, 4, 5, 6, 7, 8]
             season_name = "건기 (성수기)" if is_dry_season else "우기 (태풍/우천 시즌)"
             season_desc = "스테디셀러 노선으로 건기 시즌 패키지/FIT 수요가 높습니다." if is_dry_season else "우기 및 태풍 영향을 받을 수 있어 잔여석 처리에 유의해야 합니다."
             
-        elif route_code in ["HAN", "HPH"]: # 하노이/하이퐁: 11~3월 건기(선선)
+        elif route_code in ["HAN", "HPH"]:
             is_dry_season = month in [11, 12, 1, 2, 3]
             season_name = "건기/가을·겨울 (성수기)" if is_dry_season else "우기/고온다습 (비수기)"
             season_desc = "여행하기에 선선하고 쾌적하여 관광 상용 수요가 상승합니다." if is_dry_season else "무더위와 우기로 인해 상용 수요 중심 운항이 예상됩니다."
             
-        elif route_code == "SAI": # 사이공/호치민: 12~4월 건기
+        elif route_code == "SAI":
             is_dry_season = month in [12, 1, 2, 3, 4]
             season_name = "건기 (성수기)" if is_dry_season else "우기 (스콜성 우천)"
             season_desc = "비즈니스 및 골프/관광 수요가 안정적으로 유지되는 시즌입니다." if is_dry_season else "스콜성 우천이 자주 발생하나 상용 수요는 비교적 꾸준합니다."
@@ -121,10 +140,11 @@ group_profit = group_revenue - group_cost
 
 bep_pax = (depo_seats * group_net) / indiv_net if indiv_net > 0 else 0
 
+# 5. 우측 결과 표시
 with col_result:
     st.subheader(f"📊 [{route_code}] 손익 비교 및 분석 결과")
     
-    # 5. 추천 의사결정
+    # 추천 의사결정 배지
     if indiv_profit > group_profit:
         recommendation = "INDV 발권 전환"
         saved_amount = indiv_profit - group_profit
@@ -176,12 +196,17 @@ with col_result:
         else:
             st.caption("💼 일반 주중 평일 패턴")
 
-    # 🔗 네이버 실시간 동적 URL 생성 로직
-date_str_compact = flight_date.strftime("%Y%m%d")  # YYYYMMDD (네이버용)
-
-# 네이버 항공권 URL
-naver_url = f"https://flight.naver.com/flights/oneWay/ICN-{route_code}-{date_str_compact}?gal=1&fareType=Y"
-
+    # --------------------------------------------------------------------------
+    # 🔗 네이버 실시간 동적 URL 생성 및 버튼 표시 (AI 리포트 바로 위)
+    # --------------------------------------------------------------------------
+    st.markdown("---")
+    date_str_compact = flight_date.strftime("%Y%m%d")  # YYYYMMDD
+    naver_url = f"https://flight.naver.com/flights/oneWay/ICN-{route_code}-{date_str_compact}?gal=1&fareType=Y"
+    
+    st.markdown(
+        f'<a href="{naver_url}" target="_blank" class="naver-btn">🟢 네이버 항공권 실시간 조회 ({route_code} {flight_date}) ↗</a>',
+        unsafe_allow_html=True
+    )
 
     # 7. AI 종합 전략 리포트
     st.subheader("🤖 AI 종합 전략 리포트 (Comment)")
