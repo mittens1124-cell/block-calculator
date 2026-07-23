@@ -92,26 +92,18 @@ tab_sheet1, tab_sheet2 = st.tabs(
 # ==========================================================================
 # 📋 [1번 탭] DEPO 전 시뮬레이터
 # ==========================================================================
-with tab_sheet1:
-  col_input1, col_result1 = st.columns([1, 1.2], gap="large")
+   with tab_sheet1:
+    col_input1, col_result1 = st.columns([1, 1.2], gap="large")
 
-  with col_input1:
-    st.subheader("📌 [DEPO 전] 조건 입력")
+    with col_input1:
+        st.subheader("📌 [DEPO 전] 조건 입력")
 
-    with st.expander("1️⃣ 노선 선택 (목적지)", expanded=True):
-      route1 = st.selectbox(
-          "목적지 노선 선택",
-          options=[
-              "PQC (푸꾸옥)",
-              "CXR (나트랑)",
-              "DAD (다낭)",
-              "HAN (하노이)",
-              "HPH (하이퐁)",
-              "SAI (사이공/호치민)",
-          ],
-          key="r1",
-      )
-      route_code1 = route1.split()[0]
+        # 1️⃣ 노선 선택
+        with st.expander("1️⃣ 노선 선택 (목적지)", expanded=True):
+            route_options = ["PQC (푸꾸옥)", "DAD (다낭)", "CXR (나트랑)", "NHA (나트랑)"]
+            selected_route = st.selectbox(
+                "목적지 노선 선택", options=route_options, index=0, key="pre_route"
+            )
 
     with st.expander("2️⃣ 출발/운항 날짜 설정", expanded=True):
       flight_date1 = st.date_input(
@@ -163,23 +155,20 @@ with tab_sheet1:
         season_desc1 = "정규 건기/우기 스케줄에 맞춰 대응하세요."
 
     with st.expander("3️⃣ 실모객 및 판매가 설정", expanded=True):
-      pax1 = st.number_input(
-          "실모객 인원 (PAX)",
-          min_value=1,
-          max_value=100,
-          value=3,
-          step=1,
-          key="pax1",
-      )
-      selling_price1 = st.number_input(
-          "1인당 판매가 (KRW)",
-          min_value=0,
-          value=620000,
-          step=10000,
-          key="sp1",
-      )
+    
 
     with st.expander("4️⃣ INDV 발권 조건", expanded=True):
+        actual_pax = st.number_input(
+                "실모객 인원 (PAX)", min_value=0, value=0, step=1, key="pre_pax"
+            )
+            selling_price = st.number_input(
+                "1인당 판매가 (KRW)",
+                min_value=0.0,
+                value=0.0,
+                step=10000.0,
+                format="%.0f",
+                key="pre_price",
+            )
       indiv_net1 = st.number_input(
           "INDV 1인당 NET FARE (KRW)",
           min_value=0,
