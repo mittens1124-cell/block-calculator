@@ -176,6 +176,13 @@ with col_result:
         else:
             st.caption("💼 일반 주중 평일 패턴")
 
+    # 🔗 네이버 실시간 동적 URL 생성 로직
+date_str_compact = flight_date.strftime("%Y%m%d")  # YYYYMMDD (네이버용)
+
+# 네이버 항공권 URL
+naver_url = f"https://flight.naver.com/flights/oneWay/ICN-{route_code}-{date_str_compact}?gal=1&fareType=Y"
+
+
     # 7. AI 종합 전략 리포트
     st.subheader("🤖 AI 종합 전략 리포트 (Comment)")
     
