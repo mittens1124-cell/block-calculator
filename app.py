@@ -272,23 +272,27 @@ with tab_sheet2:
 
     with col_input2:
         st.subheader("📌 [Full Pay 마감 전] 조건 입력")
-        st.caption("🔵 **파란색 글씨 입력란** (엑셀과 100% 동기화)")
+        st.caption("🔵 **파란색 글씨 입력란** (엑셀 양식과 100% 동기화)")
         
         with st.expander("1️⃣ DEPO 결제 현황 및 F/P 기준", expanded=True):
             depo_pax = st.number_input("DEPO 계약 인원 (PAX)", min_value=1, value=10, key="dp_pax")
-            depo_net = st.number_input("NET 단가 (KRW)", value=405657.10, step=1000.0, format="%.2f", key="dp_net")
+            depo_net = st.number_input("DEPO NET 단가 (KRW)", value=405657.10, step=1000.0, format="%.2f", key="dp_net")
 
         with st.expander("2️⃣ 경로 A: INDV 발권 전환 시 조건", expanded=True):
-            indv_fare = st.number_input("INDV 1인당 NET FARE", value=500000.0, step=10000.0, key="post_ifare")
-            indv_pax = st.number_input("INDV 발권 전환 PAX", value=4, key="post_ipax")
+            c_ifare1, c_ifare2, c_ifare3 = st.columns(3)
+            indv_fare = c_ifare1.number_input("1인당 NET FARE", value=500000.0, step=10000.0, key="post_ifare")
+            indv_baggage = c_ifare2.number_input("수하물 추가금", value=0.0, step=5000.0, key="post_ibag")
+            indv_pax = c_ifare3.number_input("INDV 발권 PAX", value=4, key="post_ipax")
             
+            st.markdown("---")
+            st.caption("🛍️ **T/A (여행사) 판매 수입 입력**")
             c_ta1_1, c_ta1_2 = st.columns(2)
-            ta1_net = c_ta1_1.number_input("T/A 1 단가 (NET)", value=420000.0, step=10000.0, key="ta1_net")
-            ta1_pax = c_ta1_2.number_input("T/A 1 인원 (PAX)", value=2, key="ta1_pax")
+            ta1_net = c_ta1_1.number_input("T/A 1 단가", value=420000.0, step=10000.0, key="ta1_net")
+            ta1_pax = c_ta1_2.number_input("T/A 1 PAX", value=2, key="ta1_pax")
             
             c_ta2_1, c_ta2_2 = st.columns(2)
-            ta2_net = c_ta2_1.number_input("T/A 2 단가 (NET)", value=420000.0, step=10000.0, key="ta2_net")
-            ta2_pax = c_ta2_2.number_input("T/A 2 인원 (PAX)", value=2, key="ta2_pax")
+            ta2_net = c_ta2_1.number_input("T/A 2 단가", value=420000.0, step=10000.0, key="ta2_net")
+            ta2_pax = c_ta2_2.number_input("T/A 2 PAX", value=2, key="ta2_pax")
 
         with st.expander("3️⃣ 경로 B: F/P 진행 및 완주 시 (INV 수입)", expanded=True):
             c_inv1_1, c_inv1_2 = st.columns(2)
@@ -304,15 +308,13 @@ with tab_sheet2:
             inv3_pax = c_inv3_2.number_input("INV 3 인원 (PAX)", value=0, key="inv3_pax")
 
     # ----------------------------------------------------------------------
-    # 🧮 엑셀 정확한 수식 및 LOOKUP 로직 적용
+    # 🧮 엑셀 수식 및 총 손실 계산
     # ----------------------------------------------------------------------
-    # 1인당 DEPO = NET * 20%
-    depo_per_pax = depo_net * 0.20                             
+    # 1. 1인당 DEPO & DEPO 들어간 금액
+    depo_per_pax = depo_net * 0.20                             # 81,131.42
+    depo_total_entry = depo_per_pax * depo_pax                 # 811,314.20
 
-    # 1. DEPO 들어간 금액 = 1인당 DEPO * PAX
-    depo_total_entry = depo_per_pax * depo_pax                 
-
-    # 2. LOOKUP(depo_pax, {0, 11, 15, 25, 35}, {0, 1, 2, 3, 4}) 환급 인원 계산 (노란색 영역)
+    # 2. LOOKUP 환급 인원 및 환불금
     if depo_pax >= 35:
         refund_pax = 4
     elif depo_pax >= 25:
@@ -324,41 +326,41 @@ with tab_sheet2:
     else:
         refund_pax = 0
 
-    # DEPO 환불금 (초록색 영역) = 환급 인원 * 1인당 DEPO
-    depo_refund = refund_pax * depo_per_pax                     
+    depo_refund = refund_pax * depo_per_pax                     # DEPO 환불금
+    depo_loss_pax = depo_pax - refund_pax                       # DEPO 손실 PAX (10명)
+    depo_loss = depo_total_entry - depo_refund                 # DEPO 손실액 (811,314.20)
 
-    # 3. DEPO 손실 (하단) = (전체 인원 - 환급 인원) & 손실액
-    depo_loss_pax = depo_pax - refund_pax                       # 손실 PAX
-    depo_loss = depo_total_entry - depo_refund                 # DEPO 손실액
+    # 3. INDV FARE 수식 = (1인당 NET FARE + 수하물) * PAX (2,000,000.00)
+    indv_ticket_total = (indv_fare + indv_baggage) * indv_pax   
 
-    # INDV 관련 계산
-    indv_ticket_total = indv_fare * indv_pax                   # INDV FARE (발권금)
-    indv_plus_depo_loss = indv_ticket_total + depo_loss        # INDV 발권금 + DEPO 손실금
+    # 4. INDV 발권금 + DEPO 손실금 = 2,811,314.20
+    indv_plus_depo_loss = indv_ticket_total + depo_loss        
 
-    ta1_ttl = ta1_net * ta1_pax                                
-    ta2_ttl = ta2_net * ta2_pax                                
-    ta_total = ta1_ttl + ta2_ttl                               # T/A 총 수입
+    # 5. T/A 수입 계산
+    ta1_ttl = ta1_net * ta1_pax                                # T/A 1 수입 (840,000)
+    ta2_ttl = ta2_net * ta2_pax                                # T/A 2 수입 (840,000)
+    
+    # 6. 총 손실 계산 = (T/A 1 + T/A 2) - (INDV 발권금 + DEPO 손실금)
+    post_indv_total_loss = (ta1_ttl + ta2_ttl) - indv_plus_depo_loss  # -1,131,314.20
 
-    post_indv_total_loss = ta_total - indv_plus_depo_loss      # 경로 A 총 손실
-
-    # [경로 B: Full Pay 진행/여행사 최소 판매 금액]
-    gv10_ttl = depo_pax * depo_net                             # GV10 전체 F/P 원가
+    # [경로 B: Full Pay 진행 수식]
+    gv10_ttl = depo_pax * depo_net                             
     fp_ttl = gv10_ttl                                          
 
     inv1_ttl = inv1_net * inv1_pax                             
     inv2_ttl = inv2_net * inv2_pax                             
     inv3_ttl = inv3_net * inv3_pax                             
-    inv_total = inv1_ttl + inv2_ttl + inv3_ttl                 # INV 총 수입
+    inv_total = inv1_ttl + inv2_ttl + inv3_ttl                 
 
-    total_inv_pax = inv1_pax + inv2_pax + inv3_pax            # 현재 확정 모객 인원
-    agency_rem_pax = depo_pax - total_inv_pax                  # 잔여 필요 소진 인원
+    total_inv_pax = inv1_pax + inv2_pax + inv3_pax            
+    agency_rem_pax = depo_pax - total_inv_pax                  
 
-    agency_min_cost = fp_ttl - inv_total                       # 잔여석이 메꿔야할 적자금액
-    min_selling_price_per_pax = agency_min_cost / agency_rem_pax if agency_rem_pax > 0 else 0  # 잔여석 1인당 최소 필요 판매가
-    post_ttl_profit = -agency_min_cost                         # 경로 B 현시점 손익
+    agency_min_cost = fp_ttl - inv_total                       
+    min_selling_price_per_pax = agency_min_cost / agency_rem_pax if agency_rem_pax > 0 else 0 
+    post_ttl_profit = -agency_min_cost                         
 
     # ----------------------------------------------------------------------
-    # 📊 결과 리포트 출력
+    # 📊 결과 리포트 (엑셀표 시각화)
     # ----------------------------------------------------------------------
     with col_result2:
         st.subheader("📊 F/P 마감 전 최종 의사결정 시뮬레이션")
@@ -376,44 +378,65 @@ with tab_sheet2:
 
         st.markdown("---")
 
-        # 1. INDV 발권할 경우 표 (엑셀 표 형태와 일치)
+        # 1. INDV 발권할 경우 표 (엑셀 1:1 매칭 양식)
         st.markdown("##### 1️⃣ INDV 발권할 경우 (경로 A)")
+        
+        # 총 손실 금액 텍스트 포맷팅 (손실 시 빨간색 강조)
+        if post_indv_total_loss < 0:
+            loss_display = f":red[**{post_indv_total_loss:,.2f} 원**]"
+        else:
+            loss_display = f"{post_indv_total_loss:,.2f} 원"
+
         df_indv_post = pd.DataFrame({
-            "구분": [
+            "항목": [
                 "DEPO 들어간 금액", 
-                "DEPO 환불금 (LOOKUP)", 
-                "DEPO 손실 (최종)", 
-                "INDV FARE (발권금)", 
+                "DEPO 환불금", 
+                "DEPO 손실액", 
+                "INDV FARE", 
                 "INDV 발권금 + DEPO 손실금", 
-                "T/A 수입 합계", 
-                "경로 A 총 손실"
+                "T/A 1 수입", 
+                "T/A 2 수입", 
+                "총 손실"
+            ],
+            "1인당 NET / 단가": [
+                f"{depo_net:,.2f}원", 
+                "-", 
+                "-", 
+                f"{indv_fare:,.2f}원", 
+                "-", 
+                f"{ta1_net:,.2f}원", 
+                f"{ta2_net:,.2f}원", 
+                "-"
             ],
             "1인당 DEPO": [
                 f"{depo_per_pax:,.2f}원", 
-                f"{depo_per_pax:,.2f}원", 
-                f"{depo_per_pax:,.2f}원", 
-                f"{indv_fare:,.2f}원", 
+                "-", 
+                "-", 
+                "-", 
+                "-", 
                 "-", 
                 "-", 
                 "-"
             ],
             "PAX": [
                 f"{depo_pax}명", 
-                f"🟨 {refund_pax}명", 
+                f"{refund_pax}명", 
                 f"{depo_loss_pax}명", 
                 f"{indv_pax}명", 
                 "-", 
-                f"{ta1_pax + ta2_pax}명", 
+                f"{ta1_pax}명", 
+                f"{ta2_pax}명", 
                 "-"
             ],
             "금액 (KRW)": [
                 f"{depo_total_entry:,.2f} 원",
-                f"🟩 {depo_refund:,.2f} 원",
+                f"{depo_refund:,.2f} 원",
                 f"{depo_loss:,.2f} 원",
                 f"{indv_ticket_total:,.2f} 원",
-                f"{indv_plus_depo_loss:,.2f} 원",
-                f"{ta_total:,.2f} 원",
-                f"{post_indv_total_loss:,.2f} 원"
+                f":red[**{indv_plus_depo_loss:,.2f} 원**]",
+                f"{ta1_ttl:,.2f} 원",
+                f"{ta2_ttl:,.2f} 원",
+                loss_display
             ]
         })
         st.dataframe(df_indv_post, use_container_width=True, hide_index=True)
@@ -430,7 +453,7 @@ with tab_sheet2:
                 f"{fp_ttl:,.2f} 원",
                 f"{inv_total:,.2f} 원",
                 f"{min_selling_price_per_pax:,.2f} 원",
-                f"{post_ttl_profit:,.2f} 원"
+                f":red[**{post_ttl_profit:,.2f} 원**]" if post_ttl_profit < 0 else f"{post_ttl_profit:,.2f} 원"
             ]
         })
         st.dataframe(df_margin_post, use_container_width=True, hide_index=True)
