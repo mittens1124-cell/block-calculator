@@ -5,7 +5,7 @@ import holidays
 
 # 1. 페이지 설정
 st.set_page_config(
-    page_title="항공 그룹 블록 vs INDV 의사결정 시뮬레이터",
+    page_title="베트남 노선 그룹 블록 vs INDV 의사결정 시뮬레이터",
     page_icon="✈️",
     layout="wide"
 )
@@ -25,8 +25,8 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.title("✈️ 항공 그룹 블록 vs INDV 손익 판단 시뮬레이터")
-st.caption("DEPO 전 모객 인원 미달 시, 그룹 유지 vs INDV 전환 손익 및 양국 공휴일/요일 특성 기반 AI 전략 코멘트를 제공합니다.")
+st.title("✈️ 베트남 노선 그룹 블록 vs INDV 손익 판단 시뮬레이터")
+st.caption("노선별 건기/우기, 양국 공휴일, 요일 특성을 통합 분석하여 최적의 의사결정과 AI 전략 리포트를 제공합니다.")
 
 st.divider()
 
@@ -36,26 +36,34 @@ col_input, col_result = st.columns([1, 1.2], gap="large")
 with col_input:
     st.subheader("📌 조건 입력")
     
-    with st.expander("1️⃣ 실모객 및 판매가 설정", expanded=True):
+    with st.expander("1️⃣ 노선 선택 (목적지)", expanded=True):
+        route = st.selectbox(
+            "목적지 노선 선택",
+            options=["PQC (푸꾸옥)", "CXR (나트랑)", "DAD (다낭)", "HAN (하노이)", "HPH (하이퐁)", "SAI (사이공/호치민)"]
+        )
+        route_code = route.split()[0]
+        
+    with st.expander("2️⃣ 실모객 및 판매가 설정", expanded=True):
         pax = st.number_input("실모객 인원 (PAX)", min_value=1, max_value=100, value=3, step=1)
         selling_price = st.number_input("1인당 판매가 (KRW)", min_value=0, value=620000, step=10000, format="%d")
         
-    with st.expander("2️⃣ INDV 발권 조건", expanded=True):
+    with st.expander("3️⃣ INDV 발권 조건", expanded=True):
         indiv_net = st.number_input("INDV 1인당 NET FARE (KRW)", min_value=0, value=1069000, step=10000, format="%d")
         
-    with st.expander("3️⃣ DEPO 그룹 조건", expanded=True):
+    with st.expander("4️⃣ DEPO 그룹 조건", expanded=True):
         group_net = st.number_input("그룹 1인당 NET FARE (KRW)", min_value=0.0, value=587457.1, step=1000.0, format="%.2f")
         depo_seats = st.number_input("DEPO 유지/보장 좌석 수", min_value=1, max_value=100, value=11, step=1)
 
-    with st.expander("4️⃣ 출발/운항 날짜 설정 (요일 & 공휴일 분석)", expanded=True):
+    with st.expander("5️⃣ 출발/운항 날짜 설정 (요일/공휴일/기후)", expanded=True):
         flight_date = st.date_input("출발/운항 날짜", datetime.date.today())
+        month = flight_date.month
         
         # 요일 판단
-        weekday_num = flight_date.weekday() # 0:월 ~ 6:일
+        weekday_num = flight_date.weekday()
         weekday_kr = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"][weekday_num]
-        is_weekend = weekday_num in [4, 5, 6] # 금, 토, 일
+        is_weekend = weekday_num in [4, 5, 6]
         
-        # 🇰🇷 한국 & 🇻🇳 베트남 공휴일 로드 및 판단
+        # 🇰🇷 한국 & 🇻🇳 베트남 공휴일
         kr_holidays = holidays.KR(years=flight_date.year)
         vn_holidays = holidays.VN(years=flight_date.year)
         
@@ -65,7 +73,37 @@ with col_input:
         is_vn_holiday = flight_date in vn_holidays
         vn_holiday_name = vn_holidays.get(flight_date) if is_vn_holiday else ""
 
-    st.info("💡 **Tip:** 날짜 및 조건 입력을 변경하면 우측의 손익 분석 및 요일/공휴일 반영 AI Comment가 즉시 자동 계산됩니다.")
+        # ☀️🌧️ 노선별 건기/우기 판단 로직
+        is_dry_season = False
+        season_name = ""
+        season_desc = ""
+
+        if route_code == "PQC": # 푸꾸옥: 11~4월 건기
+            is_dry_season = month in [11, 12, 1, 2, 3, 4]
+            season_name = "건기 (최고 성수기)" if is_dry_season else "우기 (비수기)"
+            season_desc = "휴양지 특성상 건기 시즌 모객 집중도가 매우 높은 노선입니다." if is_dry_season else "우기 시즌으로 강수량이 많아 모객 속도가 더딜 수 있습니다."
+            
+        elif route_code == "CXR": # 나트랑: 1~8월 건기
+            is_dry_season = month in [1, 2, 3, 4, 5, 6, 7, 8]
+            season_name = "건기 (성수기)" if is_dry_season else "우기 (우천/태풍 주의)"
+            season_desc = "날씨가 좋아 가족/휴양 객단가가 안정적으로 형성되는 시즌입니다." if is_dry_season else "Late Rainy Season으로 단기 우천에 따른 모객 변동성이 있습니다."
+            
+        elif route_code == "DAD": # 다낭: 2~8월 건기
+            is_dry_season = month in [2, 3, 4, 5, 6, 7, 8]
+            season_name = "건기 (성수기)" if is_dry_season else "우기 (태풍/우천 시즌)"
+            season_desc = "스테디셀러 노선으로 건기 시즌 패키지/FIT 수요가 높습니다." if is_dry_season else "우기 및 태풍 영향을 받을 수 있어 잔여석 처리에 유의해야 합니다."
+            
+        elif route_code in ["HAN", "HPH"]: # 하노이/하이퐁: 11~3월 건기(선선)
+            is_dry_season = month in [11, 12, 1, 2, 3]
+            season_name = "건기/가을·겨울 (성수기)" if is_dry_season else "우기/고온다습 (비수기)"
+            season_desc = "여행하기에 선선하고 쾌적하여 관광 상용 수요가 상승합니다." if is_dry_season else "무더위와 우기로 인해 상용 수요 중심 운항이 예상됩니다."
+            
+        elif route_code == "SAI": # 사이공/호치민: 12~4월 건기
+            is_dry_season = month in [12, 1, 2, 3, 4]
+            season_name = "건기 (성수기)" if is_dry_season else "우기 (스콜성 우천)"
+            season_desc = "비즈니스 및 골프/관광 수요가 안정적으로 유지되는 시즌입니다." if is_dry_season else "스콜성 우천이 자주 발생하나 상용 수요는 비교적 꾸준합니다."
+
+    st.info("💡 **Tip:** 노선 및 날짜를 변경하면 기후 특성을 반영한 AI 전략이 즉시 업그레이드됩니다.")
 
 # 4. 손익 계산 로직
 indiv_revenue = pax * selling_price
@@ -76,13 +114,12 @@ group_revenue = pax * selling_price
 group_cost = depo_seats * group_net
 group_profit = group_revenue - group_cost
 
-# 손익분기점(BEP) 인원 계산
 bep_pax = (depo_seats * group_net) / indiv_net if indiv_net > 0 else 0
 
 with col_result:
-    st.subheader("📊 손익 비교 및 분석 결과")
+    st.subheader(f"📊 [{route_code}] 손익 비교 및 분석 결과")
     
-    # 5. 추천 의사결정 판별
+    # 5. 추천 의사결정
     if indiv_profit > group_profit:
         recommendation = "INDV 발권 전환"
         saved_amount = indiv_profit - group_profit
@@ -95,7 +132,6 @@ with col_result:
     st.markdown(status_html, unsafe_allow_html=True)
     st.write("")
 
-    # 메트릭 카드 출력
     res_c1, res_c2 = st.columns(2)
     with res_c1:
         st.metric("INDV 발권 시 손익", f"{indiv_profit:,.0f} 원", delta=f"원가 {indiv_cost:,.0f}원", delta_color="off")
@@ -104,7 +140,6 @@ with col_result:
 
     st.success(f"**최종 판단:** {recommendation} (상대 선택 대비 **약 {saved_amount:,.0f}원** 손실 절감 가능)")
 
-    # 상세 비교 데이터 프레임
     df_summary = pd.DataFrame({
         "구분": ["INDV 발권", "DEPO 그룹 유지"],
         "적용 좌석": [f"{pax}석", f"{depo_seats}석"],
@@ -114,40 +149,49 @@ with col_result:
     })
     st.dataframe(df_summary, use_container_width=True, hide_index=True)
 
-    # 6. 날짜/요일/공휴일 자동 특성 태그 박스
+    # 6. 노선 기후 & 양국 공휴일 요약 박스
     st.markdown("---")
-    st.subheader("📅 운항 날짜 및 양국 공휴일 특성")
+    st.subheader(f"🗺️ [{route_code} 노선] 기후 및 달력 특성")
     
     col_d1, col_d2 = st.columns(2)
     with col_d1:
-        st.write(f"📆 **선택 운항일**: **{flight_date.strftime('%Y-%m-%d')} ({weekday_kr})**")
-        if is_kr_holiday:
-            st.error(f"🇰🇷 **[한국 공휴일] {kr_holiday_name}**: 한국 출국 수요가 집중되는 극성수기/대목 구간입니다.")
-        elif is_weekend:
-            st.warning(f"🔥 **[주말 패턴] {weekday_kr}**: 평일 대비 출국 선호도가 높은 주말 노선입니다.")
-        else:
-            st.info(f"💼 **[평일 패턴] {weekday_kr}**: 일반 평일 수요 패턴을 보이는 구간입니다.")
-
+        st.write(f"🏖️ **노선 기후**: **{season_name}** ({flight_date.month}월)")
+        st.caption(f"• {season_desc}")
+        
     with col_d2:
-        if is_vn_holiday:
-            st.warning(f"🇻🇳 **[베트남 공휴일] {vn_holiday_name}**: 현지 연휴 기간입니다. 현지 호텔/지상비 및 현지 출발(Inbound) 수요 체크가 필요합니다.")
+        st.write(f"📆 **운항일**: **{flight_date.strftime('%Y-%m-%d')} ({weekday_kr})**")
+        holiday_tags = []
+        if is_kr_holiday: holiday_tags.append(f"🇰🇷 {kr_holiday_name}")
+        if is_vn_holiday: holiday_tags.append(f"🇻🇳 {vn_holiday_name}")
+        
+        if holiday_tags:
+            st.warning(f"🎉 **공휴일 태그**: {', '.join(holiday_tags)}")
+        elif is_weekend:
+            st.info(f"🔥 **주말 패턴**: {weekday_kr} 운항 (주말 출국 선호)")
         else:
-            st.caption("🇻🇳 베트남 현지 공휴일 없음 (현지 정상 운영)")
+            st.caption("💼 일반 주중 평일 패턴")
 
-    # 7. AI Comment 생성 및 박스 출력
+    # 7. AI 종합 전략 리포트
     st.subheader("🤖 AI 종합 전략 리포트 (Comment)")
     
-    # 날짜 관련 전략 코멘트 조합
+    # 노선 기후 기반 코멘수
+    climate_comment = f"• **[{route_code} {season_name}]** {season_desc}"
+    if is_dry_season:
+        climate_comment += " (건기 특수로 D-10 시점까지 추가 모객 가능성이 높습니다.)"
+    else:
+        climate_comment += " (우기 시즌이므로 모객 속도가 느릴 수 있으니 무리한 그룹 유지보다는 보수적 대응이 유리합니다.)"
+
+    # 날짜 공휴일 코멘트
     date_comment = []
     if is_kr_holiday:
-        date_comment.append(f"• **[한국 연휴 특수]** 운항일이 한국 공휴일({kr_holiday_name})로, 추가 모객 잠재력이 매우 높은 구간입니다.")
+        date_comment.append(f"• **[한국 연휴 특수]** 한국 {kr_holiday_name} 연휴로 출국 수요 폭증 구간입니다.")
     elif is_weekend:
-        date_comment.append(f"• **[주말 모객 우수]** {weekday_kr} 운항 건으로, 평일 대비 잔여 D-day 동안 추가 모객 성공 확률이 높습니다.")
+        date_comment.append(f"• **[주말 패턴]** {weekday_kr} 출발 건으로 주말 선호 모객 우수가 예상됩니다.")
     
     if is_vn_holiday:
-        date_comment.append(f"• **[베트남 연휴 고려]** 현지 {vn_holiday_name} 연휴로 지상비 변동 및 현지 영업 상황을 점검하십시오.")
+        date_comment.append(f"• **[베트남 현지 연휴]** 현지 {vn_holiday_name} 기간으로 현지 지상비 및 인바운드 상황을 체크하세요.")
 
-    date_comment_str = "\n".join(date_comment) if date_comment else "• **[날짜 특이사항 없음]** 일반 주중 평일 노선 패턴입니다."
+    date_comment_str = "\n".join(date_comment) if date_comment else "• **[일반 날짜]** 특이 공휴일 없는 평일 노선입니다."
 
     if indiv_profit > group_profit:
         comment_text = f"""
@@ -159,7 +203,8 @@ with col_result:
 • 💡 **액션 플랜:** 그룹 블록을 즉시 취소/해제하고 개별 발권을 진행하십시오.
 
 ---
-**🗓️ 요일 및 공휴일 고려 전략:**
+**🌤️ 노선 기후 & 🗓️ 공휴일 반영 추가 전략:**
+{climate_comment}
 {date_comment_str}
         """
         st.warning(comment_text)
@@ -173,7 +218,8 @@ with col_result:
 • 💡 **액션 플랜:** DEPO를 납입하여 블록을 유지하고, 남은 D-10(풀페이) 시점까지 추가 모객에 집중하십시오.
 
 ---
-**🗓️ 요일 및 공휴일 고려 전략:**
+**🌤️ 노선 기후 & 🗓️ 공휴일 반영 추가 전략:**
+{climate_comment}
 {date_comment_str}
         """
         st.success(comment_text)
