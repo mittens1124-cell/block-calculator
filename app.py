@@ -655,3 +655,94 @@ with tab_sheet2:
             ],
         })
         st.dataframe(df_b, use_container_width=True, hide_index=True)
+
+# ----------------------------------------------------------------------
+# 📊 결과 출력
+# ----------------------------------------------------------------------
+with col_result2:
+    st.subheader("📊 DEPO 후 최종 의사결정 시뮬레이션")
+    ...
+
+    st.markdown("---")
+
+    # =========================
+    # 경로 A 표 (멀티셀렉트 적용)
+    # =========================
+    st.markdown("##### 1️⃣ [경로 A] INDV 발권 전환 손익표")
+
+    items_a = [
+        "DEPO 들어간 금액",
+        "DEPO 환불금",
+        "DEPO 손실액",
+        "INDV FARE",
+        "INDV 발권금 + DEPO 손실금",
+        "T/A 1 수입",
+        "T/A 2 수입",
+        "T/A 3 수입",
+        "총 손실",
+    ]
+    selected_items_a = st.multiselect(
+        "표시할 항목 선택 (경로 A)", options=items_a, default=items_a
+    )
+
+    df_a = pd.DataFrame({
+        "항목": [
+            "DEPO 들어간 금액",
+            "DEPO 환불금",
+            "DEPO 손실액",
+            "INDV FARE",
+            "INDV 발권금 + DEPO 손실금",
+            "T/A 1 수입",
+            "T/A 2 수입",
+            "T/A 3 수입",
+            "총 손실",
+        ],
+        "PAX": [...],          # 기존 로직 그대로
+        "NET / 단가": [...],   # 기존 로직 그대로
+        "금액 (KRW)": [...],   # 기존 로직 그대로
+    })
+
+    df_a_filtered = df_a[df_a["항목"].isin(selected_items_a)]
+    st.dataframe(df_a_filtered, use_container_width=True, hide_index=True)
+
+    st.markdown("---")
+
+    # =========================
+    # 경로 B 표 (멀티셀렉트 적용)
+    # =========================
+    st.markdown("##### 2️⃣ [경로 B] 여행사 최소 판매 금액 / 블록 유지 (ABS 적용)")
+
+    items_b = [
+        "GV10 원가",
+        "DEPO 환불 가능",
+        "DEPO 환불 불가",
+        "F/P TTL (탑업 차감금)",
+        "T/A 1 판매",
+        "T/A 2 판매",
+        "T/A 3 판매",
+        "여행사 최소 판매 요청 금액",
+        "TTL 손익",
+    ]
+    selected_items_b = st.multiselect(
+        "표시할 항목 선택 (경로 B)", options=items_b, default=items_b
+    )
+
+    df_b = pd.DataFrame({
+        "구분 / 항목": [
+            "GV10 원가",
+            "DEPO 환불 가능",
+            "DEPO 환불 불가",
+            "F/P TTL (탑업 차감금)",
+            "T/A 1 판매",
+            "T/A 2 판매",
+            "T/A 3 판매",
+            "여행사 최소 판매 요청 금액",
+            "TTL 손익",
+        ],
+        "PAX": [...],          # 기존 로직 그대로
+        "NET / 단가": [...],   # 기존 로직 그대로
+        "TTL (금액)": [...],   # 기존 로직 그대로
+    })
+
+    df_b_filtered = df_b[df_b["구분 / 항목"].isin(selected_items_b)]
+    st.dataframe(df_b_filtered, use_container_width=True, hide_index=True)
