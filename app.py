@@ -358,7 +358,7 @@ with tab_sheet1:
                 st.success(comment_text1)
 
 # ==========================================================================
-# 📦 [2번 탭] DEPO 후 시뮬레이터
+# 📦 [2번 탭] DEPO 후 시뮬레이터 (Option 1 환불 로직 수정 완료)
 # ==========================================================================
 with tab_sheet2:
     col_input2, col_result2 = st.columns([1, 1.2], gap="large")
@@ -445,41 +445,11 @@ with tab_sheet2:
             )
 
     # ----------------------------------------------------------------------
-    # 🧮 연산 수식 (DEPO 전체 기준 짝수 모객 로직 반영)
+    # 🧮 연산 수식
     # ----------------------------------------------------------------------
-    depo_per_pax = depo_net * 0.20
+    # 공통 공제 기본 계산
+    depo_per_pax = depo_net * 0.20  # 1인당 DEPO 금액 (20%)
     depo_total_entry = depo_per_pax * depo_pax
-
-    # 1️⃣ 기본 규칙에 따른 최대 환불 가능 인원
-    if depo_pax >= 35:
-        base_refund_pax = 4
-    elif depo_pax >= 25:
-        base_refund_pax = 3
-    elif depo_pax >= 15:
-        base_refund_pax = 2
-    elif depo_pax >= 11:
-        base_refund_pax = 1
-    else:
-        base_refund_pax = 0
-
-    # 2️⃣ 판매 완료 인원
-    sold_pax = ta1_pax + ta2_pax + ta3_pax
-
-    # 3️⃣ 순수 미판매 잔여석 (DEPO 전체 인원 - 실모객 인원)
-    raw_unsold_pax = max(0, depo_pax - sold_pax)
-
-    # 4️⃣ [핵심 수정] 환불 후 남은 요청 인원이 '짝수'가 되도록 환불 인원 자동 조정
-    # 기본 환불 적용 시 여행사에 판매 요청할 남은 인원
-    temp_remaining = raw_unsold_pax - base_refund_pax
-
-    if temp_remaining > 0 and temp_remaining % 2 != 0:
-        # 남은 판매 인원이 홀수(1, 3, 5...)면 환불을 1명 포기/줄여서 판매 인원을 짝수로 맞춤
-        depo_refund_pax = max(0, base_refund_pax - 1)
-    else:
-        depo_refund_pax = base_refund_pax
-
-    # 최종 환불액
-    depo_refund_amount = depo_refund_pax * depo_per_pax
 
     # T/A 수입 합계
     ta1_ttl = ta1_net * ta1_pax
@@ -487,28 +457,64 @@ with tab_sheet2:
     ta3_ttl = ta3_net * ta3_pax
     ta_total_revenue = ta1_ttl + ta2_ttl + ta3_ttl
 
-    # --- Option 1 연산 ---
-    depo_loss_a = depo_total_entry - depo_refund_amount
+    # ======================================================================
+    # 🔵 [Option 1 연산] - 엑셀 LOOKUP(F5, {0,11,15,25,35}, {0,1,2,3,4}) 반영
+    # ======================================================================
+    if depo_pax >= 35:
+        opt1_refund_pax = 4
+    elif depo_pax >= 25:
+        opt1_refund_pax = 3
+    elif depo_pax >= 15:
+        opt1_refund_pax = 2
+    elif depo_pax >= 11:
+        opt1_refund_pax = 1
+    else:
+        opt1_refund_pax = 0
+
+    opt1_refund_amount = opt1_refund_pax * depo_per_pax
+    depo_loss_a = depo_total_entry - opt1_refund_amount
     indv_ticket_ttl = (indv_fare + indv_baggage) * indv_pax
     indv_plus_depo = indv_ticket_ttl + depo_loss_a
     path_a_total_loss = ta_total_revenue - indv_plus_depo
 
-    # --- Option 2 연산 ---
+    # ======================================================================
+    # 🟢 [Option 2 연산] - 짝수 남은 요청 인원 맞춤 로직 포함
+    # ======================================================================
+    sold_pax = ta1_pax + ta2_pax + ta3_pax
+    raw_unsold_pax = max(0, depo_pax - sold_pax)
+
+    # Option 2 기본 환불 인원
+    if depo_pax >= 35:
+        base_refund_pax_opt2 = 4
+    elif depo_pax >= 25:
+        base_refund_pax_opt2 = 3
+    elif depo_pax >= 15:
+        base_refund_pax_opt2 = 2
+    elif depo_pax >= 11:
+        base_refund_pax_opt2 = 1
+    else:
+        base_refund_pax_opt2 = 0
+
+    # 짝수 맞춤 조정
+    temp_remaining = raw_unsold_pax - base_refund_pax_opt2
+    if temp_remaining > 0 and temp_remaining % 2 != 0:
+        opt2_refund_pax = max(0, base_refund_pax_opt2 - 1)
+    else:
+        opt2_refund_pax = base_refund_pax_opt2
+
+    opt2_refund_amount = opt2_refund_pax * depo_per_pax
+
     gv10_pax = 10
     gv10_total_amount = gv10_pax * depo_net
 
-    # 환불 불가 DEPO 인원
-    depo_non_refund_pax = max(0, depo_pax - gv10_pax - depo_refund_pax)
+    depo_non_refund_pax = max(0, depo_pax - gv10_pax - opt2_refund_pax)
     depo_non_refund_amount = depo_non_refund_pax * depo_per_pax
 
-    fp_ttl = gv10_total_amount - depo_refund_amount + depo_non_refund_amount
-
-    # 5️⃣ 최종 여행사 요청 잔여석 (DEPO 11명 - 9명 - 환불0명 = 짝수 2석!)
-    remaining_pax = max(0, raw_unsold_pax - depo_refund_pax)
+    fp_ttl = gv10_total_amount - opt2_refund_amount + depo_non_refund_amount
+    remaining_pax = max(0, raw_unsold_pax - opt2_refund_pax)
 
     path_b_ttl_profit = ta_total_revenue - fp_ttl
 
-    # 6️⃣ 짝수 잔여석 기준 최소 판매 단가 (ABS)
     if remaining_pax > 0:
         min_selling_price_b = (
             abs(path_b_ttl_profit) / remaining_pax
@@ -573,8 +579,8 @@ with tab_sheet2:
                     ],
                     "PAX": [
                         f"{depo_pax}명",
-                        f"{depo_refund_pax}명",
-                        f"{max(0, depo_pax-depo_refund_pax)}명",
+                        f"{opt1_refund_pax}명",
+                        f"{max(0, depo_pax - opt1_refund_pax)}명",
                         f"{indv_pax}명",
                         "-",
                         f"{ta1_pax}명",
@@ -584,7 +590,7 @@ with tab_sheet2:
                     ],
                     "NET / 단가": [
                         f"{depo_net:,.0f}원",
-                        "-",
+                        f"{depo_per_pax:,.0f}원",
                         "-",
                         f"{indv_fare:,.0f}원",
                         "-",
@@ -595,7 +601,7 @@ with tab_sheet2:
                     ],
                     "금액 (KRW)": [
                         f"{depo_total_entry:,.0f} 원",
-                        f"{depo_refund_amount:,.0f} 원",
+                        f"{opt1_refund_amount:,.0f} 원",
                         f"{depo_loss_a:,.0f} 원",
                         f"{indv_ticket_ttl:,.0f} 원",
                         f"{indv_plus_depo:,.0f} 원",
@@ -637,7 +643,7 @@ with tab_sheet2:
                     ],
                     "PAX": [
                         f"{gv10_pax}명",
-                        f"{depo_refund_pax}명",
+                        f"{opt2_refund_pax}명",
                         f"{depo_non_refund_pax}명",
                         "-",
                         f"{ta1_pax}명",
@@ -648,8 +654,8 @@ with tab_sheet2:
                     ],
                     "NET / 단가": [
                         f"{depo_net:,.0f}원",
-                        f"{depo_net:,.0f}원",
-                        f"{depo_net:,.0f}원",
+                        f"{depo_per_pax:,.0f}원",
+                        f"{depo_per_pax:,.0f}원",
                         "-",
                         f"{ta1_net:,.0f}원",
                         f"{ta2_net:,.0f}원",
@@ -659,7 +665,7 @@ with tab_sheet2:
                     ],
                     "TTL (금액)": [
                         f"{gv10_total_amount:,.0f} 원",
-                        f"{depo_refund_amount:,.0f} 원",
+                        f"{opt2_refund_amount:,.0f} 원",
                         f"{depo_non_refund_amount:,.0f} 원",
                         f"{fp_ttl:,.0f} 원",
                         f"{ta1_ttl:,.0f} 원",
