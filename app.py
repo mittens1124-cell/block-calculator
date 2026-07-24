@@ -163,11 +163,11 @@ with tab_sheet1:
             )
             selling_price1 = st.number_input(
                 "1인당 판매가 (KRW)",
-                min_value=0.0,
-                value=0.0,
-                step=10000,0
-                format="%.0f",
-                key="pre_price",
+                min_value=0,
+                value=420000,
+                step=10000,
+                format="%d",
+                key="pre_price_v2",
             )
 
         # 4️⃣ INDV 발권 조건 (초기값 0)
