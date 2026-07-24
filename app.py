@@ -156,18 +156,19 @@ with tab_sheet1:
                 season_name1 = "건기 시즌" if is_dry1 else "우기 시즌"
                 season_desc1 = "정규 건기/우기 스케줄에 맞춰 대응하세요."
 
-     # 3️⃣ 실모객 및 판매가 설정 (초기값 0)
+    # 3️⃣ 실모객 및 판매가 설정 (초기값 0)
         with st.expander("3️⃣ 실모객 및 판매가 설정", expanded=True):
             pax1 = st.number_input(
                 "실모객 인원 (PAX)", min_value=0, value=0, step=1, key="pre_pax"
             )
             selling_price1 = st.number_input(
                 "1인당 판매가 (KRW)",
-                min_value=0.0,
+                min_value=0,
                 value=0,
-                step=10000.0,
-                format="%,d",
+                step=10000,
+                format="%d",
                 key="pre_price_v2",
+            )
             
         # 4️⃣ INDV 발권 조건 (초기값 0)
         with st.expander("4️⃣ INDV 발권 조건", expanded=True):
