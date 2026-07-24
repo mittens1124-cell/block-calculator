@@ -166,7 +166,7 @@ with tab_sheet1:
                 min_value=0.0,
                 value=0.0,
                 step=10000.0,
-                format="%.0f",
+                format="%,.0f",
                 key="pre_price",
             )
 
