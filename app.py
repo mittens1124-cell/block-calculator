@@ -358,7 +358,7 @@ with tab_sheet1:
                 st.success(comment_text1)
 
 # ==========================================================================
-# 📦 [2번 탭] DEPO 후 시뮬레이터 (Option 1 환불 로직 수정 완료)
+# 📦 [2번 탭] DEPO 후 시뮬레이터 (마이너스 표시 및 손익 색상 스타일링 적용)
 # ==========================================================================
 with tab_sheet2:
     col_input2, col_result2 = st.columns([1, 1.2], gap="large")
@@ -458,7 +458,7 @@ with tab_sheet2:
     ta_total_revenue = ta1_ttl + ta2_ttl + ta3_ttl
 
     # ======================================================================
-    # 🔵 [Option 1 연산] - 엑셀 LOOKUP(F5, {0,11,15,25,35}, {0,1,2,3,4}) 반영
+    # 🔵 [Option 1 연산] - LOOKUP 및 마이너스/최종 손익 연산
     # ======================================================================
     if depo_pax >= 35:
         opt1_refund_pax = 4
@@ -474,8 +474,13 @@ with tab_sheet2:
     opt1_refund_amount = opt1_refund_pax * depo_per_pax
     depo_loss_a = depo_total_entry - opt1_refund_amount
     indv_ticket_ttl = (indv_fare + indv_baggage) * indv_pax
-    indv_plus_depo = indv_ticket_ttl + depo_loss_a
-    path_a_total_loss = ta_total_revenue - indv_plus_depo
+
+    # 1인당 발권금 + DEPO 손실금 (비용이므로 마이너스 처리)
+    indv_plus_depo_cost = indv_ticket_ttl + depo_loss_a
+    indv_plus_depo_val = -indv_plus_depo_cost
+
+    # 총 손익 (T/A 양수 수입 - 비용)
+    path_a_net_profit = ta_total_revenue - indv_plus_depo_cost
 
     # ======================================================================
     # 🟢 [Option 2 연산] - 짝수 남은 요청 인원 맞춤 로직 포함
@@ -483,7 +488,6 @@ with tab_sheet2:
     sold_pax = ta1_pax + ta2_pax + ta3_pax
     raw_unsold_pax = max(0, depo_pax - sold_pax)
 
-    # Option 2 기본 환불 인원
     if depo_pax >= 35:
         base_refund_pax_opt2 = 4
     elif depo_pax >= 25:
@@ -495,7 +499,6 @@ with tab_sheet2:
     else:
         base_refund_pax_opt2 = 0
 
-    # 짝수 맞춤 조정
     temp_remaining = raw_unsold_pax - base_refund_pax_opt2
     if temp_remaining > 0 and temp_remaining % 2 != 0:
         opt2_refund_pax = max(0, base_refund_pax_opt2 - 1)
@@ -525,6 +528,20 @@ with tab_sheet2:
         min_selling_price_b = 0.0
 
     # ----------------------------------------------------------------------
+    # 🎨 [Option 1] 데이터프레임 조건부 스타일링 함수 (글자 색상)
+    # ----------------------------------------------------------------------
+    def style_opt1_df(df):
+        def color_cells(val):
+            if isinstance(val, str):
+                if val.startswith("-"):
+                    return "color: #E53E3E; font-weight: bold;"  # 빨간색 (손실/비용)
+                elif val.startswith("+"):
+                    return "color: #3182CE; font-weight: bold;"  # 파란색 (이익)
+            return ""
+
+        return df.style.map(color_cells)
+
+    # ----------------------------------------------------------------------
     # 📊 결과 출력
     # ----------------------------------------------------------------------
     with col_result2:
@@ -535,12 +552,13 @@ with tab_sheet2:
                 "👈 왼쪽 입력창에서 **DEPO 인원 및 조건**을 입력해주시면 시뮬레이션 비교 결과가 표시됩니다."
             )
         else:
-            if path_a_total_loss > path_b_ttl_profit:
+            # 추천 조건 비교 (Option 1 손익과 Option 2 손익 비교)
+            if path_a_net_profit > path_b_ttl_profit:
                 st.success(
                     "💡 **시뮬레이션 추천: [Option 1] INDV 발권 전환 유효**\n\n"
-                    f"* **Option 1 손익**: `{path_a_total_loss:,.0f}원`\n"
-                    f"* **Option 2 현 손익**: `{path_b_ttl_profit:,.0f}원`\n\n"
-                    f"👉 INDV 전환이 현시점 그룹 블록 유지 대비 **{abs(path_a_total_loss - path_b_ttl_profit):,.0f}원** 손실을 줄일 수 있습니다."
+                    f"* **Option 1 손익**: `{path_a_net_profit:,.0f}원`\n"
+                    f"* **Option 2 손익**: `{path_b_ttl_profit:,.0f}원`\n\n"
+                    f"👉 INDV 전환이 현시점 그룹 블록 유지 대비 **{abs(path_a_net_profit - path_b_ttl_profit):,.0f}원** 손익이 우수합니다."
                 )
             else:
                 st.info(
@@ -556,13 +574,19 @@ with tab_sheet2:
             # ==================================================================
             st.markdown("##### 1️⃣ [Option 1] INDV 발권 전환 손익표")
 
+            # 총 손익 표시 문자열 (+/- 처리)
+            if path_a_net_profit > 0:
+                summary_val_str = f"+{path_a_net_profit:,.0f} 원"
+            else:
+                summary_val_str = f"{path_a_net_profit:,.0f} 원"
+
             df_a_summary = pd.DataFrame({
-                "항목": ["총 손실"],
+                "항목": ["총 손익"],
                 "PAX": ["-"],
                 "NET / 단가": ["-"],
-                "금액 (KRW)": [f"{path_a_total_loss:,.0f} 원"]
+                "금액 (KRW)": [summary_val_str]
             })
-            st.dataframe(df_a_summary, use_container_width=True, hide_index=True)
+            st.dataframe(style_opt1_df(df_a_summary), use_container_width=True, hide_index=True)
 
             with st.expander("🔍 [Option 1] 세부 내역 보기 / 접기", expanded=False):
                 df_a_detail = pd.DataFrame({
@@ -575,7 +599,7 @@ with tab_sheet2:
                         "T/A 1 수입",
                         "T/A 2 수입",
                         "T/A 3 수입",
-                        "총 손실"
+                        "총 손익"
                     ],
                     "PAX": [
                         f"{depo_pax}명",
@@ -604,14 +628,14 @@ with tab_sheet2:
                         f"{opt1_refund_amount:,.0f} 원",
                         f"{depo_loss_a:,.0f} 원",
                         f"{indv_ticket_ttl:,.0f} 원",
-                        f"{indv_plus_depo:,.0f} 원",
+                        f"{indv_plus_depo_val:,.0f} 원",  # 음수 -> 빨간색
                         f"{ta1_ttl:,.0f} 원",
                         f"{ta2_ttl:,.0f} 원",
                         f"{ta3_ttl:,.0f} 원",
-                        f"{path_a_total_loss:,.0f} 원"
+                        summary_val_str                  # 양수 -> 파란색, 음수 -> 빨간색
                     ]
                 })
-                st.dataframe(df_a_detail, use_container_width=True, hide_index=True)
+                st.dataframe(style_opt1_df(df_a_detail), use_container_width=True, hide_index=True)
 
             st.markdown("---")
 
@@ -680,12 +704,12 @@ with tab_sheet2:
             st.markdown("---")
             st.subheader("🤖 AI 종합 전략 리포트 (Comment)")
 
-            if path_a_total_loss > path_b_ttl_profit:
+            if path_a_net_profit > path_b_ttl_profit:
                 comment_text2 = f"""
 **[AI 분석 의견: Option 1 개별(INDV) 발권 전환 추천]**
 
-• **손익 분석:** 현 상태에서 그룹 블록을 유지할 경우 손실({path_b_ttl_profit:,.0f}원)이 INDV 전환 시 손실({path_a_total_loss:,.0f}원)보다 큽니다.
-• **절감 효과:** INDV 발권으로 전환 시 그룹 유지 대비 **약 {abs(path_a_total_loss - path_b_ttl_profit):,.0f}원**의 손실을 방지할 수 있습니다.
+• **손익 분석:** Option 1의 예상 손익({path_a_net_profit:,.0f}원)이 Option 2 유지 시 손익({path_b_ttl_profit:,.0f}원)보다 우수합니다.
+• **절감 효과:** INDV 발권으로 전환 시 그룹 유지 대비 **약 {abs(path_a_net_profit - path_b_ttl_profit):,.0f}원**의 손익 개선 효과를 얻을 수 있습니다.
 • 💡 **액션 플랜:** 미판매 잔여석 모객 부담을 해소하기 위해 그룹 블록을 해제하고 INDV 개별 발권으로 즉시 전환하십시오.
 """
                 st.warning(comment_text2)
@@ -693,7 +717,7 @@ with tab_sheet2:
                 comment_text2 = f"""
 **[AI 분석 의견: Option 2 그룹 블록 유지 및 추가 모객 추천]**
 
-• **손익 분석:** GV10 보장 조건을 활용하여 그룹 블록을 끌고 가는 것이 상대적으로 손실을 방지하는 데 유리합니다.
+• **손익 분석:** GV10 보장 조건을 활용하여 그룹 블록을 끌고 가는 것이 상대적으로 유리합니다.
 • **목표 단가:** 잔여 **{remaining_pax}석**에 대해 1인당 최소 **{min_selling_price_b:,.0f}원 이상**으로 판매를 완료할 경우 손실을 완전 상쇄(BEP 달성)할 수 있습니다.
 • 💡 **액션 플랜:** T/A 및 프로모션 채널을 통해 남은 {remaining_pax}석에 대한 땡처리 또는 타겟 영업 전략을 강화하십시오.
 """
