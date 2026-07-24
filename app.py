@@ -100,7 +100,7 @@ with tab_sheet1:
 
         # 1️⃣ 노선 선택
         with st.expander("1️⃣ 노선 선택 (목적지)", expanded=True):
-            route_options = ["PQC (푸꾸옥)", "DAD (다낭)", "CXR (나트랑)", "NHA (나트랑)"]
+            route_options = ["PQC (푸꾸옥)", "HAN (하노이)", "DAD (다낭)", "CXR (나트랑)", "HPH (하이퐁)", "SAI (시엠립)"]
             selected_route = st.selectbox(
                 "목적지 노선 선택", options=route_options, index=0, key="pre_route"
             )
