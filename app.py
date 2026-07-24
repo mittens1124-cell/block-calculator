@@ -458,18 +458,16 @@ with tab_sheet2:
     ta_total_revenue = ta1_ttl + ta2_ttl + ta3_ttl
 
     # ======================================================================
-    # 🔵 [Option 1 연산] - LOOKUP 및 마이너스/최종 손익 연산
+    # 🟢 [Option 2 연산] - DEPO 전체 인원 10% (사반오입 반올림: 3.5 -> 4명 / 3.4 -> 3명)
     # ======================================================================
-    if depo_pax >= 35:
-        opt1_refund_pax = 4
-    elif depo_pax >= 25:
-        opt1_refund_pax = 3
-    elif depo_pax >= 15:
-        opt1_refund_pax = 2
-    elif depo_pax >= 11:
-        opt1_refund_pax = 1
-    else:
-        opt1_refund_pax = 0
+    sold_pax = ta1_pax + ta2_pax + ta3_pax
+    raw_unsold_pax = max(0, depo_pax - sold_pax)
+
+    # DEPO 전체 인원(depo_pax)의 10% 계산 후 사반오입(0.5 이상 올림) 적용
+    calc_10pct = depo_pax * 0.10
+    opt2_refund_pax = math.floor(calc_10pct + 0.5)
+
+     opt2_refund_amount = opt2_refund_pax * depo_per_pax
 
     opt1_refund_amount = opt1_refund_pax * depo_per_pax
     depo_loss_a = depo_total_entry - opt1_refund_amount
