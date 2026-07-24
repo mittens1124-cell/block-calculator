@@ -156,49 +156,77 @@ with tab_sheet1:
                 season_name1 = "건기 시즌" if is_dry1 else "우기 시즌"
                 season_desc1 = "정규 건기/우기 스케줄에 맞춰 대응하세요."
 
-        # 3️⃣ 실모객 및 판매가 설정 (초기값 0)
-        with st.expander("3️⃣ 실모객 및 판매가 설정", expanded=True):
-            pax1 = st.number_input(
-                "실모객 인원 (PAX)", min_value=0, value=0, step=1, key="pre_pax"
-            )
-            selling_price1 = st.number_input(
-                "1인당 판매가 (KRW)",
-                min_value=0.0,
-                value=0.0,
-                step=10000.0,
-                format="%.0f",
-                key="pre_price",
-            )
+        # 유틸 함수: 콤마 포함 문자열을 숫자로 변환
+def parse_number_with_commas(value: str) -> int:
+    try:
+        return int(value.replace(",", ""))
+    except:
+        return 0
 
-        # 4️⃣ INDV 발권 조건 (초기값 0)
-        with st.expander("4️⃣ INDV 발권 조건", expanded=True):
-            indiv_net1 = st.number_input(
-                "INDV 1인당 NET FARE (KRW)",
-                min_value=0.0,
-                value=0.0,
-                step=10000.0,
-                format="%.0f",
-                key="inet1",
-            )
+# 3️⃣ 실모객 및 판매가 설정
+with st.expander("3️⃣ 실모객 및 판매가 설정", expanded=True):
+    pax1 = st.number_input(
+        "실모객 인원 (PAX)", min_value=0, value=0, step=1, key="pre_pax"
+    )
+    selling_price1_str = st.text_input("1인당 판매가 (KRW)", value="0", key="pre_price")
+    selling_price1 = parse_number_with_commas(selling_price1_str)
 
-        # 5️⃣ DEPO 그룹 조건 (초기값 0)
-        with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
-            group_net1 = st.number_input(
-                "그룹 1인당 NET FARE (KRW)",
-                min_value=0.0,
-                value=0.0,
-                step=10000.0,
-                format="%.0f",
-                key="gnet1",
-            )
-            depo_seats1 = st.number_input(
-                "DEPO 유지/보장 좌석 수",
-                min_value=0,
-                max_value=100,
-                value=0,
-                step=1,
-                key="gseats1",
-            )
+# 4️⃣ INDV 발권 조건
+with st.expander("4️⃣ INDV 발권 조건", expanded=True):
+    indiv_net1_str = st.text_input("INDV 1인당 NET FARE (KRW)", value="0", key="inet1")
+    indiv_net1 = parse_number_with_commas(indiv_net1_str)
+
+# 5️⃣ DEPO 그룹 조건
+with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
+    group_net1_str = st.text_input("그룹 1인당 NET FARE (KRW)", value="0", key="gnet1")
+    group_net1 = parse_number_with_commas(group_net1_str)
+
+    depo_seats1 = st.number_input(
+        "DEPO 유지/보장 좌석 수",
+        min_value=0,
+        max_value=100,
+        value=0,
+        step=1,
+        key="gseats1",
+    )
+
+# --------------------------------------------------------------------------
+# 📦 [2번 탭] DEPO 후 시뮬레이터
+# --------------------------------------------------------------------------
+with tab_sheet2:
+    col_input2, col_result2 = st.columns([1, 1.2], gap="large")
+
+    with col_input2:
+        st.subheader("📌 [DEPO 후] 시뮬레이션 조건 입력")
+
+        # 1️⃣ DEPO 조건
+        with st.expander("1️⃣ DEPO 결제 현황", expanded=True):
+            depo_pax = st.number_input("DEPO 전체 인원 (PAX)", min_value=0, value=0, key="dp_pax")
+            depo_net_str = st.text_input("DEPO NET 단가 (KRW)", value="0", key="dp_net")
+            depo_net = parse_number_with_commas(depo_net_str)
+
+        # 2️⃣ Option 1: INDV 발권 전환 조건
+        with st.expander("2️⃣ [Option 1] INDV 발권 전환 시 조건", expanded=True):
+            indv_fare_str = st.text_input("1인당 NET FARE", value="0", key="post_ifare")
+            indv_fare = parse_number_with_commas(indv_fare_str)
+
+            indv_baggage_str = st.text_input("수하물 추가금", value="0", key="post_ibag")
+            indv_baggage = parse_number_with_commas(indv_baggage_str)
+
+            indv_pax = st.number_input("INDV 발권 PAX", min_value=0, value=0, key="post_ipax")
+
+            # T/A 판매 수입
+            ta1_net_str = st.text_input("T/A 1 단가", value="0", key="ta1_net")
+            ta1_net = parse_number_with_commas(ta1_net_str)
+            ta1_pax = st.number_input("T/A 1 PAX", min_value=0, value=0, key="ta1_pax")
+
+            ta2_net_str = st.text_input("T/A 2 단가", value="0", key="ta2_net")
+            ta2_net = parse_number_with_commas(ta2_net_str)
+            ta2_pax = st.number_input("T/A 2 PAX", min_value=0, value=0, key="ta2_pax")
+
+            ta3_net_str = st.text_input("T/A 3 단가", value="0", key="ta3_net")
+            ta3_net = parse_number_with_commas(ta3_net_str)
+            ta3_pax = st.number_input("T/A 3 PAX", min_value=0, value=0, key="ta3_pax")
 
     # 연산
     indiv_rev1 = pax1 * selling_price1
