@@ -161,13 +161,13 @@ with tab_sheet1:
             pax1 = st.number_input(
                 "실모객 인원 (PAX)", min_value=0, value=0, step=1, key="pre_pax"
             )
-            selling_price1 = st.text_input(
+            selling_price1 = st.number_input(
                 "1인당 판매가 (KRW)",
-                min_value=0,
-                value=420,000,
-                step=10000,
-                format="%d",
-                key="pre_price_v4",
+                min_value=0.0,
+                value=0.0,
+                step=10000,0
+                format="%.0f",
+                key="pre_price",
             )
 
         # 4️⃣ INDV 발권 조건 (초기값 0)
