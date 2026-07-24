@@ -156,7 +156,7 @@ with tab_sheet1:
                 season_name1 = "건기 시즌" if is_dry1 else "우기 시즌"
                 season_desc1 = "정규 건기/우기 스케줄에 맞춰 대응하세요."
 
-   # 3️⃣ 실모객 및 판매가 설정 (초기값 0)
+  # 3️⃣ 실모객 및 판매가 설정 (초기값 0)
         with st.expander("3️⃣ 실모객 및 판매가 설정", expanded=True):
             pax1 = st.number_input(
                 "실모객 인원 (PAX)", min_value=0, value=0, step=1, key="pre_pax"
@@ -166,11 +166,10 @@ with tab_sheet1:
                 min_value=0,
                 value=0,
                 step=10000,
-                format="%d",
                 key="pre_price_v2",
             )
-            # 💡 증감 버튼 사용 시 실시간 콤마 금액 확인용 안내
-            st.caption(f"💰 **적용 판매가**: `{selling_price1:,.0f}원`")
+            # 💡 +,- 버튼 클릭 및 숫자 입력 시 바로 밑에 천 단위 콤마 금액 표시
+            st.markdown(f"💰 **입력된 금액:** `{selling_price1:,.0f}원`")
                 
         # 4️⃣ INDV 발권 조건 (초기값 0)
         with st.expander("4️⃣ INDV 발권 조건", expanded=True):
