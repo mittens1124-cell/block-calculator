@@ -172,7 +172,7 @@ with tab_sheet1:
 
         # 4️⃣ INDV 발권 조건 (초기값 0)
         with st.expander("4️⃣ INDV 발권 조건", expanded=True):
-            indiv_net1 = st.number_input(
+            indiv_net1 = st.text_input(
                 "INDV 1인당 NET FARE (KRW)",
                 min_value=0.0,
                 value=0.0,
@@ -183,7 +183,7 @@ with tab_sheet1:
 
         # 5️⃣ DEPO 그룹 조건 (초기값 0)
         with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
-            group_net1 = st.number_input(
+            group_net1 = st.text_input(
                 "그룹 1인당 NET FARE (KRW)",
                 min_value=0.0,
                 value=0.0,
