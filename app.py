@@ -358,7 +358,7 @@ with tab_sheet1:
                 st.success(comment_text1)
 
 # ==========================================================================
-# 📦 [2번 탭] DEPO 후 시뮬레이터 (엑셀 수식 100% 동기화 버전)
+# 📦 [2번 탭] DEPO 후 시뮬레이터 (최소 판매 요청 인원 수동 입력 버전)
 # ==========================================================================
 with tab_sheet2:
     col_input2, col_result2 = st.columns([1, 1.2], gap="large")
@@ -431,12 +431,22 @@ with tab_sheet2:
                 "T/A 3 PAX", min_value=0, value=0, key="ta3_pax"
             )
 
-        # 3️⃣ Option 2: 그룹 블록 유지 조건 (T/A 판매 내역 자동 반영 안내)
+        # 3️⃣ Option 2: 그룹 블록 유지 조건 (사용자 지정 요청 인원 추가)
         with st.expander(
-            "3️⃣ [Option 2] 그룹 블록 유지 시 조건 (T/A 수입 연동)", expanded=True
+            "3️⃣ [Option 2] 그룹 블록 유지 시 조건", expanded=True
         ):
+            # ✏️ [신규 추가] 사용자가 직접 입력하는 판매 요청 인원
+            req_pax = st.number_input(
+                "여행사 최소 판매 요청 인원 (PAX)",
+                min_value=0,
+                value=0,
+                key="opt2_req_pax",
+                help="1인당 최소 판매 필요 금액을 산출할 요청 인원을 직접 입력하세요."
+            )
+
+            st.markdown("---")
             st.info(
-                "💡 **T/A 1, T/A 2, T/A 3 조건은 위 [Option 1]에서 입력한 값과 자동으로 100% 동일하게 연동됩니다.**"
+                "💡 **T/A 1, T/A 2, T/A 3 조건은 위 [Option 1]에서 입력한 값과 연동됩니다.**"
             )
             st.markdown(
                 f"- **T/A 1**: `{ta1_net:,.0f}원` / `{ta1_pax}명`\n"
@@ -445,10 +455,10 @@ with tab_sheet2:
             )
 
     # ----------------------------------------------------------------------
-    # 🧮 연산 수식 (엑셀 수식 100% 반영)
+    # 🧮 연산 수식
     # ----------------------------------------------------------------------
     # DEPO 20% 단가
-    depo_per_pax = depo_net * 0.20  # 1인당 DEPO 20% 금액
+    depo_per_pax = depo_net * 0.20
     depo_total_entry = depo_per_pax * depo_pax
 
     # T/A 수입 합계
@@ -458,7 +468,7 @@ with tab_sheet2:
     ta_total_revenue = ta1_ttl + ta2_ttl + ta3_ttl
 
     # ======================================================================
-    # 🎯 구간별 환불 가능 인원 판정 (요청 규칙)
+    # 🎯 구간별 환불 가능 인원 판정
     # ======================================================================
     if depo_pax >= 35:
         depo_refund_pax = 4
@@ -471,7 +481,6 @@ with tab_sheet2:
     else:
         depo_refund_pax = 0
 
-    # DEPO 환불금 (인원 * DEPO 20% 금액)
     depo_refund_amount = depo_refund_pax * depo_per_pax
 
     # ======================================================================
@@ -482,20 +491,17 @@ with tab_sheet2:
     depo_loss_a = depo_total_entry - opt1_refund_amount
     indv_ticket_ttl = (indv_fare + indv_baggage) * indv_pax
 
-    # 1인당 발권금 + DEPO 손실금 (비용)
     indv_plus_depo_cost = indv_ticket_ttl + depo_loss_a
     indv_plus_depo_val = -indv_plus_depo_cost
 
-    # 총 손익
     path_a_net_profit = ta_total_revenue - indv_plus_depo_cost
 
     # ======================================================================
-    # 🟢 [Option 2 연산] - 그룹 블록 유지 (엑셀 차감 로직 반영)
+    # 🟢 [Option 2 연산] - 그룹 블록 유지
     # ======================================================================
     gv10_pax = 10
     gv10_total_amount = gv10_pax * depo_net
 
-    # GV10 초과 인원 중 환불 불가능한 인원 및 금액
     if depo_pax > gv10_pax:
         depo_non_refund_pax = max(0, depo_pax - gv10_pax - depo_refund_pax)
     else:
@@ -503,22 +509,16 @@ with tab_sheet2:
     
     depo_non_refund_amount = depo_non_refund_pax * depo_per_pax
 
-    # F/P TTL (탑업 차감금) = GV10 원가 - DEPO 환불금 + DEPO 환불불가금
+    # F/P TTL = GV10 원가 - DEPO 환불금 + DEPO 환불불가금
     fp_ttl = gv10_total_amount - depo_refund_amount + depo_non_refund_amount
 
-    # T/A 판매 완료 인원
-    sold_pax = ta1_pax + ta2_pax + ta3_pax
-
-    # GV10 유지에 필요한 남은 최소 인원 (최소 10명 기준 중 미판매 인원)
-    remaining_pax = max(0, gv10_pax - sold_pax)
-
-    # TTL 손익 = T/A 총수입 - F/P TTL
+    # TTL 손익
     path_b_ttl_profit = ta_total_revenue - fp_ttl
 
-    # 여행사 최소 판매 요청 금액 (1인당)
-    if remaining_pax > 0:
+    # ✏️ [수정] 사용자가 직접 입력한 req_pax 기준 1인당 최소 판매 요청 금액 산출
+    if req_pax > 0:
         min_selling_price_b = (
-            abs(path_b_ttl_profit) / remaining_pax
+            abs(path_b_ttl_profit) / req_pax
             if path_b_ttl_profit < 0
             else 0.0
         )
@@ -532,9 +532,9 @@ with tab_sheet2:
         def color_cells(val):
             if isinstance(val, str):
                 if val.startswith("-"):
-                    return "color: #E53E3E; font-weight: bold;"  # 빨간색 (손실/비용)
+                    return "color: #E53E3E; font-weight: bold;"
                 elif val.startswith("+"):
-                    return "color: #3182CE; font-weight: bold;"  # 파란색 (이익)
+                    return "color: #3182CE; font-weight: bold;"
             return ""
 
         return df.style.map(color_cells)
@@ -561,8 +561,8 @@ with tab_sheet2:
             else:
                 st.info(
                     "💡 **시뮬레이션 추천: [Option 2] 그룹 블록 유지 및 운영 유효**\n\n"
-                    f"* **Option 2 남은 {remaining_pax}석 최소 판매 필요 단가**: `{min_selling_price_b:,.0f}원`\n"
-                    f"👉 나머지 {remaining_pax}석을 1인당 **{min_selling_price_b:,.0f}원 이상**으로 판매 시 Option 1보다 유효하거나 손실을 완전 상쇄할 수 있습니다."
+                    f"* **Option 2 입력 요청인원 ({req_pax}명) 최소 판매 필요 단가**: `{min_selling_price_b:,.0f}원`\n"
+                    f"👉 요청하신 **{req_pax}명**을 1인당 **{min_selling_price_b:,.0f}원 이상**으로 판매 시 손실을 완전 상쇄할 수 있습니다."
                 )
 
             st.markdown("---")
@@ -634,7 +634,7 @@ with tab_sheet2:
             st.markdown("---")
 
             # ==================================================================
-            # 2️⃣ [Option 2] 결과 출력 (엑셀 양식 100% 동일)
+            # 2️⃣ [Option 2] 결과 출력 (수동 입력 req_pax 반영)
             # ==================================================================
             st.markdown("##### 2️⃣ [Option 2] 여행사 최소 판매 금액 / 블록 유지 (ABS 적용)")
 
@@ -642,7 +642,7 @@ with tab_sheet2:
 
             df_b_summary = pd.DataFrame({
                 "구분 / 항목": ["여행사 최소 판매 요청 금액", "TTL 손익"],
-                "PAX": [f"🌸 {remaining_pax}명", "-"],
+                "PAX": [f"🌸 {req_pax}명", "-"],
                 "NET / 단가": [f"{min_selling_price_b:,.0f}원", "-"],
                 "TTL (금액)": ["-", summary_val_str2]
             })
@@ -669,7 +669,7 @@ with tab_sheet2:
                         f"{ta1_pax}명",
                         f"{ta2_pax}명",
                         f"{ta3_pax}명",
-                        f"🌸 {remaining_pax}명",
+                        f"🌸 {req_pax}명",
                         "-"
                     ],
                     "NET / 단가": [
@@ -714,7 +714,8 @@ with tab_sheet2:
 **[AI 분석 의견: Option 2 그룹 블록 유지 및 추가 모객 추천]**
 
 • **손익 분석:** GV10 보장 조건을 활용하여 그룹 블록을 끌고 가는 것이 상대적으로 유리합니다.
-• **목표 단가:** 잔여 **{remaining_pax}석**에 대해 1인당 최소 **{min_selling_price_b:,.0f}원 이상**으로 판매를 완료할 경우 손실을 완전 상쇄(BEP 달성)할 수 있습니다.
-• 💡 **액션 플랜:** T/A 및 프로모션 채널을 통해 남은 {remaining_pax}석에 대한 땡처리 또는 타겟 영업 전략을 강화하십시오.
+• **목표 단가:** 요청하신 **{req_pax}석**에 대해 1인당 최소 **{min_selling_price_b:,.0f}원 이상**으로 판매를 완료할 경우 손실을 완전 상쇄(BEP 달성)할 수 있습니다.
+• 💡 **액션 플랜:** T/A 및 프로모션 채널을 통해 요청 {req_pax}석에 대한 땡처리 또는 타겟 영업 전략을 강화하십시오.
 """
                 st.success(comment_text2)
+
