@@ -100,7 +100,7 @@ with tab_sheet1:
 
         # 1️⃣ 노선 선택
         with st.expander("1️⃣ 노선 선택 (목적지)", expanded=True):
-            route_options = ["PQC (푸꾸옥)", "HAN (하노이)", "DAD (다낭)", "CXR (나트랑)", "HPH (하이퐁)", "SAI (시엠립)"]
+            route_options = ["PQC (푸꾸옥)", "DAD (다낭)", "CXR (나트랑)", "NHA (나트랑)"]
             selected_route = st.selectbox(
                 "목적지 노선 선택", options=route_options, index=0, key="pre_route"
             )
@@ -172,18 +172,18 @@ with tab_sheet1:
 
         # 4️⃣ INDV 발권 조건 (초기값 0)
         with st.expander("4️⃣ INDV 발권 조건", expanded=True):
-            indiv_net1 = st.text_input(
+            indiv_net1 = st.number_input(
                 "INDV 1인당 NET FARE (KRW)",
                 min_value=0.0,
                 value=0.0,
                 step=10000.0,
-                format="%,0f",
+                format="%.0f",
                 key="inet1",
             )
 
         # 5️⃣ DEPO 그룹 조건 (초기값 0)
         with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
-            group_net1 = st.text_input(
+            group_net1 = st.number_input(
                 "그룹 1인당 NET FARE (KRW)",
                 min_value=0.0,
                 value=0.0,
