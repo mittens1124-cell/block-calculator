@@ -166,9 +166,9 @@ with tab_sheet1:
                 min_value=0.0,
                 value=420000.0,
                 step=10000.0,
-                format="%.0f",
+                format="%,d",
                 key="pre_price_v2",
-            )
+            
         # 4️⃣ INDV 발권 조건 (초기값 0)
         with st.expander("4️⃣ INDV 발권 조건", expanded=True):
             indiv_net1 = st.number_input(
