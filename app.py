@@ -358,7 +358,7 @@ with tab_sheet1:
                 st.success(comment_text1)
 
 # ==========================================================================
-# 📦 [2번 탭] DEPO 후 시뮬레이터 (마이너스 표시 및 손익 색상 스타일링 적용)
+# 📦 [2번 탭] DEPO 후 시뮬레이터 (엑셀 수식 100% 동기화 버전)
 # ==========================================================================
 with tab_sheet2:
     col_input2, col_result2 = st.columns([1, 1.2], gap="large")
@@ -445,10 +445,10 @@ with tab_sheet2:
             )
 
     # ----------------------------------------------------------------------
-    # 🧮 연산 수식
+    # 🧮 연산 수식 (엑셀 수식 100% 반영)
     # ----------------------------------------------------------------------
-    # 공통 공제 기본 계산
-    depo_per_pax = depo_net * 0.20  # 1인당 DEPO 금액 (20%)
+    # DEPO 20% 단가
+    depo_per_pax = depo_net * 0.20  # 1인당 DEPO 20% 금액
     depo_total_entry = depo_per_pax * depo_pax
 
     # T/A 수입 합계
@@ -458,66 +458,64 @@ with tab_sheet2:
     ta_total_revenue = ta1_ttl + ta2_ttl + ta3_ttl
 
     # ======================================================================
-    # 🔵 [Option 1 연산] - LOOKUP 및 마이너스/최종 손익 연산
+    # 🎯 구간별 환불 가능 인원 판정 (요청 규칙)
     # ======================================================================
     if depo_pax >= 35:
-        opt1_refund_pax = 4
+        depo_refund_pax = 4
     elif depo_pax >= 25:
-        opt1_refund_pax = 3
+        depo_refund_pax = 3
     elif depo_pax >= 15:
-        opt1_refund_pax = 2
+        depo_refund_pax = 2
     elif depo_pax >= 11:
-        opt1_refund_pax = 1
+        depo_refund_pax = 1
     else:
-        opt1_refund_pax = 0
+        depo_refund_pax = 0
 
-    opt1_refund_amount = opt1_refund_pax * depo_per_pax
+    # DEPO 환불금 (인원 * DEPO 20% 금액)
+    depo_refund_amount = depo_refund_pax * depo_per_pax
+
+    # ======================================================================
+    # 🔵 [Option 1 연산] - INDV 전환
+    # ======================================================================
+    opt1_refund_pax = depo_refund_pax
+    opt1_refund_amount = depo_refund_amount
     depo_loss_a = depo_total_entry - opt1_refund_amount
     indv_ticket_ttl = (indv_fare + indv_baggage) * indv_pax
 
-    # 1인당 발권금 + DEPO 손실금 (비용이므로 마이너스 처리)
+    # 1인당 발권금 + DEPO 손실금 (비용)
     indv_plus_depo_cost = indv_ticket_ttl + depo_loss_a
     indv_plus_depo_val = -indv_plus_depo_cost
 
-    # 총 손익 (T/A 양수 수입 - 비용)
+    # 총 손익
     path_a_net_profit = ta_total_revenue - indv_plus_depo_cost
 
     # ======================================================================
-    # 🟢 [Option 2 연산] - 짝수 남은 요청 인원 맞춤 로직 포함
+    # 🟢 [Option 2 연산] - 그룹 블록 유지 (엑셀 차감 로직 반영)
     # ======================================================================
-    sold_pax = ta1_pax + ta2_pax + ta3_pax
-    raw_unsold_pax = max(0, depo_pax - sold_pax)
-
-    if depo_pax >= 35:
-        base_refund_pax_opt2 = 4
-    elif depo_pax >= 25:
-        base_refund_pax_opt2 = 3
-    elif depo_pax >= 15:
-        base_refund_pax_opt2 = 2
-    elif depo_pax >= 11:
-        base_refund_pax_opt2 = 1
-    else:
-        base_refund_pax_opt2 = 0
-
-    temp_remaining = raw_unsold_pax - base_refund_pax_opt2
-    if temp_remaining > 0 and temp_remaining % 2 != 0:
-        opt2_refund_pax = max(0, base_refund_pax_opt2 - 1)
-    else:
-        opt2_refund_pax = base_refund_pax_opt2
-
-    opt2_refund_amount = opt2_refund_pax * depo_per_pax
-
     gv10_pax = 10
     gv10_total_amount = gv10_pax * depo_net
 
-    depo_non_refund_pax = max(0, depo_pax - gv10_pax - opt2_refund_pax)
+    # GV10 초과 인원 중 환불 불가능한 인원 및 금액
+    if depo_pax > gv10_pax:
+        depo_non_refund_pax = max(0, depo_pax - gv10_pax - depo_refund_pax)
+    else:
+        depo_non_refund_pax = 0
+    
     depo_non_refund_amount = depo_non_refund_pax * depo_per_pax
 
-    fp_ttl = gv10_total_amount - opt2_refund_amount + depo_non_refund_amount
-    remaining_pax = max(0, raw_unsold_pax - opt2_refund_pax)
+    # F/P TTL (탑업 차감금) = GV10 원가 - DEPO 환불금 + DEPO 환불불가금
+    fp_ttl = gv10_total_amount - depo_refund_amount + depo_non_refund_amount
 
+    # T/A 판매 완료 인원
+    sold_pax = ta1_pax + ta2_pax + ta3_pax
+
+    # GV10 유지에 필요한 남은 최소 인원 (최소 10명 기준 중 미판매 인원)
+    remaining_pax = max(0, gv10_pax - sold_pax)
+
+    # TTL 손익 = T/A 총수입 - F/P TTL
     path_b_ttl_profit = ta_total_revenue - fp_ttl
 
+    # 여행사 최소 판매 요청 금액 (1인당)
     if remaining_pax > 0:
         min_selling_price_b = (
             abs(path_b_ttl_profit) / remaining_pax
@@ -528,9 +526,9 @@ with tab_sheet2:
         min_selling_price_b = 0.0
 
     # ----------------------------------------------------------------------
-    # 🎨 [Option 1] 데이터프레임 조건부 스타일링 함수 (글자 색상)
+    # 🎨 데이터프레임 조건부 스타일링 함수 (손익 색상)
     # ----------------------------------------------------------------------
-    def style_opt1_df(df):
+    def style_dataframe(df):
         def color_cells(val):
             if isinstance(val, str):
                 if val.startswith("-"):
@@ -552,7 +550,7 @@ with tab_sheet2:
                 "👈 왼쪽 입력창에서 **DEPO 인원 및 조건**을 입력해주시면 시뮬레이션 비교 결과가 표시됩니다."
             )
         else:
-            # 추천 조건 비교 (Option 1 손익과 Option 2 손익 비교)
+            # 추천 조건 비교
             if path_a_net_profit > path_b_ttl_profit:
                 st.success(
                     "💡 **시뮬레이션 추천: [Option 1] INDV 발권 전환 유효**\n\n"
@@ -574,19 +572,15 @@ with tab_sheet2:
             # ==================================================================
             st.markdown("##### 1️⃣ [Option 1] INDV 발권 전환 손익표")
 
-            # 총 손익 표시 문자열 (+/- 처리)
-            if path_a_net_profit > 0:
-                summary_val_str = f"+{path_a_net_profit:,.0f} 원"
-            else:
-                summary_val_str = f"{path_a_net_profit:,.0f} 원"
+            summary_val_str1 = f"+{path_a_net_profit:,.0f} 원" if path_a_net_profit > 0 else f"{path_a_net_profit:,.0f} 원"
 
             df_a_summary = pd.DataFrame({
                 "항목": ["총 손익"],
                 "PAX": ["-"],
                 "NET / 단가": ["-"],
-                "금액 (KRW)": [summary_val_str]
+                "금액 (KRW)": [summary_val_str1]
             })
-            st.dataframe(style_opt1_df(df_a_summary), use_container_width=True, hide_index=True)
+            st.dataframe(style_dataframe(df_a_summary), use_container_width=True, hide_index=True)
 
             with st.expander("🔍 [Option 1] 세부 내역 보기 / 접기", expanded=False):
                 df_a_detail = pd.DataFrame({
@@ -614,7 +608,7 @@ with tab_sheet2:
                     ],
                     "NET / 단가": [
                         f"{depo_net:,.0f}원",
-                        f"{depo_per_pax:,.0f}원",
+                        f"{depo_net:,.0f}원",
                         "-",
                         f"{indv_fare:,.0f}원",
                         "-",
@@ -626,33 +620,35 @@ with tab_sheet2:
                     "금액 (KRW)": [
                         f"{depo_total_entry:,.0f} 원",
                         f"{opt1_refund_amount:,.0f} 원",
-                        f"{depo_loss_a:,.0f} 원",
+                        f"-{depo_loss_a:,.0f} 원",
                         f"{indv_ticket_ttl:,.0f} 원",
-                        f"{indv_plus_depo_val:,.0f} 원",  # 음수 -> 빨간색
-                        f"{ta1_ttl:,.0f} 원",
-                        f"{ta2_ttl:,.0f} 원",
-                        f"{ta3_ttl:,.0f} 원",
-                        summary_val_str                  # 양수 -> 파란색, 음수 -> 빨간색
+                        f"{indv_plus_depo_val:,.0f} 원",
+                        f"+{ta1_ttl:,.0f} 원" if ta1_ttl > 0 else "0 원",
+                        f"+{ta2_ttl:,.0f} 원" if ta2_ttl > 0 else "0 원",
+                        f"+{ta3_ttl:,.0f} 원" if ta3_ttl > 0 else "0 원",
+                        summary_val_str1
                     ]
                 })
-                st.dataframe(style_opt1_df(df_a_detail), use_container_width=True, hide_index=True)
+                st.dataframe(style_dataframe(df_a_detail), use_container_width=True, hide_index=True)
 
             st.markdown("---")
 
             # ==================================================================
-            # 2️⃣ [Option 2] 결과 출력
+            # 2️⃣ [Option 2] 결과 출력 (엑셀 양식 100% 동일)
             # ==================================================================
             st.markdown("##### 2️⃣ [Option 2] 여행사 최소 판매 금액 / 블록 유지 (ABS 적용)")
+
+            summary_val_str2 = f"+{path_b_ttl_profit:,.0f} 원" if path_b_ttl_profit > 0 else f"{path_b_ttl_profit:,.0f} 원"
 
             df_b_summary = pd.DataFrame({
                 "구분 / 항목": ["여행사 최소 판매 요청 금액", "TTL 손익"],
                 "PAX": [f"🌸 {remaining_pax}명", "-"],
                 "NET / 단가": [f"{min_selling_price_b:,.0f}원", "-"],
-                "TTL (금액)": ["-", f"{path_b_ttl_profit:,.0f} 원"]
+                "TTL (금액)": ["-", summary_val_str2]
             })
-            st.dataframe(df_b_summary, use_container_width=True, hide_index=True)
+            st.dataframe(style_dataframe(df_b_summary), use_container_width=True, hide_index=True)
 
-            with st.expander("🔍 [Option 2] 세부 내역 보기 / 접기", expanded=False):
+            with st.expander("🔍 [Option 2] 세부 내역 보기 / 접기", expanded=True):
                 df_b_detail = pd.DataFrame({
                     "구분 / 항목": [
                         "GV10 원가",
@@ -667,7 +663,7 @@ with tab_sheet2:
                     ],
                     "PAX": [
                         f"{gv10_pax}명",
-                        f"{opt2_refund_pax}명",
+                        f"{depo_refund_pax}명",
                         f"{depo_non_refund_pax}명",
                         "-",
                         f"{ta1_pax}명",
@@ -678,8 +674,8 @@ with tab_sheet2:
                     ],
                     "NET / 단가": [
                         f"{depo_net:,.0f}원",
-                        f"{depo_per_pax:,.0f}원",
-                        f"{depo_per_pax:,.0f}원",
+                        f"{depo_net:,.0f}원",
+                        f"{depo_net:,.0f}원",
                         "-",
                         f"{ta1_net:,.0f}원",
                         f"{ta2_net:,.0f}원",
@@ -689,17 +685,17 @@ with tab_sheet2:
                     ],
                     "TTL (금액)": [
                         f"{gv10_total_amount:,.0f} 원",
-                        f"{opt2_refund_amount:,.0f} 원",
+                        f"{depo_refund_amount:,.0f} 원",
                         f"{depo_non_refund_amount:,.0f} 원",
-                        f"{fp_ttl:,.0f} 원",
-                        f"{ta1_ttl:,.0f} 원",
-                        f"{ta2_ttl:,.0f} 원",
-                        f"{ta3_ttl:,.0f} 원",
+                        f"-{fp_ttl:,.0f} 원",
+                        f"+{ta1_ttl:,.0f} 원" if ta1_ttl > 0 else "0 원",
+                        f"+{ta2_ttl:,.0f} 원" if ta2_ttl > 0 else "0 원",
+                        f"+{ta3_ttl:,.0f} 원" if ta3_ttl > 0 else "0 원",
                         "-",
-                        f"{path_b_ttl_profit:,.0f} 원"
+                        summary_val_str2
                     ]
                 })
-                st.dataframe(df_b_detail, use_container_width=True, hide_index=True)
+                st.dataframe(style_dataframe(df_b_detail), use_container_width=True, hide_index=True)
 
             st.markdown("---")
             st.subheader("🤖 AI 종합 전략 리포트 (Comment)")
