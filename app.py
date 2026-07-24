@@ -167,7 +167,7 @@ with tab_sheet1:
                 value=420000,
                 step=10000,
                 format="%d",
-                key="pre_price",
+                key="pre_price_v2",
             )
 
         # 4️⃣ INDV 발권 조건 (초기값 0)
