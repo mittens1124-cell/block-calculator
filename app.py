@@ -445,12 +445,12 @@ with tab_sheet2:
             )
 
     # ----------------------------------------------------------------------
-    # 🧮 연산 수식 (수정된 로직)
+    # 🧮 연산 수식 (DEPO 전체 기준 짝수 모객 로직 반영)
     # ----------------------------------------------------------------------
     depo_per_pax = depo_net * 0.20
     depo_total_entry = depo_per_pax * depo_pax
 
-    # 1️⃣ 기본 규칙에 따른 환불 가능 인원 초기 산정
+    # 1️⃣ 기본 규칙에 따른 최대 환불 가능 인원
     if depo_pax >= 35:
         base_refund_pax = 4
     elif depo_pax >= 25:
@@ -462,27 +462,26 @@ with tab_sheet2:
     else:
         base_refund_pax = 0
 
-    # 2️⃣ 판매 완료 인원 집계
+    # 2️⃣ 판매 완료 인원
     sold_pax = ta1_pax + ta2_pax + ta3_pax
 
-    # 3️⃣ GV10 기준 10석을 제외한 '1차 잔여석' 계산
-    # (DEPO 인원 중 GV10 기본 10석과 이미 판매된 석을 고려한 잔여석)
-    raw_remaining_pax = max(0, depo_pax - 10)
+    # 3️⃣ 순수 미판매 잔여석 (DEPO 전체 인원 - 실모객 인원)
+    raw_unsold_pax = max(0, depo_pax - sold_pax)
 
-    # 4️⃣ [핵심 조정] T/A 판매 요청 시 홀수가 아닌 짝수가 되도록 환불 인원 재조정
-    # 기본 환불 적용 시 남는 인원
-    temp_remaining = raw_remaining_pax - base_refund_pax
+    # 4️⃣ [핵심 수정] 환불 후 남은 요청 인원이 '짝수'가 되도록 환불 인원 자동 조정
+    # 기본 환불 적용 시 여행사에 판매 요청할 남은 인원
+    temp_remaining = raw_unsold_pax - base_refund_pax
 
     if temp_remaining > 0 and temp_remaining % 2 != 0:
-        # 남은 인원이 홀수(1, 3, 5...)인 경우, 환불 인원을 1명 줄여서 남은 인원을 짝수로 맞춤
+        # 남은 판매 인원이 홀수(1, 3, 5...)면 환불을 1명 포기/줄여서 판매 인원을 짝수로 맞춤
         depo_refund_pax = max(0, base_refund_pax - 1)
     else:
         depo_refund_pax = base_refund_pax
 
-    # 최종 환불 금액 계산
+    # 최종 환불액
     depo_refund_amount = depo_refund_pax * depo_per_pax
 
-    # T/A 1, 2, 3 수입 합계
+    # T/A 수입 합계
     ta1_ttl = ta1_net * ta1_pax
     ta2_ttl = ta2_net * ta2_pax
     ta3_ttl = ta3_net * ta3_pax
@@ -498,19 +497,18 @@ with tab_sheet2:
     gv10_pax = 10
     gv10_total_amount = gv10_pax * depo_net
 
-    # 환불 불가 DEPO 인원 계산
+    # 환불 불가 DEPO 인원
     depo_non_refund_pax = max(0, depo_pax - gv10_pax - depo_refund_pax)
     depo_non_refund_amount = depo_non_refund_pax * depo_per_pax
 
     fp_ttl = gv10_total_amount - depo_refund_amount + depo_non_refund_amount
 
-    # 5️⃣ 최종 여행사 요청 잔여석 (짝수로 맞춰진 인원)
-    remaining_pax = max(0, gv10_pax - sold_pax + (depo_pax - gv10_pax - depo_refund_pax))
-    # 또는 간결하게: remaining_pax = max(0, depo_pax - sold_pax - depo_refund_pax)
+    # 5️⃣ 최종 여행사 요청 잔여석 (DEPO 11명 - 9명 - 환불0명 = 짝수 2석!)
+    remaining_pax = max(0, raw_unsold_pax - depo_refund_pax)
 
     path_b_ttl_profit = ta_total_revenue - fp_ttl
 
-    # 6️⃣ 짝수 잔여석 기준 최소 판매 단가 (ABS) 계산
+    # 6️⃣ 짝수 잔여석 기준 최소 판매 단가 (ABS)
     if remaining_pax > 0:
         min_selling_price_b = (
             abs(path_b_ttl_profit) / remaining_pax
