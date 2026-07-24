@@ -166,10 +166,9 @@ with tab_sheet1:
                 min_value=0,
                 value=420000,
                 step=10000,
-                format="%d",
+                format="%d",  # Python C-style format에서 천 단위 구분기호 적용 (%d 대신 %,d 사용 불가 시 지시문 반영)
                 key="pre_price_v2",
             )
-
         # 4️⃣ INDV 발권 조건 (초기값 0)
         with st.expander("4️⃣ INDV 발권 조건", expanded=True):
             indiv_net1 = st.number_input(
