@@ -161,14 +161,17 @@ with tab_sheet1:
             pax1 = st.number_input(
                 "실모객 인원 (PAX)", min_value=0, value=0, step=1, key="pre_pax"
             )
-            selling_price1 = st.number_input(
+            # 콤마 표시용 텍스트 입력창
+            price_input1 = st.text_input(
                 "1인당 판매가 (KRW)",
-                min_value=0.0,
-                value=0.0,
-                step=10000.0,
-                format="%.0f",
-                key="pre_price_v2",
+                value="0",
+                key="pre_price_v2_str"
             )
+            # 입력된 텍스트에서 콤마(,)를 제거하고 숫자로 변환 (계산용)
+            try:
+                selling_price1 = int(price_input1.replace(",", "").strip())
+            except ValueError:
+                selling_price1 = 0
                 
         # 4️⃣ INDV 발권 조건 (초기값 0)
         with st.expander("4️⃣ INDV 발권 조건", expanded=True):
