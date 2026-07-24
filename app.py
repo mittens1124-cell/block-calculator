@@ -637,22 +637,26 @@ with tab_sheet2:
                 })
                 st.dataframe(style_opt1_df(df_a_detail), use_container_width=True, hide_index=True)
 
-            st.markdown("---")
-
             # ==================================================================
-            # 2️⃣ [Option 2] 결과 출력
+            # 2️⃣ [Option 2] 결과 출력 (엑셀 양식 동일 적용)
             # ==================================================================
-            st.markdown("##### 2️⃣ [Option 2] 여행사 최소 판매 금액 / 블록 유지 (ABS 적용)")
+            st.markdown(
+                "##### 2️⃣ [Option 2] 여행사 최소 판매 금액 / 블록 유지 (ABS 적용)"
+            )
 
             df_b_summary = pd.DataFrame({
                 "구분 / 항목": ["여행사 최소 판매 요청 금액", "TTL 손익"],
                 "PAX": [f"🌸 {remaining_pax}명", "-"],
                 "NET / 단가": [f"{min_selling_price_b:,.0f}원", "-"],
-                "TTL (금액)": ["-", f"{path_b_ttl_profit:,.0f} 원"]
+                "TTL (금액)": ["-", f"{path_b_ttl_profit:,.0f} 원"],
             })
-            st.dataframe(df_b_summary, use_container_width=True, hide_index=True)
+            st.dataframe(
+                df_b_summary, use_container_width=True, hide_index=True
+            )
 
-            with st.expander("🔍 [Option 2] 세부 내역 보기 / 접기", expanded=False):
+            with st.expander(
+                "🔍 [Option 2] 세부 내역 보기 / 접기", expanded=True
+            ):
                 df_b_detail = pd.DataFrame({
                     "구분 / 항목": [
                         "GV10 원가",
@@ -663,43 +667,46 @@ with tab_sheet2:
                         "T/A 2 판매",
                         "T/A 3 판매",
                         "여행사 최소 판매 요청 금액",
-                        "TTL 손익"
+                        "TTL 손익",
                     ],
                     "PAX": [
                         f"{gv10_pax}명",
-                        f"{opt2_refund_pax}명",
+                        f"{depo_refund_pax}명",
                         f"{depo_non_refund_pax}명",
                         "-",
                         f"{ta1_pax}명",
                         f"{ta2_pax}명",
                         f"{ta3_pax}명",
                         f"🌸 {remaining_pax}명",
-                        "-"
+                        "-",
                     ],
                     "NET / 단가": [
                         f"{depo_net:,.0f}원",
-                        f"{depo_per_pax:,.0f}원",
-                        f"{depo_per_pax:,.0f}원",
+                        f"{depo_net:,.0f}원",
+                        f"{depo_net:,.0f}원",
                         "-",
                         f"{ta1_net:,.0f}원",
                         f"{ta2_net:,.0f}원",
                         f"{ta3_net:,.0f}원",
                         f"{min_selling_price_b:,.0f}원",
-                        "-"
+                        "-",
                     ],
                     "TTL (금액)": [
                         f"{gv10_total_amount:,.0f} 원",
-                        f"{opt2_refund_amount:,.0f} 원",
+                        f"{depo_refund_amount:,.0f} 원",  # 20% DEPO 금액 환불
                         f"{depo_non_refund_amount:,.0f} 원",
-                        f"{fp_ttl:,.0f} 원",
+                        f"{fp_ttl:,.0f} 원",  # GV10원가 - 환불금 + 환불불가금
                         f"{ta1_ttl:,.0f} 원",
                         f"{ta2_ttl:,.0f} 원",
                         f"{ta3_ttl:,.0f} 원",
                         "-",
-                        f"{path_b_ttl_profit:,.0f} 원"
-                    ]
+                        f"{path_b_ttl_profit:,.0f} 원",
+                    ],
                 })
-                st.dataframe(df_b_detail, use_container_width=True, hide_index=True)
+                st.dataframe(
+                    df_b_detail, use_container_width=True, hide_index=True
+                )
+            st.markdown("---")
 
             st.markdown("---")
             st.subheader("🤖 AI 종합 전략 리포트 (Comment)")
