@@ -476,14 +476,8 @@ with tab_sheet2:
         # 2️⃣ Option 1: INDV 발권 전환 조건 & T/A 판매 수입 입력
         with st.expander("2️⃣ [Option 1] INDV 발권 전환 시 조건", expanded=True):
             c_ifare1, c_ifare2, c_ifare3 = st.columns(3)
-            indv_fare = c_ifare1.number_input(
-                "1인당 NET FARE",
-                min_value=0.0,
-                value=0.0,
-                step=10000.0,
-                format="%.0f",
-                key="post_ifare",
-            )
+            with c_ifare1:
+                indv_fare = comma_stepper("1인당 NET FARE", key="post_ifare_val", step=10000.0)
             indv_baggage = c_ifare2.number_input(
                 "수하물 추가금",
                 min_value=0.0,
@@ -500,25 +494,22 @@ with tab_sheet2:
             st.caption("🛍️ **T/A (여행사) 판매 수입**")
 
             c_ta1_1, c_ta1_2 = st.columns(2)
-            ta1_net = c_ta1_1.number_input(
-                "T/A 1 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta1_net"
-            )
+            with c_ta1_1:
+                ta1_net = comma_stepper("T/A 1 단가", key="ta1_net_val", step=10000.0)
             ta1_pax = c_ta1_2.number_input(
                 "T/A 1 PAX", min_value=0, value=0, key="ta1_pax"
             )
 
             c_ta2_1, c_ta2_2 = st.columns(2)
-            ta2_net = c_ta2_1.number_input(
-                "T/A 2 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta2_net"
-            )
+            with c_ta2_1:
+                ta2_net = comma_stepper("T/A 2 단가", key="ta2_net_val", step=10000.0)
             ta2_pax = c_ta2_2.number_input(
                 "T/A 2 PAX", min_value=0, value=0, key="ta2_pax"
             )
 
             c_ta3_1, c_ta3_2 = st.columns(2)
-            ta3_net = c_ta3_1.number_input(
-                "T/A 3 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta3_net"
-            )
+            with c_ta3_1:
+                ta3_net = comma_stepper("T/A 3 단가", key="ta3_net_val", step=10000.0)
             ta3_pax = c_ta3_2.number_input(
                 "T/A 3 PAX", min_value=0, value=0, key="ta3_pax"
             )
