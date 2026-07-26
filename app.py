@@ -148,11 +148,12 @@ st.markdown(
         font-weight: 400 !important;
     }
 
-    /* − / + 위젯 자체를 입력창 오른쪽에 절대 배치하여 줄바꿈 방지 */
+    /* − / + 위젯 자체를 입력창 오른쪽에 절대 배치하여 줄바꿈 방지
+       Streamlit number_input의 − / +와 같은 세로 위치로 맞춤 */
     [class*="st-key-opt1-stepper-"] [class*="_minus_btn"],
     [class*="st-key-opt1-stepper-"] [class*="_plus_btn"] {
         position: absolute !important;
-        top: 30px !important;
+        top: 12px !important;
         z-index: 20 !important;
         width: 48px !important;
         min-width: 48px !important;
