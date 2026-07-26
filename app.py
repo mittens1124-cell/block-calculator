@@ -69,6 +69,28 @@ st.markdown(
         background-color: #02b350;
         color: white !important;
     }
+
+    /* 🔘 comma_stepper 전용 ➖ / ➕ 버튼: 다른 number_input 스텝퍼와 동일한 톤으로 통일 */
+    .stButton > button {
+        background-color: #f1f3f5 !important;
+        border: 1px solid #ced4da !important;
+        color: #868e96 !important;
+        box-shadow: none !important;
+        font-weight: normal !important;
+    }
+    .stButton > button:hover {
+        background-color: #e9ecef !important;
+        border-color: #ced4da !important;
+        color: #495057 !important;
+    }
+    .stButton > button:active,
+    .stButton > button:focus,
+    .stButton > button:focus:not(:active) {
+        background-color: #e9ecef !important;
+        border-color: #ced4da !important;
+        color: #495057 !important;
+        box-shadow: none !important;
+    }
     </style>
 """,
     unsafe_allow_html=True,
