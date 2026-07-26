@@ -185,15 +185,29 @@ with tab_sheet1:
                 else 0
             )
                 
-        # 4️⃣ INDV 발권 조건 (초기값 0)
+# 4️⃣ INDV 발권 조건 (초기값 0)
         with st.expander("4️⃣ INDV 발권 조건", expanded=True):
-            indiv_net1 = st.number_input(
+
+            def _format_indiv_net_with_commas(key):
+                raw = st.session_state[key]
+                digits = "".join(ch for ch in raw if ch.isdigit())
+                st.session_state[key] = f"{int(digits):,}" if digits else ""
+
+            if "inet1_str" not in st.session_state:
+                st.session_state["inet1_str"] = ""
+
+            st.text_input(
                 "INDV 1인당 NET FARE (KRW)",
-                min_value=0.0,
-                value=0.0,
-                step=10000.0,
-                format="%.0f",
-                key="inet1",
+                key="inet1_str",
+                on_change=_format_indiv_net_with_commas,
+                args=("inet1_str",),
+                placeholder="예: 1,500,000",
+            )
+
+            indiv_net1 = (
+                float(st.session_state["inet1_str"].replace(",", ""))
+                if st.session_state["inet1_str"]
+                else 0.0
             )
 
         # 5️⃣ DEPO 그룹 조건 (초기값 0)
