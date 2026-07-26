@@ -69,10 +69,89 @@ st.markdown(
         background-color: #02b350;
         color: white !important;
     }
+
+    /* 금액 입력용 콤마 스테퍼: 기존 기능은 유지하고 표시만 천 단위 콤마 처리 */
+    .comma-stepper-label {
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        margin-bottom: 0.25rem;
+        color: #31333f;
+    }
+    div[data-testid="stButton"] > button {
+        min-height: 2.5rem;
+        height: 2.5rem;
+        padding-left: 0;
+        padding-right: 0;
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
     </style>
 """,
     unsafe_allow_html=True,
 )
+
+def comma_number_stepper(
+    label,
+    key,
+    step,
+    min_value=0,
+    value=0,
+):
+    """천 단위 콤마 표시와 -/+ 증감 기능을 함께 제공하는 금액 입력 위젯."""
+    value_key = key
+    display_key = f"{key}_display"
+
+    if value_key not in st.session_state:
+        st.session_state[value_key] = int(value)
+    if display_key not in st.session_state:
+        st.session_state[display_key] = f"{int(st.session_state[value_key]):,}"
+
+    def _sync_from_text():
+        raw = str(st.session_state.get(display_key, ""))
+        digits = "".join(ch for ch in raw if ch.isdigit())
+        parsed = int(digits) if digits else int(min_value)
+        parsed = max(int(min_value), parsed)
+        st.session_state[value_key] = parsed
+        st.session_state[display_key] = f"{parsed:,}"
+
+    def _change_value(amount):
+        current = int(st.session_state.get(value_key, value))
+        changed = max(int(min_value), current + int(amount))
+        st.session_state[value_key] = changed
+        st.session_state[display_key] = f"{changed:,}"
+
+    st.markdown(
+        f'<div class="comma-stepper-label">{label}</div>',
+        unsafe_allow_html=True,
+    )
+    value_col, minus_col, plus_col = st.columns([3.4, 1, 1], gap="small")
+
+    with value_col:
+        st.text_input(
+            label,
+            key=display_key,
+            on_change=_sync_from_text,
+            label_visibility="collapsed",
+        )
+    with minus_col:
+        st.button(
+            "−",
+            key=f"{key}_minus",
+            on_click=_change_value,
+            args=(-int(step),),
+            use_container_width=True,
+        )
+    with plus_col:
+        st.button(
+            "+",
+            key=f"{key}_plus",
+            on_click=_change_value,
+            args=(int(step),),
+            use_container_width=True,
+        )
+
+    return float(st.session_state[value_key])
+
 
 st.title("✈️ 베트남 노선 그룹 블록 손익 판단 시뮬레이터")
 st.caption(
@@ -442,52 +521,71 @@ with tab_sheet2:
         # 2️⃣ Option 1: INDV 발권 전환 조건 & T/A 판매 수입 입력
         with st.expander("2️⃣ [Option 1] INDV 발권 전환 시 조건", expanded=True):
             c_ifare1, c_ifare2, c_ifare3 = st.columns(3)
-            indv_fare = c_ifare1.number_input(
-                "1인당 NET FARE",
-                min_value=0.0,
-                value=0.0,
-                step=10000.0,
-                format="%.0f",
-                key="post_ifare",
-            )
-            indv_baggage = c_ifare2.number_input(
-                "수하물 추가금",
-                min_value=0.0,
-                value=0.0,
-                step=5000.0,
-                format="%.0f",
-                key="post_ibag",
-            )
-            indv_pax = c_ifare3.number_input(
-                "INDV 발권 PAX", min_value=0, value=0, key="post_ipax"
-            )
+            with c_ifare1:
+                indv_fare = comma_number_stepper(
+                    "1인당 NET FARE",
+                    key="post_ifare",
+                    min_value=0,
+                    value=0,
+                    step=10000,
+                )
+            with c_ifare2:
+                indv_baggage = comma_number_stepper(
+                    "수하물 추가금",
+                    key="post_ibag",
+                    min_value=0,
+                    value=0,
+                    step=5000,
+                )
+            with c_ifare3:
+                indv_pax = st.number_input(
+                    "INDV 발권 PAX", min_value=0, value=0, key="post_ipax"
+                )
 
             st.markdown("---")
             st.caption("🛍️ **T/A (여행사) 판매 수입**")
 
             c_ta1_1, c_ta1_2 = st.columns(2)
-            ta1_net = c_ta1_1.number_input(
-                "T/A 1 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta1_net"
-            )
-            ta1_pax = c_ta1_2.number_input(
-                "T/A 1 PAX", min_value=0, value=0, key="ta1_pax"
-            )
+            with c_ta1_1:
+                ta1_net = comma_number_stepper(
+                    "T/A 1 단가",
+                    key="ta1_net",
+                    min_value=0,
+                    value=0,
+                    step=10000,
+                )
+            with c_ta1_2:
+                ta1_pax = st.number_input(
+                    "T/A 1 PAX", min_value=0, value=0, key="ta1_pax"
+                )
 
             c_ta2_1, c_ta2_2 = st.columns(2)
-            ta2_net = c_ta2_1.number_input(
-                "T/A 2 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta2_net"
-            )
-            ta2_pax = c_ta2_2.number_input(
-                "T/A 2 PAX", min_value=0, value=0, key="ta2_pax"
-            )
+            with c_ta2_1:
+                ta2_net = comma_number_stepper(
+                    "T/A 2 단가",
+                    key="ta2_net",
+                    min_value=0,
+                    value=0,
+                    step=10000,
+                )
+            with c_ta2_2:
+                ta2_pax = st.number_input(
+                    "T/A 2 PAX", min_value=0, value=0, key="ta2_pax"
+                )
 
             c_ta3_1, c_ta3_2 = st.columns(2)
-            ta3_net = c_ta3_1.number_input(
-                "T/A 3 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta3_net"
-            )
-            ta3_pax = c_ta3_2.number_input(
-                "T/A 3 PAX", min_value=0, value=0, key="ta3_pax"
-            )
+            with c_ta3_1:
+                ta3_net = comma_number_stepper(
+                    "T/A 3 단가",
+                    key="ta3_net",
+                    min_value=0,
+                    value=0,
+                    step=10000,
+                )
+            with c_ta3_2:
+                ta3_pax = st.number_input(
+                    "T/A 3 PAX", min_value=0, value=0, key="ta3_pax"
+                )
 
         # 3️⃣ Option 2: 그룹 블록 유지 조건 (사용자 지정 요청 인원 추가)
         with st.expander(
