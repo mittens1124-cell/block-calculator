@@ -522,7 +522,6 @@ with tab_sheet2:
             ta3_pax = c_ta3_2.number_input(
                 "T/A 3 PAX", min_value=0, value=0, key="ta3_pax"
             )
-
         # 3️⃣ Option 2: 그룹 블록 유지 조건 (사용자 지정 요청 인원 추가)
         with st.expander(
             "3️⃣ [Option 2] 그룹 블록 유지 시 조건", expanded=True
