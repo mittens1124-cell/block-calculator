@@ -70,45 +70,77 @@ st.markdown(
         color: white !important;
     }
 
-    /* 🔘 comma_stepper 전용 ➖ / ➕ 버튼: 다른 number_input 스텝퍼와 동일한 톤으로 통일 */
-    .stButton button,
-    div[data-testid="stButton"] button,
-    button[kind="secondary"],
-    button[data-testid="baseButton-secondary"],
-    button[data-testid="baseButtonSecondary"] {
-        background-color: #f1f3f5 !important;
-        border: 1px solid #ced4da !important;
-        border-color: #ced4da !important;
-        color: #868e96 !important;
+    /* 🔘 comma_stepper 전용 − / + 버튼
+       첨부 이미지처럼 하나의 회색 컨트롤 안에 붙어 있는 형태로 표시 */
+    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) div[data-testid="stButton"]):has(> div:nth-child(2) div[data-testid="stButton"]) {
+        gap: 0 !important;
+        height: 60px !important;
+        min-height: 60px !important;
+        background-color: #f0f2f6 !important;
+        border: 0 !important;
+        border-radius: 10px !important;
+        overflow: hidden !important;
+    }
+
+    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) div[data-testid="stButton"]):has(> div:nth-child(2) div[data-testid="stButton"])
+    div[data-testid="stColumn"] {
+        min-width: 0 !important;
+        width: 50% !important;
+        flex: 1 1 50% !important;
+    }
+
+    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) div[data-testid="stButton"]):has(> div:nth-child(2) div[data-testid="stButton"])
+    div[data-testid="stButton"] {
+        height: 60px !important;
+        margin: 0 !important;
+    }
+
+    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) div[data-testid="stButton"]):has(> div:nth-child(2) div[data-testid="stButton"])
+    button {
+        width: 100% !important;
+        min-width: 44px !important;
+        height: 60px !important;
+        min-height: 60px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background-color: #f0f2f6 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
         box-shadow: none !important;
         outline: none !important;
-        font-weight: normal !important;
+        font-size: 22px !important;
+        line-height: 1 !important;
+        font-weight: 700 !important;
     }
-    .stButton button:hover,
-    div[data-testid="stButton"] button:hover,
-    button[kind="secondary"]:hover,
-    button[data-testid="baseButton-secondary"]:hover,
-    button[data-testid="baseButtonSecondary"]:hover {
-        background-color: #e9ecef !important;
-        border-color: #ced4da !important;
-        color: #495057 !important;
+
+    /* 왼쪽 − : 연한 회색 */
+    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) div[data-testid="stButton"]):has(> div:nth-child(2) div[data-testid="stButton"])
+    > div:nth-child(1) button,
+    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) div[data-testid="stButton"]):has(> div:nth-child(2) div[data-testid="stButton"])
+    > div:nth-child(1) button p {
+        color: #a3a7af !important;
     }
-    .stButton button:focus,
-    .stButton button:active,
-    div[data-testid="stButton"] button:focus,
-    div[data-testid="stButton"] button:active,
-    button[kind="secondary"]:focus,
-    button[kind="secondary"]:active {
-        background-color: #e9ecef !important;
-        border-color: #ced4da !important;
-        color: #495057 !important;
+
+    /* 오른쪽 + : 짙은 차콜 */
+    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) div[data-testid="stButton"]):has(> div:nth-child(2) div[data-testid="stButton"])
+    > div:nth-child(2) button,
+    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) div[data-testid="stButton"]):has(> div:nth-child(2) div[data-testid="stButton"])
+    > div:nth-child(2) button p {
+        color: #252a35 !important;
+    }
+
+    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) div[data-testid="stButton"]):has(> div:nth-child(2) div[data-testid="stButton"])
+    button:hover {
+        background-color: #e9ecf1 !important;
+    }
+
+    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) div[data-testid="stButton"]):has(> div:nth-child(2) div[data-testid="stButton"])
+    button:focus,
+    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) div[data-testid="stButton"]):has(> div:nth-child(2) div[data-testid="stButton"])
+    button:active {
+        background-color: #e4e7ec !important;
         box-shadow: none !important;
         outline: none !important;
-    }
-    .stButton button p,
-    div[data-testid="stButton"] button p,
-    button[kind="secondary"] p {
-        color: inherit !important;
     }
     </style>
 """,
@@ -140,7 +172,7 @@ def comma_stepper(label, key, step=10000.0, min_value=0.0):
     def _increase():
         _set_val(_get_val() + step)
 
-    v_col, minus_col, plus_col = st.columns([3, 1, 1])
+    v_col, control_col = st.columns([4, 1.05], gap="small")
     with v_col:
         st.text_input(
             label,
@@ -148,12 +180,14 @@ def comma_stepper(label, key, step=10000.0, min_value=0.0):
             on_change=_sync_from_text,
             placeholder="0",
         )
-    with minus_col:
-        st.write("")
-        st.button("➖", key=f"{key}_minus_btn", on_click=_decrease, use_container_width=True)
-    with plus_col:
-        st.write("")
-        st.button("➕", key=f"{key}_plus_btn", on_click=_increase, use_container_width=True)
+    with control_col:
+        # 입력창 라벨 높이만큼 내려서 − / + 컨트롤을 입력칸과 수평 정렬
+        st.markdown('<div style="height: 28px;"></div>', unsafe_allow_html=True)
+        minus_col, plus_col = st.columns(2, gap="small")
+        with minus_col:
+            st.button("−", key=f"{key}_minus_btn", on_click=_decrease, use_container_width=True)
+        with plus_col:
+            st.button("+", key=f"{key}_plus_btn", on_click=_increase, use_container_width=True)
 
     return _get_val()
 st.caption(
