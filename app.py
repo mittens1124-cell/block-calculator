@@ -532,7 +532,7 @@ with tab_sheet2:
                 "1인당 NET FARE",
                 min_value=0.0,
                 value=0.0,
-                step=10000.0,
+                step=100000.0,
                 format="%.0f",
                 key="post_ifare",
             )
@@ -553,7 +553,7 @@ with tab_sheet2:
 
             c_ta1_1, c_ta1_2 = st.columns(2)
             ta1_net = c_ta1_1.number_input(
-                "T/A 1 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta1_net"
+                "T/A 1 단가", min_value=0.0, value=0.0, step=100000.0, format="%.0f", key="ta1_net"
             )
             ta1_pax = c_ta1_2.number_input(
                 "T/A 1 PAX", min_value=0, value=0, key="ta1_pax"
@@ -561,7 +561,7 @@ with tab_sheet2:
 
             c_ta2_1, c_ta2_2 = st.columns(2)
             ta2_net = c_ta2_1.number_input(
-                "T/A 2 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta2_net"
+                "T/A 2 단가", min_value=0.0, value=0.0, step=100000.0, format="%.0f", key="ta2_net"
             )
             ta2_pax = c_ta2_2.number_input(
                 "T/A 2 PAX", min_value=0, value=0, key="ta2_pax"
@@ -569,7 +569,7 @@ with tab_sheet2:
 
             c_ta3_1, c_ta3_2 = st.columns(2)
             ta3_net = c_ta3_1.number_input(
-                "T/A 3 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta3_net"
+                "T/A 3 단가", min_value=0.0, value=0.0, step=100000.0, format="%.0f", key="ta3_net"
             )
             ta3_pax = c_ta3_2.number_input(
                 "T/A 3 PAX", min_value=0, value=0, key="ta3_pax"
