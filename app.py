@@ -439,7 +439,7 @@ with tab_sheet2:
                 else 0.0
             )
 
-        # 2️⃣ Option 1: INDV 발권 전환 조건 & T/A 판매 수입 입력
+      # 2️⃣ Option 1: INDV 발권 전환 조건 & T/A 판매 수입 입력
         with st.expander("2️⃣ [Option 1] INDV 발권 전환 시 조건", expanded=True):
             c_ifare1, c_ifare2, c_ifare3 = st.columns(3)
 
@@ -489,7 +489,21 @@ with tab_sheet2:
                 "T/A 1 PAX", min_value=0, value=0, key="ta1_pax"
             )
 
-            c_ta2_1, c_ta2_2 =
+            c_ta2_1, c_ta2_2 = st.columns(2)
+            ta2_net = c_ta2_1.number_input(
+                "T/A 2 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta2_net"
+            )
+            ta2_pax = c_ta2_2.number_input(
+                "T/A 2 PAX", min_value=0, value=0, key="ta2_pax"
+            )
+
+            c_ta3_1, c_ta3_2 = st.columns(2)
+            ta3_net = c_ta3_1.number_input(
+                "T/A 3 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta3_net"
+            )
+            ta3_pax = c_ta3_2.number_input(
+                "T/A 3 PAX", min_value=0, value=0, key="ta3_pax"
+            )
 
         # 3️⃣ Option 2: 그룹 블록 유지 조건 (사용자 지정 요청 인원 추가)
         with st.expander(
