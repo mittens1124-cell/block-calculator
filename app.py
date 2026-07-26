@@ -70,75 +70,173 @@ st.markdown(
         color: white !important;
     }
 
-    /* 🔘 comma_stepper 전용 − / + 버튼
-       첨부 이미지처럼 하나의 회색 컨트롤 안에 붙어 있는 형태로 표시 */
-    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) div[data-testid="stButton"]):has(> div:nth-child(2) div[data-testid="stButton"]) {
-        gap: 0 !important;
-        height: 60px !important;
-        min-height: 60px !important;
-        background-color: #f0f2f6 !important;
-        border: 0 !important;
-        border-radius: 10px !important;
-        overflow: hidden !important;
-    }
-
-    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) div[data-testid="stButton"]):has(> div:nth-child(2) div[data-testid="stButton"])
-    div[data-testid="stColumn"] {
-        min-width: 0 !important;
-        width: 50% !important;
-        flex: 1 1 50% !important;
-    }
-
-    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) div[data-testid="stButton"]):has(> div:nth-child(2) div[data-testid="stButton"])
-    div[data-testid="stButton"] {
-        height: 60px !important;
-        margin: 0 !important;
-    }
-
-    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) div[data-testid="stButton"]):has(> div:nth-child(2) div[data-testid="stButton"])
-    button {
+    /* ================================================================
+       [Option 1]의 comma_stepper 4개에만 적용
+       첨부 이미지와 동일한 1개 입력창 안에 0 / − / +가 배치되는 형태
+       ================================================================ */
+    [class*="st-key-opt1-stepper-"] {
         width: 100% !important;
-        min-width: 44px !important;
+        margin-bottom: 1rem !important;
+    }
+
+    [class*="st-key-opt1-stepper-"] .opt1-stepper-label {
+        margin: 0 0 6px 0 !important;
+        padding: 0 !important;
+        color: #31333f !important;
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+        font-weight: 400 !important;
+    }
+
+    /* 입력값과 −/+를 감싸는 한 개의 회색 컨트롤 */
+    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"] {
+        display: flex !important;
+        align-items: stretch !important;
+        gap: 0 !important;
+        width: 100% !important;
         height: 60px !important;
         min-height: 60px !important;
         padding: 0 !important;
         margin: 0 !important;
         background-color: #f0f2f6 !important;
         border: 0 !important;
+        border-radius: 10px !important;
+        box-shadow: none !important;
+        overflow: hidden !important;
+    }
+
+    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
+    > div[data-testid="stColumn"] {
+        min-width: 0 !important;
+        height: 60px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* 값 입력부는 남은 폭 전체 사용 */
+    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
+    > div[data-testid="stColumn"]:nth-child(1) {
+        flex: 1 1 auto !important;
+        width: auto !important;
+    }
+
+    /* −와 +는 첨부 이미지와 같은 48px 고정 폭 */
+    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
+    > div[data-testid="stColumn"]:nth-child(2),
+    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
+    > div[data-testid="stColumn"]:nth-child(3) {
+        flex: 0 0 48px !important;
+        width: 48px !important;
+        max-width: 48px !important;
+    }
+
+    /* 콤마 입력 텍스트 영역 */
+    [class*="st-key-opt1-stepper-"] div[data-testid="stTextInput"] {
+        height: 60px !important;
+        min-height: 60px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    [class*="st-key-opt1-stepper-"] div[data-testid="stTextInput"]
+    div[data-baseweb="input"] {
+        height: 60px !important;
+        min-height: 60px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+        background-color: transparent !important;
+        border: 0 !important;
         border-radius: 0 !important;
         box-shadow: none !important;
         outline: none !important;
-        font-size: 22px !important;
+    }
+
+    [class*="st-key-opt1-stepper-"] div[data-testid="stTextInput"]
+    div[data-baseweb="input"]:focus-within {
+        border: 0 !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+
+    [class*="st-key-opt1-stepper-"] div[data-testid="stTextInput"] input {
+        width: 100% !important;
+        height: 60px !important;
+        min-height: 60px !important;
+        padding: 0 18px !important;
+        margin: 0 !important;
+        background: transparent !important;
+        background-color: transparent !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        outline: none !important;
+        color: #31333f !important;
+        -webkit-text-fill-color: #31333f !important;
+        font-size: 18px !important;
+        line-height: 60px !important;
+        font-weight: 400 !important;
+    }
+
+    /* − / + 버튼 */
+    [class*="st-key-opt1-stepper-"] div[data-testid="stButton"] {
+        width: 48px !important;
+        height: 60px !important;
+        min-height: 60px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    [class*="st-key-opt1-stepper-"] div[data-testid="stButton"] button {
+        width: 48px !important;
+        min-width: 48px !important;
+        max-width: 48px !important;
+        height: 60px !important;
+        min-height: 60px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+        background-color: transparent !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        outline: none !important;
+        font-size: 18px !important;
         line-height: 1 !important;
         font-weight: 700 !important;
     }
 
-    /* 왼쪽 − : 연한 회색 */
-    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) div[data-testid="stButton"]):has(> div:nth-child(2) div[data-testid="stButton"])
-    > div:nth-child(1) button,
-    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) div[data-testid="stButton"]):has(> div:nth-child(2) div[data-testid="stButton"])
-    > div:nth-child(1) button p {
-        color: #a3a7af !important;
+    [class*="st-key-opt1-stepper-"] div[data-testid="stButton"] button p {
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 18px !important;
+        line-height: 1 !important;
+        font-weight: 700 !important;
     }
 
-    /* 오른쪽 + : 짙은 차콜 */
-    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) div[data-testid="stButton"]):has(> div:nth-child(2) div[data-testid="stButton"])
-    > div:nth-child(2) button,
-    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) div[data-testid="stButton"]):has(> div:nth-child(2) div[data-testid="stButton"])
-    > div:nth-child(2) button p {
-        color: #252a35 !important;
+    /* 왼쪽 −는 연한 회색, 오른쪽 +는 짙은 차콜 */
+    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
+    > div[data-testid="stColumn"]:nth-child(2) button,
+    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
+    > div[data-testid="stColumn"]:nth-child(2) button p {
+        color: #91939b !important;
     }
 
-    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) div[data-testid="stButton"]):has(> div:nth-child(2) div[data-testid="stButton"])
-    button:hover {
+    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
+    > div[data-testid="stColumn"]:nth-child(3) button,
+    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
+    > div[data-testid="stColumn"]:nth-child(3) button p {
+        color: #31333f !important;
+    }
+
+    [class*="st-key-opt1-stepper-"] div[data-testid="stButton"] button:hover {
         background-color: #e9ecf1 !important;
     }
 
-    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) div[data-testid="stButton"]):has(> div:nth-child(2) div[data-testid="stButton"])
-    button:focus,
-    div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) div[data-testid="stButton"]):has(> div:nth-child(2) div[data-testid="stButton"])
-    button:active {
+    [class*="st-key-opt1-stepper-"] div[data-testid="stButton"] button:focus,
+    [class*="st-key-opt1-stepper-"] div[data-testid="stButton"] button:active {
         background-color: #e4e7ec !important;
+        border: 0 !important;
         box-shadow: none !important;
         outline: none !important;
     }
@@ -149,7 +247,7 @@ st.markdown(
 
 st.title("✈️ 베트남 노선 그룹 블록 손익 판단 시뮬레이터")
 def comma_stepper(label, key, step=10000.0, min_value=0.0):
-    """➖ / ➕ 버튼 + 콤마(,) 표시 + 직접 타이핑 입력이 모두 가능한 숫자 입력 위젯"""
+    """− / + 버튼, 콤마 표시, 직접 입력 기능을 유지한 Option 1 전용 숫자 입력 위젯"""
     str_key = f"{key}_str"
     if str_key not in st.session_state:
         st.session_state[str_key] = "0"
@@ -172,24 +270,39 @@ def comma_stepper(label, key, step=10000.0, min_value=0.0):
     def _increase():
         _set_val(_get_val() + step)
 
-    v_col, control_col = st.columns([4, 1.05], gap="small")
-    with v_col:
-        st.text_input(
-            label,
-            key=str_key,
-            on_change=_sync_from_text,
-            placeholder="0",
+    # key가 있는 컨테이너로 감싸 CSS가 Option 1의 해당 4개 입력창에만 적용되도록 제한
+    with st.container(key=f"opt1-stepper-{key}"):
+        st.markdown(
+            f'<div class="opt1-stepper-label">{label}</div>',
+            unsafe_allow_html=True,
         )
-    with control_col:
-        # 입력창 라벨 높이만큼 내려서 − / + 컨트롤을 입력칸과 수평 정렬
-        st.markdown('<div style="height: 28px;"></div>', unsafe_allow_html=True)
-        minus_col, plus_col = st.columns(2, gap="small")
+
+        value_col, minus_col, plus_col = st.columns([6, 1, 1], gap="small")
+        with value_col:
+            st.text_input(
+                label,
+                key=str_key,
+                on_change=_sync_from_text,
+                placeholder="0",
+                label_visibility="collapsed",
+            )
         with minus_col:
-            st.button("−", key=f"{key}_minus_btn", on_click=_decrease, use_container_width=True)
+            st.button(
+                "−",
+                key=f"{key}_minus_btn",
+                on_click=_decrease,
+                use_container_width=True,
+            )
         with plus_col:
-            st.button("+", key=f"{key}_plus_btn", on_click=_increase, use_container_width=True)
+            st.button(
+                "+",
+                key=f"{key}_plus_btn",
+                on_click=_increase,
+                use_container_width=True,
+            )
 
     return _get_val()
+
 st.caption(
     "상단 탭을 통해 DEPO 전 시뮬레이션과 DEPO 후 (GV10 미만) 손익 계산을"
     " 손쉽게 전환하여 확인하세요."
