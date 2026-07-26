@@ -2,6 +2,7 @@ import datetime
 import holidays
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 
 # 1. 페이지 설정
 st.set_page_config(
@@ -72,6 +73,91 @@ st.markdown(
     </style>
 """,
     unsafe_allow_html=True,
+)
+
+# 기존 number_input의 기능·형태·크기는 유지하고 금액 표시만 천 단위 콤마로 변환
+components.html(
+    r"""
+    <script>
+    (() => {
+      const targetLabels = new Set([
+        "1인당 NET FARE",
+        "수하물 추가금",
+        "T/A 1 단가",
+        "T/A 2 단가",
+        "T/A 3 단가"
+      ]);
+
+      const parentWindow = window.parent;
+      const parentDoc = parentWindow.document;
+      const nativeValueSetter = Object.getOwnPropertyDescriptor(
+        parentWindow.HTMLInputElement.prototype,
+        "value"
+      ).set;
+
+      const onlyDigits = (value) => String(value ?? "").replace(/[^0-9]/g, "");
+      const withCommas = (value) => {
+        const digits = onlyDigits(value);
+        return digits ? Number(digits).toLocaleString("en-US") : "";
+      };
+      const setNativeValue = (input, value) => nativeValueSetter.call(input, value);
+
+      const attachFormatter = (input) => {
+        if (input.dataset.commaFormatterAttached === "1") return;
+        if (!targetLabels.has(input.getAttribute("aria-label") || "")) return;
+
+        input.dataset.commaFormatterAttached = "1";
+        input.type = "text";
+        input.inputMode = "numeric";
+
+        const formatDisplay = () => {
+          const formatted = withCommas(input.value);
+          if (input.value !== formatted) setNativeValue(input, formatted);
+        };
+
+        input.addEventListener(
+          "input",
+          () => {
+            const rawDigits = onlyDigits(input.value);
+
+            // Streamlit에는 콤마가 없는 숫자만 전달하여 기존 계산·증감 기능을 그대로 유지
+            setNativeValue(input, rawDigits);
+
+            // Streamlit 이벤트 처리 직후 화면 표시만 다시 콤마 형식으로 변경
+            parentWindow.setTimeout(formatDisplay, 0);
+          },
+          true
+        );
+
+        input.addEventListener("blur", formatDisplay);
+        input.addEventListener("change", formatDisplay);
+        formatDisplay();
+
+        let previousValue = input.value;
+        const watchValue = () => {
+          if (!input.isConnected) return;
+          if (input.value !== previousValue) {
+            previousValue = input.value;
+            formatDisplay();
+            previousValue = input.value;
+          }
+          parentWindow.requestAnimationFrame(watchValue);
+        };
+        parentWindow.requestAnimationFrame(watchValue);
+      };
+
+      const scan = () => {
+        parentDoc.querySelectorAll('input[aria-label]').forEach(attachFormatter);
+      };
+
+      scan();
+      const observer = new parentWindow.MutationObserver(scan);
+      observer.observe(parentDoc.body, { childList: true, subtree: true });
+    })();
+    </script>
+    """,
+    height=0,
+    width=0,
 )
 
 st.title("✈️ 베트남 노선 그룹 블록 손익 판단 시뮬레이터")
