@@ -115,20 +115,29 @@ components.html(
           if (input.value !== formatted) setNativeValue(input, formatted);
         };
 
+        // 수동 입력 시에는 콤마를 잠시 제거해 기존 number_input이 숫자를 정상 인식하도록 함
+        input.addEventListener("focus", () => {
+          const rawDigits = onlyDigits(input.value);
+          if (input.value !== rawDigits) setNativeValue(input, rawDigits);
+        });
+
         input.addEventListener(
           "input",
           () => {
             const rawDigits = onlyDigits(input.value);
+            const caret = input.selectionStart ?? rawDigits.length;
 
-            // Streamlit에는 콤마가 없는 숫자만 전달하여 기존 계산·증감 기능을 그대로 유지
-            setNativeValue(input, rawDigits);
-
-            // Streamlit 이벤트 처리 직후 화면 표시만 다시 콤마 형식으로 변경
-            parentWindow.setTimeout(formatDisplay, 0);
+            // 입력 중에는 콤마 없는 숫자를 Streamlit에 전달
+            if (input.value !== rawDigits) {
+              setNativeValue(input, rawDigits);
+              const nextCaret = Math.min(caret, rawDigits.length);
+              input.setSelectionRange(nextCaret, nextCaret);
+            }
           },
           true
         );
 
+        // 입력을 마치면 화면 표시만 다시 천 단위 콤마로 변환
         input.addEventListener("blur", formatDisplay);
         input.addEventListener("change", formatDisplay);
         formatDisplay();
@@ -138,8 +147,10 @@ components.html(
           if (!input.isConnected) return;
           if (input.value !== previousValue) {
             previousValue = input.value;
-            formatDisplay();
-            previousValue = input.value;
+            if (parentDoc.activeElement !== input) {
+              formatDisplay();
+              previousValue = input.value;
+            }
           }
           parentWindow.requestAnimationFrame(watchValue);
         };
@@ -532,7 +543,7 @@ with tab_sheet2:
                 "1인당 NET FARE",
                 min_value=0.0,
                 value=0.0,
-                step=100000.0,
+                step=10000.0,
                 format="%.0f",
                 key="post_ifare",
             )
@@ -553,7 +564,7 @@ with tab_sheet2:
 
             c_ta1_1, c_ta1_2 = st.columns(2)
             ta1_net = c_ta1_1.number_input(
-                "T/A 1 단가", min_value=0.0, value=0.0, step=100000.0, format="%.0f", key="ta1_net"
+                "T/A 1 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta1_net"
             )
             ta1_pax = c_ta1_2.number_input(
                 "T/A 1 PAX", min_value=0, value=0, key="ta1_pax"
@@ -561,7 +572,7 @@ with tab_sheet2:
 
             c_ta2_1, c_ta2_2 = st.columns(2)
             ta2_net = c_ta2_1.number_input(
-                "T/A 2 단가", min_value=0.0, value=0.0, step=100000.0, format="%.0f", key="ta2_net"
+                "T/A 2 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta2_net"
             )
             ta2_pax = c_ta2_2.number_input(
                 "T/A 2 PAX", min_value=0, value=0, key="ta2_pax"
@@ -569,7 +580,7 @@ with tab_sheet2:
 
             c_ta3_1, c_ta3_2 = st.columns(2)
             ta3_net = c_ta3_1.number_input(
-                "T/A 3 단가", min_value=0.0, value=0.0, step=100000.0, format="%.0f", key="ta3_net"
+                "T/A 3 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta3_net"
             )
             ta3_pax = c_ta3_2.number_input(
                 "T/A 3 PAX", min_value=0, value=0, key="ta3_pax"
