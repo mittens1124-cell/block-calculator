@@ -98,9 +98,22 @@ components.html(
       const onlyDigits = (value) => String(value ?? "").replace(/[^0-9]/g, "");
       const withCommas = (value) => {
         const digits = onlyDigits(value);
-        return digits ? Number(digits).toLocaleString("en-US") : "";
+        return digits ? Number(digits).toLocaleString("en-US") : "0";
       };
       const setNativeValue = (input, value) => nativeValueSetter.call(input, value);
+
+      const digitIndexAt = (value, position) =>
+        onlyDigits(String(value).slice(0, Math.max(0, position))).length;
+
+      const displayPositionAt = (formatted, digitIndex) => {
+        if (digitIndex <= 0) return 0;
+        let seen = 0;
+        for (let i = 0; i < formatted.length; i += 1) {
+          if (/\d/.test(formatted[i])) seen += 1;
+          if (seen >= digitIndex) return i + 1;
+        }
+        return formatted.length;
+      };
 
       const attachFormatter = (input) => {
         if (input.dataset.commaFormatterAttached === "1") return;
@@ -110,47 +123,107 @@ components.html(
         input.type = "text";
         input.inputMode = "numeric";
 
-        const formatDisplay = () => {
-          const formatted = withCommas(input.value);
-          if (input.value !== formatted) setNativeValue(input, formatted);
+        let internalUpdate = false;
+
+        const showFormatted = (rawValue, caretDigitIndex = null) => {
+          const formatted = withCommas(rawValue);
+          setNativeValue(input, formatted);
+          if (caretDigitIndex !== null && parentDoc.activeElement === input) {
+            const caretPosition = displayPositionAt(formatted, caretDigitIndex);
+            input.setSelectionRange(caretPosition, caretPosition);
+          }
         };
 
-        // 수동 입력 시에는 콤마를 잠시 제거해 기존 number_input이 숫자를 정상 인식하도록 함
-        input.addEventListener("focus", () => {
-          const rawDigits = onlyDigits(input.value);
-          if (input.value !== rawDigits) setNativeValue(input, rawDigits);
+        const sendRawToStreamlit = (rawValue, caretDigitIndex = null) => {
+          const normalized = onlyDigits(rawValue) || "0";
+          internalUpdate = true;
+          setNativeValue(input, normalized);
+          input.dispatchEvent(new parentWindow.Event("input", { bubbles: true }));
+          internalUpdate = false;
+
+          parentWindow.requestAnimationFrame(() => {
+            if (input.isConnected) showFormatted(normalized, caretDigitIndex);
+          });
+        };
+
+        input.addEventListener("beforeinput", (event) => {
+          const supportedTypes = new Set([
+            "insertText",
+            "insertCompositionText",
+            "insertFromPaste",
+            "deleteContentBackward",
+            "deleteContentForward",
+            "deleteByCut"
+          ]);
+          if (!supportedTypes.has(event.inputType)) return;
+
+          const displayValue = input.value;
+          const rawValue = onlyDigits(displayValue);
+          const selectionStart = input.selectionStart ?? displayValue.length;
+          const selectionEnd = input.selectionEnd ?? selectionStart;
+          let startDigit = digitIndexAt(displayValue, selectionStart);
+          let endDigit = digitIndexAt(displayValue, selectionEnd);
+          let nextRaw = rawValue;
+          let nextCaretDigit = startDigit;
+
+          if (event.inputType.startsWith("insert")) {
+            const inserted = onlyDigits(event.data ?? "");
+            if (!inserted && event.inputType !== "insertFromPaste") return;
+            nextRaw = rawValue.slice(0, startDigit) + inserted + rawValue.slice(endDigit);
+            nextCaretDigit = startDigit + inserted.length;
+          } else if (startDigit !== endDigit) {
+            nextRaw = rawValue.slice(0, startDigit) + rawValue.slice(endDigit);
+            nextCaretDigit = startDigit;
+          } else if (event.inputType === "deleteContentBackward" && startDigit > 0) {
+            nextRaw = rawValue.slice(0, startDigit - 1) + rawValue.slice(startDigit);
+            nextCaretDigit = startDigit - 1;
+          } else if (event.inputType === "deleteContentForward" && startDigit < rawValue.length) {
+            nextRaw = rawValue.slice(0, startDigit) + rawValue.slice(startDigit + 1);
+            nextCaretDigit = startDigit;
+          } else {
+            return;
+          }
+
+          event.preventDefault();
+          sendRawToStreamlit(nextRaw, nextCaretDigit);
         });
 
         input.addEventListener(
           "input",
           () => {
-            const rawDigits = onlyDigits(input.value);
-            const caret = input.selectionStart ?? rawDigits.length;
-
-            // 입력 중에는 콤마 없는 숫자를 Streamlit에 전달
-            if (input.value !== rawDigits) {
-              setNativeValue(input, rawDigits);
-              const nextCaret = Math.min(caret, rawDigits.length);
-              input.setSelectionRange(nextCaret, nextCaret);
-            }
+            if (internalUpdate) return;
+            const rawValue = onlyDigits(input.value) || "0";
+            const caretDigit = digitIndexAt(
+              input.value,
+              input.selectionStart ?? input.value.length
+            );
+            setNativeValue(input, rawValue);
+            parentWindow.requestAnimationFrame(() => {
+              if (input.isConnected) showFormatted(rawValue, caretDigit);
+            });
           },
           true
         );
 
-        // 입력을 마치면 화면 표시만 다시 천 단위 콤마로 변환
-        input.addEventListener("blur", formatDisplay);
-        input.addEventListener("change", formatDisplay);
-        formatDisplay();
+        input.addEventListener("focus", () => {
+          showFormatted(input.value);
+        });
+        input.addEventListener("blur", () => {
+          showFormatted(input.value);
+        });
+        input.addEventListener("change", () => {
+          showFormatted(input.value);
+        });
 
-        let previousValue = input.value;
+        showFormatted(input.value);
+
+        let previousRawValue = onlyDigits(input.value);
         const watchValue = () => {
           if (!input.isConnected) return;
-          if (input.value !== previousValue) {
-            previousValue = input.value;
-            if (parentDoc.activeElement !== input) {
-              formatDisplay();
-              previousValue = input.value;
-            }
+          const currentRawValue = onlyDigits(input.value);
+          if (currentRawValue !== previousRawValue || !input.value.includes(",") && currentRawValue.length >= 4) {
+            previousRawValue = currentRawValue;
+            showFormatted(currentRawValue);
           }
           parentWindow.requestAnimationFrame(watchValue);
         };
