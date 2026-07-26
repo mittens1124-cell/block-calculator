@@ -153,7 +153,7 @@ st.markdown(
     [class*="st-key-opt1-stepper-"] [class*="_minus_btn"],
     [class*="st-key-opt1-stepper-"] [class*="_plus_btn"] {
         position: absolute !important;
-        top: 30px !important;
+        top: 14px !important;
         z-index: 20 !important;
         width: 48px !important;
         min-width: 48px !important;
