@@ -71,23 +71,43 @@ st.markdown(
     }
 
     /* 🔘 comma_stepper 전용 ➖ / ➕ 버튼: 다른 number_input 스텝퍼와 동일한 톤으로 통일 */
-    div[data-testid="stButton"] > button,
-    div[data-testid="stButton"] > button:hover,
-    div[data-testid="stButton"] > button:focus,
-    div[data-testid="stButton"] > button:active,
-    div[data-testid="stButton"] > button:focus:not(:active) {
+    .stButton button,
+    div[data-testid="stButton"] button,
+    button[kind="secondary"],
+    button[data-testid="baseButton-secondary"],
+    button[data-testid="baseButtonSecondary"] {
         background-color: #f1f3f5 !important;
         border: 1px solid #ced4da !important;
+        border-color: #ced4da !important;
         color: #868e96 !important;
         box-shadow: none !important;
         outline: none !important;
         font-weight: normal !important;
     }
-    div[data-testid="stButton"] > button:hover {
+    .stButton button:hover,
+    div[data-testid="stButton"] button:hover,
+    button[kind="secondary"]:hover,
+    button[data-testid="baseButton-secondary"]:hover,
+    button[data-testid="baseButtonSecondary"]:hover {
         background-color: #e9ecef !important;
+        border-color: #ced4da !important;
         color: #495057 !important;
     }
-    div[data-testid="stButton"] > button p {
+    .stButton button:focus,
+    .stButton button:active,
+    div[data-testid="stButton"] button:focus,
+    div[data-testid="stButton"] button:active,
+    button[kind="secondary"]:focus,
+    button[kind="secondary"]:active {
+        background-color: #e9ecef !important;
+        border-color: #ced4da !important;
+        color: #495057 !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+    .stButton button p,
+    div[data-testid="stButton"] button p,
+    button[kind="secondary"] p {
         color: inherit !important;
     }
     </style>
