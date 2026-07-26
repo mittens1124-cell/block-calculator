@@ -439,33 +439,17 @@ with tab_sheet2:
                 else 0.0
             )
 
-      # 2️⃣ Option 1: INDV 발권 전환 조건 & T/A 판매 수입 입력
+        # 2️⃣ Option 1: INDV 발권 전환 조건 & T/A 판매 수입 입력
         with st.expander("2️⃣ [Option 1] INDV 발권 전환 시 조건", expanded=True):
             c_ifare1, c_ifare2, c_ifare3 = st.columns(3)
-
-            with c_ifare1:
-                def _format_indv_fare_with_commas(key):
-                    raw = st.session_state[key]
-                    digits = "".join(ch for ch in raw if ch.isdigit())
-                    st.session_state[key] = f"{int(digits):,}" if digits else ""
-
-                if "post_ifare_str" not in st.session_state:
-                    st.session_state["post_ifare_str"] = ""
-
-                st.text_input(
-                    "1인당 NET FARE",
-                    key="post_ifare_str",
-                    on_change=_format_indv_fare_with_commas,
-                    args=("post_ifare_str",),
-                    placeholder="예: 500,000",
-                )
-
-                indv_fare = (
-                    float(st.session_state["post_ifare_str"].replace(",", ""))
-                    if st.session_state["post_ifare_str"]
-                    else 0.0
-                )
-
+            indv_fare = c_ifare1.number_input(
+                "1인당 NET FARE",
+                min_value=0.0,
+                value=0.0,
+                step=10000.0,
+                format="%.0f",
+                key="post_ifare",
+            )
             indv_baggage = c_ifare2.number_input(
                 "수하물 추가금",
                 min_value=0.0,
@@ -792,4 +776,3 @@ with tab_sheet2:
 • 💡 **액션 플랜:** T/A 및 프로모션 채널을 통해 요청 {req_pax}석에 대한 땡처리 또는 타겟 영업 전략을 강화하십시오.
 """
                 st.success(comment_text2)
-
