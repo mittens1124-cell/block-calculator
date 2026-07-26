@@ -442,14 +442,30 @@ with tab_sheet2:
         # 2️⃣ Option 1: INDV 발권 전환 조건 & T/A 판매 수입 입력
         with st.expander("2️⃣ [Option 1] INDV 발권 전환 시 조건", expanded=True):
             c_ifare1, c_ifare2, c_ifare3 = st.columns(3)
-            indv_fare = c_ifare1.number_input(
-                "1인당 NET FARE",
-                min_value=0.0,
-                value=0.0,
-                step=10000.0,
-                format="%.0f",
-                key="post_ifare",
-            )
+
+            with c_ifare1:
+                def _format_indv_fare_with_commas(key):
+                    raw = st.session_state[key]
+                    digits = "".join(ch for ch in raw if ch.isdigit())
+                    st.session_state[key] = f"{int(digits):,}" if digits else ""
+
+                if "post_ifare_str" not in st.session_state:
+                    st.session_state["post_ifare_str"] = ""
+
+                st.text_input(
+                    "1인당 NET FARE",
+                    key="post_ifare_str",
+                    on_change=_format_indv_fare_with_commas,
+                    args=("post_ifare_str",),
+                    placeholder="예: 500,000",
+                )
+
+                indv_fare = (
+                    float(st.session_state["post_ifare_str"].replace(",", ""))
+                    if st.session_state["post_ifare_str"]
+                    else 0.0
+                )
+
             indv_baggage = c_ifare2.number_input(
                 "수하물 추가금",
                 min_value=0.0,
@@ -473,21 +489,7 @@ with tab_sheet2:
                 "T/A 1 PAX", min_value=0, value=0, key="ta1_pax"
             )
 
-            c_ta2_1, c_ta2_2 = st.columns(2)
-            ta2_net = c_ta2_1.number_input(
-                "T/A 2 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta2_net"
-            )
-            ta2_pax = c_ta2_2.number_input(
-                "T/A 2 PAX", min_value=0, value=0, key="ta2_pax"
-            )
-
-            c_ta3_1, c_ta3_2 = st.columns(2)
-            ta3_net = c_ta3_1.number_input(
-                "T/A 3 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta3_net"
-            )
-            ta3_pax = c_ta3_2.number_input(
-                "T/A 3 PAX", min_value=0, value=0, key="ta3_pax"
-            )
+            c_ta2_1, c_ta2_2 =
 
         # 3️⃣ Option 2: 그룹 블록 유지 조건 (사용자 지정 요청 인원 추가)
         with st.expander(
