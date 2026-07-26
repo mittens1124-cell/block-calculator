@@ -76,39 +76,45 @@ st.markdown(
 
 st.title("✈️ 베트남 노선 그룹 블록 손익 판단 시뮬레이터")
 def comma_stepper(label, key, step=10000.0, min_value=0.0):
-    """➖ / ➕ 버튼 + 콤마(,) 표시가 되는 숫자 입력 위젯"""
-    if key not in st.session_state:
-        st.session_state[key] = 0.0
+    """➖ / ➕ 버튼 + 콤마(,) 표시 + 직접 타이핑 입력이 모두 가능한 숫자 입력 위젯"""
+    str_key = f"{key}_str"
+    if str_key not in st.session_state:
+        st.session_state[str_key] = "0"
+
+    def _get_val():
+        raw = "".join(ch for ch in st.session_state[str_key] if ch.isdigit())
+        return float(raw) if raw else 0.0
+
+    def _set_val(v):
+        v = max(min_value, v)
+        st.session_state[str_key] = f"{v:,.0f}"
+
+    def _sync_from_text():
+        # 사용자가 직접 입력한 값에 콤마를 자동으로 붙여줌
+        _set_val(_get_val())
 
     def _decrease():
-        st.session_state[key] = max(min_value, st.session_state[key] - step)
+        _set_val(_get_val() - step)
 
     def _increase():
-        st.session_state[key] = st.session_state[key] + step
+        _set_val(_get_val() + step)
 
-    st.caption(label)
     v_col, minus_col, plus_col = st.columns([3, 1, 1])
     with v_col:
-        st.markdown(
-            f"""
-            <div style="
-                background-color:#f1f3f5;
-                border:1px solid #ced4da;
-                border-radius:6px;
-                padding:9px 12px;
-                text-align:right;
-                font-weight:bold;
-                font-size:15px;
-            ">{st.session_state[key]:,.0f}</div>
-            """,
-            unsafe_allow_html=True,
+        st.text_input(
+            label,
+            key=str_key,
+            on_change=_sync_from_text,
+            placeholder="0",
         )
     with minus_col:
+        st.write("")
         st.button("➖", key=f"{key}_minus_btn", on_click=_decrease, use_container_width=True)
     with plus_col:
+        st.write("")
         st.button("➕", key=f"{key}_plus_btn", on_click=_increase, use_container_width=True)
 
-    return st.session_state[key]
+    return _get_val()
 st.caption(
     "상단 탭을 통해 DEPO 전 시뮬레이션과 DEPO 후 (GV10 미만) 손익 계산을"
     " 손쉽게 전환하여 확인하세요."
