@@ -156,20 +156,34 @@ with tab_sheet1:
                 season_name1 = "건기 시즌" if is_dry1 else "우기 시즌"
                 season_desc1 = "정규 건기/우기 스케줄에 맞춰 대응하세요."
 
-  # 3️⃣ 실모객 및 판매가 설정 (초기값 0)
+ # 3️⃣ 실모객 및 판매가 설정 (초기값 0)
         with st.expander("3️⃣ 실모객 및 판매가 설정", expanded=True):
             pax1 = st.number_input(
                 "실모객 인원 (PAX)", min_value=0, value=0, step=1, key="pre_pax"
             )
-            selling_price1 = st.number_input(
+
+            # 💡 입력 중 자동으로 콤마(,)가 붙는 판매가 입력 필드
+            def _format_price_with_commas(key):
+                raw = st.session_state[key]
+                digits = "".join(ch for ch in raw if ch.isdigit())
+                st.session_state[key] = f"{int(digits):,}" if digits else ""
+
+            if "pre_price_str" not in st.session_state:
+                st.session_state["pre_price_str"] = ""
+
+            st.text_input(
                 "1인당 판매가 (KRW)",
-                min_value=0,
-                value=0,
-                step=10000,
-                key="pre_price_v2",
+                key="pre_price_str",
+                on_change=_format_price_with_commas,
+                args=("pre_price_str",),
+                placeholder="예: 450,000",
             )
-            # 💡 +,- 버튼 클릭 및 숫자 입력 시 바로 밑에 천 단위 콤마 금액 표시
-            st.markdown(f"💰 **입력된 금액:** `{selling_price1:,.0f}원`")
+
+            selling_price1 = (
+                int(st.session_state["pre_price_str"].replace(",", ""))
+                if st.session_state["pre_price_str"]
+                else 0
+            )
                 
         # 4️⃣ INDV 발권 조건 (초기값 0)
         with st.expander("4️⃣ INDV 발권 조건", expanded=True):
