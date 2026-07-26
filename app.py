@@ -411,18 +411,32 @@ with tab_sheet2:
         st.subheader("📌 [DEPO 후] 시뮬레이션 조건 입력")
         st.caption("🔵 모든 단가 및 인원 항목은 기본값으로 설정되어 있습니다.")
 
-        # 1️⃣ DEPO 조건
+# 1️⃣ DEPO 조건
         with st.expander("1️⃣ DEPO 결제 현황", expanded=True):
             depo_pax = st.number_input(
                 "DEPO 전체 인원 (PAX)", min_value=0, value=0, key="dp_pax"
             )
-            depo_net = st.number_input(
+
+            def _format_depo_net_with_commas(key):
+                raw = st.session_state[key]
+                digits = "".join(ch for ch in raw if ch.isdigit())
+                st.session_state[key] = f"{int(digits):,}" if digits else ""
+
+            if "dp_net_str" not in st.session_state:
+                st.session_state["dp_net_str"] = ""
+
+            st.text_input(
                 "DEPO NET 단가 (KRW)",
-                min_value=0.0,
-                value=0.0,
-                step=1000.0,
-                format="%.0f",
-                key="dp_net",
+                key="dp_net_str",
+                on_change=_format_depo_net_with_commas,
+                args=("dp_net_str",),
+                placeholder="예: 800,000",
+            )
+
+            depo_net = (
+                float(st.session_state["dp_net_str"].replace(",", ""))
+                if st.session_state["dp_net_str"]
+                else 0.0
             )
 
         # 2️⃣ Option 1: INDV 발권 전환 조건 & T/A 판매 수입 입력
