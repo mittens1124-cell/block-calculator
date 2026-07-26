@@ -72,19 +72,15 @@ st.markdown(
 
     /* ================================================================
        [Option 1]의 comma_stepper 4개에만 적용
-       기능은 그대로 유지하고 값 / − / +를 60px 한 줄 안에 고정
+       외형은 유지하고 실제 버튼을 가로 열에 배치하여 − / + 클릭 기능 복구
        ================================================================ */
     [class*="st-key-opt1-stepper-"] {
-        position: relative !important;
         width: 100% !important;
         min-height: 90px !important;
-        height: 90px !important;
         margin: 0 0 1rem 0 !important;
         padding: 0 !important;
-        overflow: visible !important;
     }
 
-    /* 컨테이너 내부 기본 세로 간격 제거 */
     [class*="st-key-opt1-stepper-"] div[data-testid="stVerticalBlock"] {
         gap: 0 !important;
     }
@@ -99,15 +95,46 @@ st.markdown(
         font-weight: 400 !important;
     }
 
-    /* 입력창: 첨부 이미지와 같은 60px 높이 */
-    [class*="st-key-opt1-stepper-"] div[data-testid="stTextInput"] {
+    /* 값 입력창과 실제 − / + 버튼을 하나의 60px 행으로 구성 */
+    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"] {
         width: 100% !important;
+        height: 60px !important;
+        min-height: 60px !important;
+        gap: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background-color: #f0f2f6 !important;
+        border-radius: 10px !important;
+        overflow: hidden !important;
+        align-items: stretch !important;
+    }
+
+    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
+    > div[data-testid="stColumn"] {
         height: 60px !important;
         min-height: 60px !important;
         margin: 0 !important;
         padding: 0 !important;
     }
 
+    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
+    > div[data-testid="stColumn"]:first-child {
+        flex: 1 1 auto !important;
+        width: auto !important;
+        min-width: 0 !important;
+    }
+
+    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
+    > div[data-testid="stColumn"]:nth-child(2),
+    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
+    > div[data-testid="stColumn"]:nth-child(3) {
+        flex: 0 0 48px !important;
+        width: 48px !important;
+        min-width: 48px !important;
+        max-width: 48px !important;
+    }
+
+    [class*="st-key-opt1-stepper-"] div[data-testid="stTextInput"],
     [class*="st-key-opt1-stepper-"] div[data-testid="stTextInput"]
     div[data-baseweb="input"] {
         width: 100% !important;
@@ -115,12 +142,11 @@ st.markdown(
         min-height: 60px !important;
         margin: 0 !important;
         padding: 0 !important;
-        background-color: #f0f2f6 !important;
+        background: transparent !important;
         border: 0 !important;
-        border-radius: 10px !important;
+        border-radius: 0 !important;
         box-shadow: none !important;
         outline: none !important;
-        overflow: hidden !important;
     }
 
     [class*="st-key-opt1-stepper-"] div[data-testid="stTextInput"]
@@ -135,10 +161,10 @@ st.markdown(
         height: 60px !important;
         min-height: 60px !important;
         margin: 0 !important;
-        padding: 0 112px 0 18px !important;
+        padding: 0 12px 0 18px !important;
         background: transparent !important;
         border: 0 !important;
-        border-radius: 10px !important;
+        border-radius: 0 !important;
         box-shadow: none !important;
         outline: none !important;
         color: #31333f !important;
@@ -148,32 +174,8 @@ st.markdown(
         font-weight: 400 !important;
     }
 
-    /* − / + 위젯 자체를 입력창 오른쪽에 절대 배치하여 줄바꿈 방지
-       Streamlit number_input의 − / +와 같은 세로 위치로 맞춤 */
-    [class*="st-key-opt1-stepper-"] [class*="_minus_btn"],
-    [class*="st-key-opt1-stepper-"] [class*="_plus_btn"] {
-        position: absolute !important;
-        top: 14px !important;
-        z-index: 20 !important;
-        width: 48px !important;
-        min-width: 48px !important;
-        max-width: 48px !important;
-        height: 60px !important;
-        min-height: 60px !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-
-    [class*="st-key-opt1-stepper-"] [class*="_minus_btn"] {
-        right: 48px !important;
-    }
-
-    [class*="st-key-opt1-stepper-"] [class*="_plus_btn"] {
-        right: 0 !important;
-    }
-
-    [class*="st-key-opt1-stepper-"] [class*="_minus_btn"] div[data-testid="stButton"],
-    [class*="st-key-opt1-stepper-"] [class*="_plus_btn"] div[data-testid="stButton"] {
+    [class*="st-key-opt1-stepper-"] div[data-testid="stButton"],
+    [class*="st-key-opt1-stepper-"] div[data-testid="stButton"] > div {
         width: 48px !important;
         height: 60px !important;
         min-height: 60px !important;
@@ -181,8 +183,7 @@ st.markdown(
         padding: 0 !important;
     }
 
-    [class*="st-key-opt1-stepper-"] [class*="_minus_btn"] button,
-    [class*="st-key-opt1-stepper-"] [class*="_plus_btn"] button {
+    [class*="st-key-opt1-stepper-"] div[data-testid="stButton"] button {
         width: 48px !important;
         min-width: 48px !important;
         max-width: 48px !important;
@@ -199,10 +200,11 @@ st.markdown(
         font-size: 18px !important;
         line-height: 1 !important;
         font-weight: 700 !important;
+        cursor: pointer !important;
+        pointer-events: auto !important;
     }
 
-    [class*="st-key-opt1-stepper-"] [class*="_minus_btn"] button p,
-    [class*="st-key-opt1-stepper-"] [class*="_plus_btn"] button p {
+    [class*="st-key-opt1-stepper-"] div[data-testid="stButton"] button p {
         margin: 0 !important;
         padding: 0 !important;
         font-size: 18px !important;
@@ -210,25 +212,26 @@ st.markdown(
         font-weight: 700 !important;
     }
 
-    [class*="st-key-opt1-stepper-"] [class*="_minus_btn"] button,
-    [class*="st-key-opt1-stepper-"] [class*="_minus_btn"] button p {
+    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
+    > div[data-testid="stColumn"]:nth-child(2) button,
+    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
+    > div[data-testid="stColumn"]:nth-child(2) button p {
         color: #91939b !important;
     }
 
-    [class*="st-key-opt1-stepper-"] [class*="_plus_btn"] button,
-    [class*="st-key-opt1-stepper-"] [class*="_plus_btn"] button p {
+    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
+    > div[data-testid="stColumn"]:nth-child(3) button,
+    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
+    > div[data-testid="stColumn"]:nth-child(3) button p {
         color: #31333f !important;
     }
 
-    [class*="st-key-opt1-stepper-"] [class*="_minus_btn"] button:hover,
-    [class*="st-key-opt1-stepper-"] [class*="_plus_btn"] button:hover {
+    [class*="st-key-opt1-stepper-"] div[data-testid="stButton"] button:hover {
         background-color: #e9ecf1 !important;
     }
 
-    [class*="st-key-opt1-stepper-"] [class*="_minus_btn"] button:focus,
-    [class*="st-key-opt1-stepper-"] [class*="_minus_btn"] button:active,
-    [class*="st-key-opt1-stepper-"] [class*="_plus_btn"] button:focus,
-    [class*="st-key-opt1-stepper-"] [class*="_plus_btn"] button:active {
+    [class*="st-key-opt1-stepper-"] div[data-testid="stButton"] button:focus,
+    [class*="st-key-opt1-stepper-"] div[data-testid="stButton"] button:active {
         background-color: #e4e7ec !important;
         border: 0 !important;
         box-shadow: none !important;
@@ -247,7 +250,7 @@ def comma_stepper(label, key, step=10000.0, min_value=0.0):
         st.session_state[str_key] = "0"
 
     def _get_val():
-        raw = "".join(ch for ch in st.session_state[str_key] if ch.isdigit())
+        raw = "".join(ch for ch in str(st.session_state.get(str_key, "0")) if ch.isdigit())
         return float(raw) if raw else 0.0
 
     def _set_val(v):
@@ -255,7 +258,6 @@ def comma_stepper(label, key, step=10000.0, min_value=0.0):
         st.session_state[str_key] = f"{v:,.0f}"
 
     def _sync_from_text():
-        # 사용자가 직접 입력한 값에 콤마를 자동으로 붙여줌
         _set_val(_get_val())
 
     def _decrease():
@@ -264,29 +266,36 @@ def comma_stepper(label, key, step=10000.0, min_value=0.0):
     def _increase():
         _set_val(_get_val() + step)
 
-    # 기능은 그대로 두고, CSS로 − / + 버튼을 입력창 안쪽 오른편에 한 줄 배치
+    # 실제 Streamlit 버튼을 가로 열에 배치하여 기존 − / + 증감 기능을 복구
     with st.container(key=f"opt1-stepper-{key}"):
         st.markdown(
             f'<div class="opt1-stepper-label">{label}</div>',
             unsafe_allow_html=True,
         )
-        st.text_input(
-            label,
-            key=str_key,
-            on_change=_sync_from_text,
-            placeholder="0",
-            label_visibility="collapsed",
-        )
-        st.button(
-            "−",
-            key=f"{key}_minus_btn",
-            on_click=_decrease,
-        )
-        st.button(
-            "+",
-            key=f"{key}_plus_btn",
-            on_click=_increase,
-        )
+
+        value_col, minus_col, plus_col = st.columns([6, 1, 1], gap="small")
+        with value_col:
+            st.text_input(
+                label,
+                key=str_key,
+                on_change=_sync_from_text,
+                placeholder="0",
+                label_visibility="collapsed",
+            )
+        with minus_col:
+            st.button(
+                "−",
+                key=f"{key}_minus_btn",
+                on_click=_decrease,
+                use_container_width=True,
+            )
+        with plus_col:
+            st.button(
+                "+",
+                key=f"{key}_plus_btn",
+                on_click=_increase,
+                use_container_width=True,
+            )
 
     return _get_val()
 
