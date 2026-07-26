@@ -69,236 +69,12 @@ st.markdown(
         background-color: #02b350;
         color: white !important;
     }
-
-    /* ================================================================
-       [Option 1]의 comma_stepper 4개에만 적용
-       외형은 유지하고 실제 버튼을 가로 열에 배치하여 − / + 클릭 기능 복구
-       ================================================================ */
-    [class*="st-key-opt1-stepper-"] {
-        width: 100% !important;
-        min-height: 90px !important;
-        margin: 0 0 1rem 0 !important;
-        padding: 0 !important;
-    }
-
-    [class*="st-key-opt1-stepper-"] div[data-testid="stVerticalBlock"] {
-        gap: 0 !important;
-    }
-
-    [class*="st-key-opt1-stepper-"] .opt1-stepper-label {
-        height: 30px !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        color: #31333f !important;
-        font-size: 14px !important;
-        line-height: 24px !important;
-        font-weight: 400 !important;
-    }
-
-    /* 값 입력창과 실제 − / + 버튼을 하나의 60px 행으로 구성 */
-    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"] {
-        width: 100% !important;
-        height: 60px !important;
-        min-height: 60px !important;
-        gap: 0 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        background-color: #f0f2f6 !important;
-        border-radius: 10px !important;
-        overflow: hidden !important;
-        align-items: stretch !important;
-    }
-
-    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
-    > div[data-testid="stColumn"] {
-        height: 60px !important;
-        min-height: 60px !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-
-    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
-    > div[data-testid="stColumn"]:first-child {
-        flex: 1 1 auto !important;
-        width: auto !important;
-        min-width: 0 !important;
-    }
-
-    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
-    > div[data-testid="stColumn"]:nth-child(2),
-    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
-    > div[data-testid="stColumn"]:nth-child(3) {
-        flex: 0 0 48px !important;
-        width: 48px !important;
-        min-width: 48px !important;
-        max-width: 48px !important;
-    }
-
-    [class*="st-key-opt1-stepper-"] div[data-testid="stTextInput"],
-    [class*="st-key-opt1-stepper-"] div[data-testid="stTextInput"]
-    div[data-baseweb="input"] {
-        width: 100% !important;
-        height: 60px !important;
-        min-height: 60px !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        background: transparent !important;
-        border: 0 !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        outline: none !important;
-    }
-
-    [class*="st-key-opt1-stepper-"] div[data-testid="stTextInput"]
-    div[data-baseweb="input"]:focus-within {
-        border: 0 !important;
-        box-shadow: none !important;
-        outline: none !important;
-    }
-
-    [class*="st-key-opt1-stepper-"] div[data-testid="stTextInput"] input {
-        width: 100% !important;
-        height: 60px !important;
-        min-height: 60px !important;
-        margin: 0 !important;
-        padding: 0 12px 0 18px !important;
-        background: transparent !important;
-        border: 0 !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        outline: none !important;
-        color: #31333f !important;
-        -webkit-text-fill-color: #31333f !important;
-        font-size: 18px !important;
-        line-height: 60px !important;
-        font-weight: 400 !important;
-    }
-
-    [class*="st-key-opt1-stepper-"] div[data-testid="stButton"],
-    [class*="st-key-opt1-stepper-"] div[data-testid="stButton"] > div {
-        width: 48px !important;
-        height: 60px !important;
-        min-height: 60px !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-
-    [class*="st-key-opt1-stepper-"] div[data-testid="stButton"] button {
-        width: 48px !important;
-        min-width: 48px !important;
-        max-width: 48px !important;
-        height: 60px !important;
-        min-height: 60px !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        background: transparent !important;
-        background-color: transparent !important;
-        border: 0 !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        outline: none !important;
-        font-size: 18px !important;
-        line-height: 1 !important;
-        font-weight: 700 !important;
-        cursor: pointer !important;
-        pointer-events: auto !important;
-    }
-
-    [class*="st-key-opt1-stepper-"] div[data-testid="stButton"] button p {
-        margin: 0 !important;
-        padding: 0 !important;
-        font-size: 18px !important;
-        line-height: 1 !important;
-        font-weight: 700 !important;
-    }
-
-    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
-    > div[data-testid="stColumn"]:nth-child(2) button,
-    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
-    > div[data-testid="stColumn"]:nth-child(2) button p {
-        color: #91939b !important;
-    }
-
-    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
-    > div[data-testid="stColumn"]:nth-child(3) button,
-    [class*="st-key-opt1-stepper-"] div[data-testid="stHorizontalBlock"]
-    > div[data-testid="stColumn"]:nth-child(3) button p {
-        color: #31333f !important;
-    }
-
-    [class*="st-key-opt1-stepper-"] div[data-testid="stButton"] button:hover {
-        background-color: #e9ecf1 !important;
-    }
-
-    [class*="st-key-opt1-stepper-"] div[data-testid="stButton"] button:focus,
-    [class*="st-key-opt1-stepper-"] div[data-testid="stButton"] button:active {
-        background-color: #e4e7ec !important;
-        border: 0 !important;
-        box-shadow: none !important;
-        outline: none !important;
-    }
     </style>
 """,
     unsafe_allow_html=True,
 )
 
 st.title("✈️ 베트남 노선 그룹 블록 손익 판단 시뮬레이터")
-def comma_stepper(label, key, step=10000.0, min_value=0.0):
-    """− / + 버튼, 콤마 표시, 직접 입력 기능을 유지한 Option 1 전용 숫자 입력 위젯"""
-    str_key = f"{key}_str"
-    if str_key not in st.session_state:
-        st.session_state[str_key] = "0"
-
-    def _get_val():
-        raw = "".join(ch for ch in str(st.session_state.get(str_key, "0")) if ch.isdigit())
-        return float(raw) if raw else 0.0
-
-    def _set_val(v):
-        v = max(min_value, v)
-        st.session_state[str_key] = f"{v:,.0f}"
-
-    def _sync_from_text():
-        _set_val(_get_val())
-
-    def _decrease():
-        _set_val(_get_val() - step)
-
-    def _increase():
-        _set_val(_get_val() + step)
-
-    # 실제 Streamlit 버튼을 가로 열에 배치하여 기존 − / + 증감 기능을 복구
-    with st.container(key=f"opt1-stepper-{key}"):
-        st.markdown(
-            f'<div class="opt1-stepper-label">{label}</div>',
-            unsafe_allow_html=True,
-        )
-
-        value_col, minus_col, plus_col = st.columns([6, 1, 1], gap="small")
-        with value_col:
-            st.text_input(
-                label,
-                key=str_key,
-                on_change=_sync_from_text,
-                placeholder="0",
-                label_visibility="collapsed",
-            )
-        with minus_col:
-            st.button(
-                "−",
-                key=f"{key}_minus_btn",
-                on_click=_decrease,
-                use_container_width=True,
-            )
-        with plus_col:
-            st.button(
-                "+",
-                key=f"{key}_plus_btn",
-                on_click=_increase,
-                use_container_width=True,
-            )
-
-    return _get_val()
-
 st.caption(
     "상단 탭을 통해 DEPO 전 시뮬레이션과 DEPO 후 (GV10 미만) 손익 계산을"
     " 손쉽게 전환하여 확인하세요."
@@ -666,8 +442,14 @@ with tab_sheet2:
         # 2️⃣ Option 1: INDV 발권 전환 조건 & T/A 판매 수입 입력
         with st.expander("2️⃣ [Option 1] INDV 발권 전환 시 조건", expanded=True):
             c_ifare1, c_ifare2, c_ifare3 = st.columns(3)
-            with c_ifare1:
-                indv_fare = comma_stepper("1인당 NET FARE", key="post_ifare_val", step=10000.0)
+            indv_fare = c_ifare1.number_input(
+                "1인당 NET FARE",
+                min_value=0.0,
+                value=0.0,
+                step=10000.0,
+                format="%.0f",
+                key="post_ifare",
+            )
             indv_baggage = c_ifare2.number_input(
                 "수하물 추가금",
                 min_value=0.0,
@@ -684,25 +466,29 @@ with tab_sheet2:
             st.caption("🛍️ **T/A (여행사) 판매 수입**")
 
             c_ta1_1, c_ta1_2 = st.columns(2)
-            with c_ta1_1:
-                ta1_net = comma_stepper("T/A 1 단가", key="ta1_net_val", step=10000.0)
+            ta1_net = c_ta1_1.number_input(
+                "T/A 1 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta1_net"
+            )
             ta1_pax = c_ta1_2.number_input(
                 "T/A 1 PAX", min_value=0, value=0, key="ta1_pax"
             )
 
             c_ta2_1, c_ta2_2 = st.columns(2)
-            with c_ta2_1:
-                ta2_net = comma_stepper("T/A 2 단가", key="ta2_net_val", step=10000.0)
+            ta2_net = c_ta2_1.number_input(
+                "T/A 2 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta2_net"
+            )
             ta2_pax = c_ta2_2.number_input(
                 "T/A 2 PAX", min_value=0, value=0, key="ta2_pax"
             )
 
             c_ta3_1, c_ta3_2 = st.columns(2)
-            with c_ta3_1:
-                ta3_net = comma_stepper("T/A 3 단가", key="ta3_net_val", step=10000.0)
+            ta3_net = c_ta3_1.number_input(
+                "T/A 3 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta3_net"
+            )
             ta3_pax = c_ta3_2.number_input(
                 "T/A 3 PAX", min_value=0, value=0, key="ta3_pax"
             )
+
         # 3️⃣ Option 2: 그룹 블록 유지 조건 (사용자 지정 요청 인원 추가)
         with st.expander(
             "3️⃣ [Option 2] 그룹 블록 유지 시 조건", expanded=True
