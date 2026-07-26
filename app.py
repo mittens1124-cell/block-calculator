@@ -74,42 +74,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
-# --------------------------------------------------------------------------
-# 💰 콤마(,) 자동 표시 + -/+ 버튼(step 단위 증감) 숫자 입력 헬퍼 함수
-# --------------------------------------------------------------------------
-def comma_input(label, key, step=10000):
-    """콤마(,) 자동 표시 + -/+ 버튼(step 단위 증감) 숫자 입력 위젯"""
-    if key not in st.session_state:
-        st.session_state[key] = 0
-
-    def _apply_text():
-        raw = st.session_state[f"{key}_txt"]
-        digits = "".join(ch for ch in raw if ch.isdigit())
-        st.session_state[key] = int(digits) if digits else 0
-
-    col_txt, col_minus, col_plus = st.columns([6, 1, 1])
-    with col_txt:
-        st.text_input(
-            label,
-            value=f"{st.session_state[key]:,}",
-            key=f"{key}_txt",
-            on_change=_apply_text,
-        )
-    with col_minus:
-        st.write("")
-        if st.button("−", key=f"{key}_m"):
-            st.session_state[key] = max(0, st.session_state[key] - step)
-            st.rerun()
-    with col_plus:
-        st.write("")
-        if st.button("+", key=f"{key}_p"):
-            st.session_state[key] = st.session_state[key] + step
-            st.rerun()
-
-    return float(st.session_state[key])
-
-
 st.title("✈️ 베트남 노선 그룹 블록 손익 판단 시뮬레이터")
 st.caption(
     "상단 탭을 통해 DEPO 전 시뮬레이션과 DEPO 후 (GV10 미만) 손익 계산을"
@@ -192,20 +156,85 @@ with tab_sheet1:
                 season_name1 = "건기 시즌" if is_dry1 else "우기 시즌"
                 season_desc1 = "정규 건기/우기 스케줄에 맞춰 대응하세요."
 
-        # 3️⃣ 실모객 및 판매가 설정 (초기값 0)
+ # 3️⃣ 실모객 및 판매가 설정 (초기값 0)
         with st.expander("3️⃣ 실모객 및 판매가 설정", expanded=True):
             pax1 = st.number_input(
                 "실모객 인원 (PAX)", min_value=0, value=0, step=1, key="pre_pax"
             )
-            selling_price1 = comma_input("1인당 판매가 (KRW)", key="pre_price1", step=10000)
 
-        # 4️⃣ INDV 발권 조건 (초기값 0)
+            # 💡 입력 중 자동으로 콤마(,)가 붙는 판매가 입력 필드
+            def _format_price_with_commas(key):
+                raw = st.session_state[key]
+                digits = "".join(ch for ch in raw if ch.isdigit())
+                st.session_state[key] = f"{int(digits):,}" if digits else ""
+
+            if "pre_price_str" not in st.session_state:
+                st.session_state["pre_price_str"] = ""
+
+            st.text_input(
+                "1인당 판매가 (KRW)",
+                key="pre_price_str",
+                on_change=_format_price_with_commas,
+                args=("pre_price_str",),
+                placeholder="예: 450,000",
+            )
+
+            selling_price1 = (
+                int(st.session_state["pre_price_str"].replace(",", ""))
+                if st.session_state["pre_price_str"]
+                else 0
+            )
+                
+# 4️⃣ INDV 발권 조건 (초기값 0)
         with st.expander("4️⃣ INDV 발권 조건", expanded=True):
-            indiv_net1 = comma_input("INDV 1인당 NET FARE (KRW)", key="inet1", step=10000)
 
-        # 5️⃣ DEPO 그룹 조건 (초기값 0)
+            def _format_indiv_net_with_commas(key):
+                raw = st.session_state[key]
+                digits = "".join(ch for ch in raw if ch.isdigit())
+                st.session_state[key] = f"{int(digits):,}" if digits else ""
+
+            if "inet1_str" not in st.session_state:
+                st.session_state["inet1_str"] = ""
+
+            st.text_input(
+                "INDV 1인당 NET FARE (KRW)",
+                key="inet1_str",
+                on_change=_format_indiv_net_with_commas,
+                args=("inet1_str",),
+                placeholder="예: 1,500,000",
+            )
+
+            indiv_net1 = (
+                float(st.session_state["inet1_str"].replace(",", ""))
+                if st.session_state["inet1_str"]
+                else 0.0
+            )
+
+   # 5️⃣ DEPO 그룹 조건 (초기값 0)
         with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
-            group_net1 = comma_input("그룹 1인당 NET FARE (KRW)", key="gnet1", step=10000)
+
+            def _format_group_net_with_commas(key):
+                raw = st.session_state[key]
+                digits = "".join(ch for ch in raw if ch.isdigit())
+                st.session_state[key] = f"{int(digits):,}" if digits else ""
+
+            if "gnet1_str" not in st.session_state:
+                st.session_state["gnet1_str"] = ""
+
+            st.text_input(
+                "그룹 1인당 NET FARE (KRW)",
+                key="gnet1_str",
+                on_change=_format_group_net_with_commas,
+                args=("gnet1_str",),
+                placeholder="예: 1,200,000",
+            )
+
+            group_net1 = (
+                float(st.session_state["gnet1_str"].replace(",", ""))
+                if st.session_state["gnet1_str"]
+                else 0.0
+            )
+
             depo_seats1 = st.number_input(
                 "DEPO 유지/보장 좌석 수",
                 min_value=0,
@@ -382,18 +411,45 @@ with tab_sheet2:
         st.subheader("📌 [DEPO 후] 시뮬레이션 조건 입력")
         st.caption("🔵 모든 단가 및 인원 항목은 기본값으로 설정되어 있습니다.")
 
-        # 1️⃣ DEPO 조건
+# 1️⃣ DEPO 조건
         with st.expander("1️⃣ DEPO 결제 현황", expanded=True):
             depo_pax = st.number_input(
                 "DEPO 전체 인원 (PAX)", min_value=0, value=0, key="dp_pax"
             )
-            depo_net = comma_input("DEPO NET 단가 (KRW)", key="dp_net", step=10000)
+
+            def _format_depo_net_with_commas(key):
+                raw = st.session_state[key]
+                digits = "".join(ch for ch in raw if ch.isdigit())
+                st.session_state[key] = f"{int(digits):,}" if digits else ""
+
+            if "dp_net_str" not in st.session_state:
+                st.session_state["dp_net_str"] = ""
+
+            st.text_input(
+                "DEPO NET 단가 (KRW)",
+                key="dp_net_str",
+                on_change=_format_depo_net_with_commas,
+                args=("dp_net_str",),
+                placeholder="예: 800,000",
+            )
+
+            depo_net = (
+                float(st.session_state["dp_net_str"].replace(",", ""))
+                if st.session_state["dp_net_str"]
+                else 0.0
+            )
 
         # 2️⃣ Option 1: INDV 발권 전환 조건 & T/A 판매 수입 입력
         with st.expander("2️⃣ [Option 1] INDV 발권 전환 시 조건", expanded=True):
             c_ifare1, c_ifare2, c_ifare3 = st.columns(3)
-            with c_ifare1:
-                indv_fare = comma_input("1인당 NET FARE", key="post_ifare", step=10000)
+            indv_fare = c_ifare1.number_input(
+                "1인당 NET FARE",
+                min_value=0.0,
+                value=0.0,
+                step=10000.0,
+                format="%.0f",
+                key="post_ifare",
+            )
             indv_baggage = c_ifare2.number_input(
                 "수하물 추가금",
                 min_value=0.0,
@@ -410,22 +466,25 @@ with tab_sheet2:
             st.caption("🛍️ **T/A (여행사) 판매 수입**")
 
             c_ta1_1, c_ta1_2 = st.columns(2)
-            with c_ta1_1:
-                ta1_net = comma_input("T/A 1 단가", key="ta1_net", step=10000)
+            ta1_net = c_ta1_1.number_input(
+                "T/A 1 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta1_net"
+            )
             ta1_pax = c_ta1_2.number_input(
                 "T/A 1 PAX", min_value=0, value=0, key="ta1_pax"
             )
 
             c_ta2_1, c_ta2_2 = st.columns(2)
-            with c_ta2_1:
-                ta2_net = comma_input("T/A 2 단가", key="ta2_net", step=10000)
+            ta2_net = c_ta2_1.number_input(
+                "T/A 2 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta2_net"
+            )
             ta2_pax = c_ta2_2.number_input(
                 "T/A 2 PAX", min_value=0, value=0, key="ta2_pax"
             )
 
             c_ta3_1, c_ta3_2 = st.columns(2)
-            with c_ta3_1:
-                ta3_net = comma_input("T/A 3 단가", key="ta3_net", step=10000)
+            ta3_net = c_ta3_1.number_input(
+                "T/A 3 단가", min_value=0.0, value=0.0, step=10000.0, format="%.0f", key="ta3_net"
+            )
             ta3_pax = c_ta3_2.number_input(
                 "T/A 3 PAX", min_value=0, value=0, key="ta3_pax"
             )
