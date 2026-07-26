@@ -210,16 +210,31 @@ with tab_sheet1:
                 else 0.0
             )
 
-        # 5️⃣ DEPO 그룹 조건 (초기값 0)
+   # 5️⃣ DEPO 그룹 조건 (초기값 0)
         with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
-            group_net1 = st.number_input(
+
+            def _format_group_net_with_commas(key):
+                raw = st.session_state[key]
+                digits = "".join(ch for ch in raw if ch.isdigit())
+                st.session_state[key] = f"{int(digits):,}" if digits else ""
+
+            if "gnet1_str" not in st.session_state:
+                st.session_state["gnet1_str"] = ""
+
+            st.text_input(
                 "그룹 1인당 NET FARE (KRW)",
-                min_value=0.0,
-                value=0.0,
-                step=10000.0,
-                format="%.0f",
-                key="gnet1",
+                key="gnet1_str",
+                on_change=_format_group_net_with_commas,
+                args=("gnet1_str",),
+                placeholder="예: 1,200,000",
             )
+
+            group_net1 = (
+                float(st.session_state["gnet1_str"].replace(",", ""))
+                if st.session_state["gnet1_str"]
+                else 0.0
+            )
+
             depo_seats1 = st.number_input(
                 "DEPO 유지/보장 좌석 수",
                 min_value=0,
