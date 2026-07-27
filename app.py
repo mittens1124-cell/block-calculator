@@ -6,7 +6,7 @@ import streamlit.components.v1 as components
 
 # 1. 페이지 설정
 st.set_page_config(
-    page_title="베트남 노선 DEPO 전/후 통합 손익 판단 시뮬레이터",
+    page_title="VJ 블록 노선 DEPO 전/후 통합 손익 판단 시뮬레이터",
     page_icon="✈️",
     layout="wide",
 )
