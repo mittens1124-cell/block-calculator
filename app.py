@@ -250,9 +250,11 @@ st.caption("[상단 탭] - [DEPO 전/후 손익] 시뮬레이션 및 분석")
 st.divider()
 
 # --------------------------------------------------------------------------
-# 📁 시트 탭 구성 (DEPO 전 단독 구성)
+# 📁 시트 탭 구성 (선언)
 # --------------------------------------------------------------------------
-tab_sheet1 = st.tabs(["📋 DEPO 전 시뮬레이터"])[0]
+tab_sheet1, tab_sheet2 = st.tabs(
+    ["📋 DEPO 전 시뮬레이터", "📦 DEPO 후 (GV10 미만) 시뮬레이터"]
+)
 
 # ==========================================================================
 # 📋 [1번 탭] DEPO 전 시뮬레이터
@@ -473,7 +475,9 @@ with tab_sheet1:
     group_prof1 = group_rev1 - group_cost1
 
     bep_pax1 = (
-        int(group_cost1 / selling_price1) if selling_price1 > 0 else 0
+        int(group_cost1 / selling_price1)
+        if selling_price1 > 0
+        else 0
     )
 
     # ----------------------------------------------------------------------
@@ -544,7 +548,9 @@ with tab_sheet1:
             )
 
             st.markdown("---")
-            st.subheader(f"🗺️ [{route_code1} 노선] 기후 및 달력 특성")
+            st.subheader(
+                f"🗺️ [{route_code1} 노선] 기후 및 달력 특성"
+            )
 
             col_d1, col_d2 = st.columns(2)
             with col_d1:
@@ -595,47 +601,49 @@ with tab_sheet1:
                 )
 
     # ----------------------------------------------------------------------
-    # 🤖 [1번 탭 단독] AI 종합 전략 리포트
+    # 🤖 [1번 탭 전용] AI 종합 전략 리포트 (Comment)
     # ----------------------------------------------------------------------
     st.markdown("---")
     st.subheader("💬 AI 종합 전략 리포트 (Comment)")
 
     if pax1 == 0 and depo_seats1 == 0:
-        st.info("💡 조건을 입력하시면 AI 분석 리포트가 생성됩니다.")
+        st.info("💡 조건을 입력하시면 1번 탭 전용 AI 분석 리포트가 생성됩니다.")
     else:
+        # 1번 탭의 변수들만 정확하게 연산에 사용
         diff_profit1 = abs(indiv_prof1 - group_prof1)
         shortage_pax1 = max(0, depo_seats1 - pax1)
 
         if indiv_prof1 > group_prof1:
-            st.success("### 🟢 AI 분석 의견: INDV 발권 전환 권장")
-            st.markdown(
+            st.success(f"### 🟢 AI 분석 의견: INDV 발권 전환 권장")
+            st.write(
                 f"**📈 손익 비교 분석**\n\n"
-                f"현재 INDV 발권 전환이 DEPO 그룹 유지보다 **약 {diff_profit1:,.0f}원** 유리합니다.\n\n"
-                f"**⚠️ 위험 요인**\n\n"
-                f"현재 미달 인원({shortage_pax1}명)을 모두 판매하지 못할 경우 추가 손실이 발생할 수 있습니다.\n\n"
-                f"**🔥 손익분기점 (BEP)**\n\n"
-                f"현재 판매가 기준 손익분기를 맞추기 위해서는 최소 **{bep_pax1}석** 판매가 필요합니다.\n\n"
-                f"**💡 액션 플랜**\n\n"
-                f"• **권장 방식**: {rec1}\n"
-                f"• **기후 특성**: {season_name1} - {season_desc1}\n"
-                f"• **운항일 특성**: {weekday_kr1} 운항 패턴 반영 모객 추천\n"
-                f"• 출발 직전까지 미달 좌석인 {shortage_pax1}석에 대한 추가 모객을 추진하세요."
+                f"현재 INDV 발권 전환이 DEPO 그룹 유지보다 **약 {diff_profit1:,.0f}원** 유리합니다."
             )
         else:
-            st.success("### 🟢 AI 분석 의견: DEPO 그룹 블록 유지 권장")
-            st.markdown(
+            st.success(f"### 🟢 AI 분석 의견: DEPO 그룹 블록 유지 권장")
+            st.write(
                 f"**📈 손익 비교 분석**\n\n"
-                f"현재 DEPO 그룹 유지가 INDV 전환보다 **약 {diff_profit1:,.0f}원** 유리합니다.\n\n"
-                f"**⚠️ 위험 요인**\n\n"
-                f"현재 미달 인원({shortage_pax1}명)을 모두 판매하지 못할 경우 추가 손실이 발생할 수 있습니다.\n\n"
-                f"**🔥 손익분기점 (BEP)**\n\n"
-                f"현재 판매가 기준 손익분기를 맞추기 위해서는 최소 **{bep_pax1}석** 판매가 필요합니다.\n\n"
-                f"**💡 액션 플랜**\n\n"
-                f"• **권장 방식**: {rec1}\n"
-                f"• **기후 특성**: {season_name1} - {season_desc1}\n"
-                f"• **운항일 특성**: {weekday_kr1} 운항 패턴 반영 모객 추천\n"
-                f"• 출발 직전까지 미달 좌석인 {shortage_pax1}석에 대한 추가 모객을 추진하세요."
+                f"현재 DEPO 그룹 유지가 INDV 전환보다 **약 {diff_profit1:,.0f}원** 유리합니다."
             )
+
+        st.write(
+            f"**⚠️ 위험 요인**\n\n"
+            f"현재 미달 인원({shortage_pax1}명)을 모두 판매하지 못할 경우 추가 손실이 발생할 수 있습니다."
+        )
+
+        st.write(
+            f"**🔥 손익분기점 (BEP)**\n\n"
+            f"현재 판매가 기준 그룹 손익분기를 맞추기 위해서는 최소 **{bep_pax1}석** 판매가 필요합니다."
+        )
+
+        st.write(
+            "**💡 액션 플랜**\n\n"
+            f"• **권장 방식**: {rec1}\n"
+            f"• **기후 특성**: {season_name1} - {season_desc1}\n"
+            f"• **운항일 특성**: {weekday_kr1} 운항 패턴 반영 모객 추천\n"
+            f"• 출발 직전까지 미달 좌석인 {shortage_pax1}석에 대한 추가 모객을 추진하세요."
+        )
+
 
 # ==========================================================================
 # 📦 [2번 탭] DEPO 후 시뮬레이터 (최소 판매 요청 인원 수동 입력 버전)
