@@ -396,7 +396,7 @@ with st.expander("4️⃣ INDV 발권 조건", expanded=True):
     )
 
    # 5️⃣ DEPO 그룹 조건 (초기값 0)
-   with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
+        with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
 
             def _format_group_net_with_commas(key):
                 raw = st.session_state[key]
