@@ -245,9 +245,7 @@ components.html(
 )
 
 st.title("✈️ VJ 블록 노선 손익 판단 시뮬레이터")
-st.caption(
-    "[상단 탭] - [DEPO 전/후 손익] 시뮬레이션 및 분석"
-)
+st.caption("[상단 탭] - [DEPO 전/후 손익] 시뮬레이션 및 분석")
 
 st.divider()
 
@@ -325,7 +323,7 @@ with tab_sheet1:
                 season_name1 = "건기 시즌" if is_dry1 else "우기 시즌"
                 season_desc1 = "정규 건기/우기 스케줄에 맞춰 대응하세요."
 
- # 3️⃣ 실모객 및 판매가 설정 (초기값 0)
+        # 3️⃣ 실모객 및 판매가 설정 (초기값 0)
         with st.expander("3️⃣ 실모객 및 판매가 설정", expanded=True):
             pax1 = st.number_input(
                 "실모객 인원 (PAX)", min_value=0, value=0, step=1, key="pre_pax"
@@ -353,50 +351,41 @@ with tab_sheet1:
                 if st.session_state["pre_price_str"]
                 else 0
             )
-                
-# 4️⃣ INDV 발권 조건 (초기값 0)
-with st.expander("4️⃣ INDV 발권 조건", expanded=True):
 
-    def _format_indiv_net_with_commas(key):
-        # 1. 입력값 가져오기
-        raw = str(st.session_state.get(key, ""))
-        
-        # 2. 숫자와 소수점(.)만 남기고 모두 제거
-        filtered = "".join(ch for ch in raw if ch.isdigit() or ch == ".")
-        
-        # 3. 소수점이 포함된 경우 처리
-        if "." in filtered:
-            parts = filtered.split(".")
-            integer_part = parts[0]
-            # 소수점 아래는 최대 2자리까지만
-            decimal_part = "".join(parts[1:])[:2]
-            
-            # 정수 부분 콤마 적용
-            formatted_int = f"{int(integer_part):,}" if integer_part else "0"
-            st.session_state[key] = f"{formatted_int}.{decimal_part}"
-        else:
-            # 정수만 있는 경우
-            st.session_state[key] = f"{int(filtered):,}" if filtered else ""
+        # 4️⃣ INDV 발권 조건 (초기값 0)
+        with st.expander("4️⃣ INDV 발권 조건", expanded=True):
 
-    if "inet1_str" not in st.session_state:
-        st.session_state["inet1_str"] = ""
+            def _format_indiv_net_with_commas(key):
+                raw = str(st.session_state.get(key, ""))
+                filtered = "".join(ch for ch in raw if ch.isdigit() or ch == ".")
+                if "." in filtered:
+                    parts = filtered.split(".")
+                    integer_part = parts[0]
+                    decimal_part = "".join(parts[1:])[:2]
+                    formatted_int = f"{int(integer_part):,}" if integer_part else "0"
+                    st.session_state[key] = f"{formatted_int}.{decimal_part}"
+                else:
+                    st.session_state[key] = f"{int(filtered):,}" if filtered else ""
 
-    st.text_input(
-        "INDV 1인당 NET FARE (KRW)",
-        key="inet1_str",
-        on_change=_format_indiv_net_with_commas,
-        args=("inet1_str",),
-        placeholder="예: 1,500,000.00",
-    )
+            if "inet1_str" not in st.session_state:
+                st.session_state["inet1_str"] = ""
 
-    indiv_net1 = (
-        float(st.session_state["inet1_str"].replace(",", ""))
-        if st.session_state["inet1_str"]
-        else 0.0
-    )
+            st.text_input(
+                "INDV 1인당 NET FARE (KRW)",
+                key="inet1_str",
+                on_change=_format_indiv_net_with_commas,
+                args=("inet1_str",),
+                placeholder="예: 1,500,000.00",
+            )
 
-   # 5️⃣ DEPO 그룹 조건 (초기값 0)
-with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
+            indiv_net1 = (
+                float(st.session_state["inet1_str"].replace(",", ""))
+                if st.session_state["inet1_str"]
+                else 0.0
+            )
+
+        # 5️⃣ DEPO 그룹 조건 (초기값 0)
+        with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
 
             def _format_group_net_with_commas(key):
                 raw = st.session_state[key]
@@ -430,7 +419,7 @@ with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
             )
 
     # 연산
-indiv_rev1 = pax1 * selling_price1
+    indiv_rev1 = pax1 * selling_price1
     indiv_cost1 = pax1 * indiv_net1
     indiv_prof1 = indiv_rev1 - indiv_cost1
 
@@ -556,59 +545,39 @@ indiv_rev1 = pax1 * selling_price1
             )
 
             if indiv_prof1 > group_prof1:
-                comment_text1 = f"""
-st.warning("### 🤖 AI 분석 의견: INDV 전환 강력 권장")
-
-st.markdown("#### 📈 손익분기점 분석")
-st.write(f"현재 실모객({pax1}명)은 손익분기점({bep_pax1:.1f}명) 미달입니다.")
-
-st.markdown("#### ⚠️ 위험 요인")
-st.write(f"DEPO 유지 시 손실이 {abs(group_prof1):,.0f}원 발생할 수 있습니다.")
-
-st.markdown("#### 💰 비용 절감 효과")
-st.write(f"INDV 전환 시 약 {saved1:,.0f}원의 비용을 절감할 수 있습니다.")
-
-st.markdown("#### 💡 액션 플랜")
-st.write("그룹 블록을 해제하고 INDV 발권을 진행하세요.")
-
-st.divider()
-
-st.markdown("#### 🌤️ 노선 기후")
-st.write(climate_comment1)
-
-st.markdown("#### 📅 공휴일 반영 전략")
-st.write(date_comment_str1)
-"""
-                st.warning(comment_text1)
+                st.warning("### 🤖 AI 분석 의견: INDV 전환 강력 권장")
+                st.markdown("#### 📈 손익분기점 분석")
+                st.write(f"현재 실모객({pax1}명)은 손익분기점({bep_pax1:.1f}명) 미달입니다.")
+                st.markdown("#### ⚠️ 위험 요인")
+                st.write(f"DEPO 유지 시 손실이 {abs(group_prof1):,.0f}원 발생할 수 있습니다.")
+                st.markdown("#### 💰 비용 절감 효과")
+                st.write(f"INDV 전환 시 약 {saved1:,.0f}원의 비용을 절감할 수 있습니다.")
+                st.markdown("#### 💡 액션 플랜")
+                st.write("그룹 블록을 해제하고 INDV 발권을 진행하세요.")
+                st.divider()
+                st.markdown("#### 🌤️ 노선 기후")
+                st.write(climate_comment1)
+                st.markdown("#### 📅 공휴일 반영 전략")
+                st.write(date_comment_str1)
             else:
-                comment_text1 = f"""
-st.success("### 🤖 AI 분석 의견: DEPO 유지 및 그룹 진행 권장")
-
-st.markdown("#### 📈 손익분기점 분석")
-st.write(
-    f"현재 실모객({pax1}명)은 손익분기점({bep_pax1:.1f}명) 이상이거나 INDV 운임이 높습니다."
-)
-
-st.markdown("#### ⚠️ 위험 요인")
-st.write(
-    f"{depo_seats1}석 전체 운임(-{group_cost1:,.0f}원)을 부담하더라도 그룹 유지가 더 유리합니다."
-)
-
-st.markdown("#### 💰 비용 절감 효과")
-st.write(f"INDV 전환 대비 약 {saved1:,.0f}원의 비용을 절감할 수 있습니다.")
-
-st.markdown("#### 💡 액션 플랜")
-st.write("DEPO를 납입하여 블록을 유지하고 D-10까지 추가 모객을 진행하세요.")
-
-st.divider()
-
-st.markdown("#### 🌤️ 노선 기후")
-st.write(climate_comment1)
-
-st.markdown("#### 📅 공휴일 반영 전략")
-st.write(date_comment_str1)
-"""
-                st.success(comment_text1)
+                st.success("### 🤖 AI 분석 의견: DEPO 유지 및 그룹 진행 권장")
+                st.markdown("#### 📈 손익분기점 분석")
+                st.write(
+                    f"현재 실모객({pax1}명)은 손익분기점({bep_pax1:.1f}명) 이상이거나 INDV 운임이 높습니다."
+                )
+                st.markdown("#### ⚠️ 위험 요인")
+                st.write(
+                    f"{depo_seats1}석 전체 운임(-{group_cost1:,.0f}원)을 부담하더라도 그룹 유지가 더 유리합니다."
+                )
+                st.markdown("#### 💰 비용 절감 효과")
+                st.write(f"INDV 전환 대비 약 {saved1:,.0f}원의 비용을 절감할 수 있습니다.")
+                st.markdown("#### 💡 액션 플랜")
+                st.write("DEPO를 납입하여 블록을 유지하고 D-10까지 추가 모객을 진행하세요.")
+                st.divider()
+                st.markdown("#### 🌤️ 노선 기후")
+                st.write(climate_comment1)
+                st.markdown("#### 📅 공휴일 반영 전략")
+                st.write(date_comment_str1)
 
 # ==========================================================================
 # 📦 [2번 탭] DEPO 후 시뮬레이터 (최소 판매 요청 인원 수동 입력 버전)
@@ -620,7 +589,7 @@ with tab_sheet2:
         st.subheader("📌 [DEPO 후] 시뮬레이션 조건 입력")
         st.caption("🔵 모든 단가 및 인원 항목은 기본값으로 설정되어 있습니다.")
 
-# 1️⃣ DEPO 조건
+        # 1️⃣ DEPO 조건
         with st.expander("1️⃣ DEPO 결제 현황", expanded=True):
             depo_pax = st.number_input(
                 "DEPO 전체 인원 (PAX)", min_value=0, value=0, key="dp_pax"
@@ -702,7 +671,6 @@ with tab_sheet2:
         with st.expander(
             "3️⃣ [Option 2] 그룹 블록 유지 시 조건", expanded=True
         ):
-            # ✏️ [신규 추가] 사용자가 직접 입력하는 판매 요청 인원
             req_pax = st.number_input(
                 "여행사 최소 판매 요청 인원 (PAX)",
                 min_value=0,
@@ -724,19 +692,15 @@ with tab_sheet2:
     # ----------------------------------------------------------------------
     # 🧮 연산 수식
     # ----------------------------------------------------------------------
-    # DEPO 20% 단가
     depo_per_pax = depo_net * 0.20
     depo_total_entry = depo_per_pax * depo_pax
 
-    # T/A 수입 합계
     ta1_ttl = ta1_net * ta1_pax
     ta2_ttl = ta2_net * ta2_pax
     ta3_ttl = ta3_net * ta3_pax
     ta_total_revenue = ta1_ttl + ta2_ttl + ta3_ttl
 
-    # ======================================================================
-    # 🎯 구간별 환불 가능 인원 판정
-    # ======================================================================
+    # 구간별 환불 가능 인원 판정
     if depo_pax >= 35:
         depo_refund_pax = 4
     elif depo_pax >= 25:
@@ -750,9 +714,7 @@ with tab_sheet2:
 
     depo_refund_amount = depo_refund_pax * depo_per_pax
 
-    # ======================================================================
-    # 🔵 [Option 1 연산] - INDV 전환
-    # ======================================================================
+    # Option 1 연산 - INDV 전환
     opt1_refund_pax = depo_refund_pax
     opt1_refund_amount = depo_refund_amount
     depo_loss_a = depo_total_entry - opt1_refund_amount
@@ -763,9 +725,7 @@ with tab_sheet2:
 
     path_a_net_profit = ta_total_revenue - indv_plus_depo_cost
 
-    # ======================================================================
-    # 🟢 [Option 2 연산] - 그룹 블록 유지
-    # ======================================================================
+    # Option 2 연산 - 그룹 블록 유지
     gv10_pax = 10
     gv10_total_amount = gv10_pax * depo_net
 
@@ -776,13 +736,9 @@ with tab_sheet2:
     
     depo_non_refund_amount = depo_non_refund_pax * depo_per_pax
 
-    # F/P TTL = GV10 원가 - DEPO 환불금 + DEPO 환불불가금
     fp_ttl = gv10_total_amount - depo_refund_amount + depo_non_refund_amount
-
-    # TTL 손익
     path_b_ttl_profit = ta_total_revenue - fp_ttl
 
-    # ✏️ [수정] 사용자가 직접 입력한 req_pax 기준 1인당 최소 판매 요청 금액 산출
     if req_pax > 0:
         min_selling_price_b = (
             abs(path_b_ttl_profit) / req_pax
@@ -792,9 +748,6 @@ with tab_sheet2:
     else:
         min_selling_price_b = 0.0
 
-    # ----------------------------------------------------------------------
-    # 🎨 데이터프레임 조건부 스타일링 함수 (손익 색상)
-    # ----------------------------------------------------------------------
     def style_dataframe(df):
         def color_cells(val):
             if isinstance(val, str):
@@ -806,9 +759,7 @@ with tab_sheet2:
 
         return df.style.map(color_cells)
 
-    # ----------------------------------------------------------------------
-    # 📊 결과 출력
-    # ----------------------------------------------------------------------
+    # 결과 출력
     with col_result2:
         st.subheader("📊 DEPO 후 최종 의사결정 시뮬레이션")
 
@@ -817,7 +768,6 @@ with tab_sheet2:
                 "👈 왼쪽 입력창에서 **DEPO 인원 및 조건**을 입력해주시면 시뮬레이션 비교 결과가 표시됩니다."
             )
         else:
-            # 추천 조건 비교
             if path_a_net_profit > path_b_ttl_profit:
                 st.success(
                     "💡 **시뮬레이션 추천: [Option 1] INDV 발권 전환 유효**\n\n"
@@ -834,9 +784,7 @@ with tab_sheet2:
 
             st.markdown("---")
 
-            # ==================================================================
             # 1️⃣ [Option 1] 결과 출력
-            # ==================================================================
             st.markdown("##### 1️⃣ [Option 1] INDV 발권 전환 손익표")
 
             summary_val_str1 = f"+{path_a_net_profit:,.0f} 원" if path_a_net_profit > 0 else f"{path_a_net_profit:,.0f} 원"
