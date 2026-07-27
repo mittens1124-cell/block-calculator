@@ -355,26 +355,27 @@ with tab_sheet1:
             )
                 
 # 4️⃣ INDV 발권 조건 (초기값 0)
-        with st.expander("4️⃣ INDV 발권 조건", expanded=True):
+with st.expander("4️⃣ INDV 발권 조건", expanded=True):
 
-            def _format_indiv_net_with_commas(key):
-        raw = st.session_state[key]
+    def _format_indiv_net_with_commas(key):
+        # 1. 입력값 가져오기
+        raw = str(st.session_state.get(key, ""))
         
-        # 1. 숫자와 소수점(.)만 남기기
+        # 2. 숫자와 소수점(.)만 남기고 모두 제거
         filtered = "".join(ch for ch in raw if ch.isdigit() or ch == ".")
         
-        # 2. 소수점이 여러 개 입력된 경우 첫 번째 소수점만 유지
-        parts = filtered.split(".")
-        if len(parts) > 1:
-            # 정수부 + '.' + 소수부(최대 2자리 제한)
+        # 3. 소수점이 포함된 경우 처리
+        if "." in filtered:
+            parts = filtered.split(".")
             integer_part = parts[0]
+            # 소수점 아래는 최대 2자리까지만
             decimal_part = "".join(parts[1:])[:2]
             
-            # 정수부 천 단위 콤마 적용
+            # 정수 부분 콤마 적용
             formatted_int = f"{int(integer_part):,}" if integer_part else "0"
             st.session_state[key] = f"{formatted_int}.{decimal_part}"
         else:
-            # 소수점이 없는 경우 정수만 콤마 포맷팅
+            # 정수만 있는 경우
             st.session_state[key] = f"{int(filtered):,}" if filtered else ""
 
     if "inet1_str" not in st.session_state:
@@ -393,7 +394,6 @@ with tab_sheet1:
         if st.session_state["inet1_str"]
         else 0.0
     )
-
 
    # 5️⃣ DEPO 그룹 조건 (초기값 0)
         with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
