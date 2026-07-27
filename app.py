@@ -510,12 +510,25 @@ with tab_sheet1:
                 else:
                     st.caption("💼 일반 주중 평일 패턴")
 
-            st.markdown("---")
+          st.markdown("---")
+            
+            # 🔗 외부 시스템 바로가기 버튼 2개 나란히 배치
+            col_link1, col_link2 = st.columns(2)
+            
             naver_url1 = "https://flight.naver.com/"
-            st.markdown(
-                f'<a href="{naver_url1}" target="_blank" class="naver-btn">🟢 네이버 항공권 실시간 조회하러 가기 ↗</a>',
-                unsafe_allow_html=True,
-            )
+            vietjet_url1 = "https://agents2.vietjetair.com/booking"
+
+            with col_link1:
+                st.markdown(
+                    f'<a href="{naver_url1}" target="_blank" class="naver-btn">🟢 네이버 항공권 실시간 조회 ↗</a>',
+                    unsafe_allow_html=True,
+                )
+
+            with col_link2:
+                st.markdown(
+                    f'<a href="{vietjet_url1}" target="_blank" class="naver-btn" style="background-color: #E2231A;">✈️ 비엣젯 에이전트 예약 시스템 ↗</a>',
+                    unsafe_allow_html=True,
+                )
 
             st.subheader("🤖 AI 종합 전략 리포트 (Comment)")
 
