@@ -384,31 +384,46 @@ with tab_sheet1:
                 else 0.0
             )
 
-        # 5️⃣ DEPO 그룹 조건 (초기값 0)
-        with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
+       # 5️⃣ DEPO 그룹 조건 (초기값 0)
+with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
 
-            def _format_group_net_with_commas(key):
-                raw = st.session_state[key]
-                digits = "".join(ch for ch in raw if ch.isdigit())
-                st.session_state[key] = f"{int(digits):,}" if digits else ""
+    def _format_group_net_with_commas(key):
+        raw = st.session_state[key]
+        
+        # 1. 숫자와 소수점(.)만 남기기
+        filtered = "".join(ch for ch in raw if ch.isdigit() or ch == ".")
+        
+        # 2. 소수점이 여러 개 입력된 경우 첫 번째 소수점만 유지
+        parts = filtered.split(".")
+        if len(parts) > 1:
+            # 정수부 + '.' + 소수부(최대 2자리 제한)
+            integer_part = parts[0]
+            decimal_part = "".join(parts[1:])[:2]
+            
+            # 정수부 천 단위 콤마 적용
+            formatted_int = f"{int(integer_part):,}" if integer_part else "0"
+            st.session_state[key] = f"{formatted_int}.{decimal_part}"
+        else:
+            # 소수점이 없는 경우 정수만 콤마 포맷팅
+            st.session_state[key] = f"{int(filtered):,}" if filtered else ""
 
-            if "gnet1_str" not in st.session_state:
-                st.session_state["gnet1_str"] = ""
+    if "gnet1_str" not in st.session_state:
+        st.session_state["gnet1_str"] = ""
 
-            st.text_input(
-                "그룹 1인당 NET FARE (KRW)",
-                key="gnet1_str",
-                on_change=_format_group_net_with_commas,
-                args=("gnet1_str",),
-                placeholder="예: 1,200,000",
-            )
+    st.text_input(
+        "그룹 1인당 NET FARE (KRW)",
+        key="gnet1_str",
+        on_change=_format_group_net_with_commas,
+        args=("gnet1_str",),
+        placeholder="예: 1,200,000.00",
+    )
 
-            group_net1 = (
-                float(st.session_state["gnet1_str"].replace(",", ""))
-                if st.session_state["gnet1_str"]
-                else 0.0
-            )
-
+    group_net1 = (
+        float(st.session_state["gnet1_str"].replace(",", ""))
+        if st.session_state["gnet1_str"]
+        else 0.0
+    )
+    
             depo_seats1 = st.number_input(
                 "DEPO 유지/보장 좌석 수",
                 min_value=0,
