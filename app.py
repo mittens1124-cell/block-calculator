@@ -246,8 +246,7 @@ components.html(
 
 st.title("✈️ VJ 블록 노선 손익 판단 시뮬레이터")
 st.caption(
-    "상단 탭을 통해 DEPO 전 시뮬레이션과 DEPO 후 (GV10 미만) 손익 계산을"
-    " 손쉽게 전환하여 확인하세요."
+    "[상단 탭] - [DEPO 전/후 손익] 시뮬레이션 및 분석"
 )
 
 st.divider()
