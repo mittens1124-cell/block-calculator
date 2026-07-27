@@ -1006,7 +1006,6 @@ with tab_sheet2:
                     ]
                 })
                 st.dataframe(style_dataframe(df_b_detail), use_container_width=True, hide_index=True)
-
 st.markdown("---")
 st.subheader("🤖 AI 종합 전략 리포트 (Comment)")
 
@@ -1077,3 +1076,4 @@ else:
         "- 최소 판매 단가 이하로 판매하지 않도록 관리합니다.\n"
         "- 출발 직전까지 추가 모객을 진행합니다."
     )
+
