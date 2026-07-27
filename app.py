@@ -430,7 +430,7 @@ with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
             )
 
     # 연산
-    indiv_rev1 = pax1 * selling_price1
+indiv_rev1 = pax1 * selling_price1
     indiv_cost1 = pax1 * indiv_net1
     indiv_prof1 = indiv_rev1 - indiv_cost1
 
