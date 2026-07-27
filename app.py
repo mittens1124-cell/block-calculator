@@ -950,21 +950,40 @@ with tab_sheet2:
             st.markdown("---")
             st.subheader("🤖 AI 종합 전략 리포트 (Comment)")
 
-            if path_a_net_profit > path_b_ttl_profit:
-                comment_text2 = f"""
-**[AI 분석 의견: Option 1 개별(INDV) 발권 전환 추천]**
+            st.markdown("---")
+st.subheader("🤖 AI 종합 전략 리포트 (Comment)")
 
-• **손익 분석:** Option 1의 예상 손익({path_a_net_profit:,.0f}원)이 Option 2 유지 시 손익({path_b_ttl_profit:,.0f}원)보다 우수합니다.
-• **절감 효과:** INDV 발권으로 전환 시 그룹 유지 대비 **약 {abs(path_a_net_profit - path_b_ttl_profit):,.0f}원**의 손익 개선 효과를 얻을 수 있습니다.
-• 💡 **액션 플랜:** 미판매 잔여석 모객 부담을 해소하기 위해 그룹 블록을 해제하고 INDV 개별 발권으로 즉시 전환하십시오.
-"""
-                st.warning(comment_text2)
-            else:
-                comment_text2 = f"""
-**[AI 분석 의견: Option 2 그룹 블록 유지 및 추가 모객 추천]**
+profit_gap = abs(path_a_net_profit - path_b_ttl_profit)
 
-• **손익 분석:** GV10 보장 조건을 활용하여 그룹 블록을 끌고 가는 것이 상대적으로 유리합니다.
-• **목표 단가:** 요청하신 **{req_pax}석**에 대해 1인당 최소 **{min_selling_price_b:,.0f}원 이상**으로 판매를 완료할 경우 손실을 완전 상쇄(BEP 달성)할 수 있습니다.
-• 💡 **액션 플랜:** T/A 및 프로모션 채널을 통해 요청 {req_pax}석에 대한 땡처리 또는 타겟 영업 전략을 강화하십시오.
-"""
-                st.success(comment_text2)
+# -------------------------------
+# Option 1 추천
+# -------------------------------
+if path_a_net_profit > path_b_ttl_profit:
+
+    st.warning("### 🤖 AI 분석 의견 : INDV 발권 전환 강력 권장")
+
+    st.markdown("#### 📈 손익 비교 분석")
+    st.write(
+        f"현재 Option 1 예상 손익(**{path_a_net_profit:,.0f}원**)이 "
+        f"Option 2(**{path_b_ttl_profit:,.0f}원**)보다 우수합니다."
+    )
+
+    st.markdown("#### ⚠️ 위험 요인")
+    st.write(
+        f"그룹 블록을 계속 유지할 경우 GV10 유지 비용 및 DEPO 손실로 "
+        f"약 **{abs(path_b_ttl_profit):,.0f}원**의 부담이 발생할 수 있습니다."
+    )
+
+    st.markdown("#### 💰 비용 절감 효과")
+    st.write(
+        f"INDV 발권으로 전환하면 그룹 유지 대비 "
+        f"약 **{profit_gap:,.0f}원** 손익 개선이 가능합니다."
+    )
+
+    st.markdown("#### 💡 액션 플랜")
+    st.write(
+        "- 그룹 블록을 해제하고 INDV 발권으로 즉시 전환합니다.\n"
+        "- T/A 판매분은 유지하여 추가 수익을 확보합니다.\n"
+        "- 남은 좌석은 개별 판매 중심으로 운영하는 것이 유리합니다."
+    )
+
