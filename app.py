@@ -543,15 +543,26 @@ with tab_sheet1:
                 comment_text1 = f"""
 **[AI 분석 의견: INDV 전환 강력 권장]**
 
-• **손익분기점 분석:** 현재 실모객({pax1}명)은 손익분기점({bep_pax1:.1f}명) 미달 상태입니다.
-• **위험 요인:** DEPO 납입 후 그룹을 유지할 경우 발생할 손실(-{abs(group_prof1):,.0f}원)이 너무 큽니다.
-• **비용 절감 효과:** INDV로 전환 발권 시, 그룹 유지 대비 **약 {saved1:,.0f}원**의 손실을 방지(절감)할 수 있습니다.
-• 💡 **액션 플랜:** 그룹 블록을 즉시 취소/해제하고 개별 발권을 진행하십시오.
+st.warning("📈 **손익분기점 분석**")
+st.write(f"현재 실모객({pax1}명)은 손익분기점({bep_pax1:.1f}명) 미달입니다.")
+
+st.warning("⚠️ **위험 요인**")
+st.write(f"DEPO 유지 시 손실이 {abs(group_prof1):,.0f}원 발생할 수 있습니다.")
+
+st.success("💰 **비용 절감 효과**")
+st.write(f"INDV 전환 시 약 {saved1:,.0f}원의 손실을 절감할 수 있습니다.")
+
+st.info("✅ **액션 플랜**")
+st.write("그룹 블록을 해제하고 INDV 발권을 진행하세요.")
+
+st.divider()
 
 ---
-**🌤️ 노선 기후 & 🗓️ 공휴일 반영 추가 전략:**
-{climate_comment1}
-{date_comment_str1}
+st.info("🌤️ **노선 기후**")
+st.write(climate_comment1)
+
+st.info("📅 **공휴일 반영 전략**")
+st.write(date_comment_str1)
 """
                 st.warning(comment_text1)
             else:
