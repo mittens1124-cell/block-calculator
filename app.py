@@ -435,7 +435,7 @@ with tab_sheet1:
 
     bep_pax1 = group_cost1 / selling_price1 if selling_price1 > 0 else 0
 
-    with col_result1:
+   with col_result1:
         st.subheader(f"📊 [{route_code1}] DEPO 전 손익 비교")
 
         if pax1 == 0 and depo_seats1 == 0:
@@ -510,11 +510,10 @@ with tab_sheet1:
                 else:
                     st.caption("💼 일반 주중 평일 패턴")
 
-           st.markdown("---")
-            
+            st.markdown("---")
+
             # 🔗 외부 시스템 바로가기 버튼 2개 나란히 배치
             col_link1, col_link2 = st.columns(2)
-            
             naver_url1 = "https://flight.naver.com/"
             vietjet_url1 = "https://agents2.vietjetair.com/booking"
 
