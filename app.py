@@ -517,75 +517,81 @@ with tab_sheet1:
                 f'<a href="{naver_url1}" target="_blank" class="naver-btn">🟢 네이버 항공권 실시간 조회하러 가기 ↗</a>',
                 unsafe_allow_html=True,
             )
+# ==========================================
+# 🟡 AI 종합 전략 리포트 (하단 전체 공간 활용)
+# ==========================================
+st.divider()  # 상단과 구분짓는 선
 
-            st.subheader("🤖 AI 종합 전략 리포트 (Comment)")
+st.subheader("🤖 AI 종합 전략 리포트 (Comment)")
 
-            climate_comment1 = f"• **[{route_code1} {season_name1}]** {season_desc1}"
-            if is_dry1:
-                climate_comment1 += (
-                    " (건기 특수로 D-10 시점까지 추가 모객 가능성이 높습니다.)"
-                )
-            else:
-                climate_comment1 += (
-                    " (우기 시즌이므로 모객 속도가 느릴 수 있으니 무리한 그룹 유지보다는 보수적 대응이 유리합니다.)"
-                )
+# 1. 기후 및 날짜 코멘트 생성
+climate_comment1 = f"• **[{route_code1} {season_name1}]** {season_desc1}"
+if is_dry1:
+    climate_comment1 += (
+        " (건기 특수로 D-10 시점까지 추가 모객 가능성이 높습니다.)"
+    )
+else:
+    climate_comment1 += (
+        " (우기 시즌이므로 모객 속도가 느릴 수 있으니 무리한 그룹 유지보다는 보수적 대응이 유리합니다.)"
+    )
 
-            date_comment1 = []
-            if is_kr_holiday1:
-                date_comment1.append(
-                    f"• **[한국 연휴 특수]** 한국 {kr_holiday_name1} 연휴로 출국 수요 폭증 구간입니다."
-                )
-            elif is_weekend1:
-                date_comment1.append(
-                    f"• **[주말 패턴]** {weekday_kr1} 출발 건으로 주말 선호 모객 우수가 예상됩니다."
-                )
+date_comment1 = []
+if is_kr_holiday1:
+    date_comment1.append(
+        f"• **[한국 연휴 특수]** 한국 {kr_holiday_name1} 연휴로 출국 수요 폭증 구간입니다."
+    )
+elif is_weekend1:
+    date_comment1.append(
+        f"• **[주말 패턴]** {weekday_kr1} 출발 건으로 주말 선호 모객 우수가 예상됩니다."
+    )
 
-            if is_vn_holiday1:
-                date_comment1.append(
-                    f"• **[베트남 현지 연휴]** 현지 {vn_holiday_name1} 기간으로 현지 지상비 및 인바운드 상황을 체크하세요."
-                )
+if is_vn_holiday1:
+    date_comment1.append(
+        f"• **[베트남 현지 연휴]** 현지 {vn_holiday_name1} 기간으로 현지 지상비 및 인바운드 상황을 체크하세요."
+    )
 
-            date_comment_str1 = (
-                "\n".join(date_comment1)
-                if date_comment1
-                else "• **[일반 날짜]** 특이 공휴일 없는 평일 노선입니다."
-            )
+date_comment_str1 = (
+    "\n".join(date_comment1)
+    if date_comment1
+    else "• **[일반 날짜]** 특이 공휴일 없는 평일 노선입니다."
+)
 
-            if indiv_prof1 > group_prof1:
-                st.warning("### 🤖 AI 분석 의견: INDV 전환 강력 권장")
-                st.markdown("#### 📈 손익분기점 분석")
-                st.write(f"현재 실모객({pax1}명)은 손익분기점({bep_pax1:.1f}명) 미달입니다.")
-                st.markdown("#### ⚠️ 위험 요인")
-                st.write(f"DEPO 유지 시 손실이 {abs(group_prof1):,.0f}원 발생할 수 있습니다.")
-                st.markdown("#### 💰 비용 절감 효과")
-                st.write(f"INDV 전환 시 약 {saved1:,.0f}원의 비용을 절감할 수 있습니다.")
-                st.markdown("#### 💡 액션 플랜")
-                st.write("그룹 블록을 해제하고 INDV 발권을 진행하세요.")
-                st.divider()
-                st.markdown("#### 🌤️ 노선 기후")
-                st.write(climate_comment1)
-                st.markdown("#### 📅 공휴일 반영 전략")
-                st.write(date_comment_str1)
-            else:
-                st.success("### 🤖 AI 분석 의견: DEPO 유지 및 그룹 진행 권장")
-                st.markdown("#### 📈 손익분기점 분석")
-                st.write(
-                    f"현재 실모객({pax1}명)은 손익분기점({bep_pax1:.1f}명) 이상이거나 INDV 운임이 높습니다."
-                )
-                st.markdown("#### ⚠️ 위험 요인")
-                st.write(
-                    f"{depo_seats1}석 전체 운임(-{group_cost1:,.0f}원)을 부담하더라도 그룹 유지가 더 유리합니다."
-                )
-                st.markdown("#### 💰 비용 절감 효과")
-                st.write(f"INDV 전환 대비 약 {saved1:,.0f}원의 비용을 절감할 수 있습니다.")
-                st.markdown("#### 💡 액션 플랜")
-                st.write("DEPO를 납입하여 블록을 유지하고 D-10까지 추가 모객을 진행하세요.")
-                st.divider()
-                st.markdown("#### 🌤️ 노선 기후")
-                st.write(climate_comment1)
-                st.markdown("#### 📅 공휴일 반영 전략")
-                st.write(date_comment_str1)
-
+# 2. 분석 결과 리포트 출력 (하단 전체 폭 활용)
+if indiv_prof1 > group_prof1:
+    st.warning("### 🤖 AI 분석 의견: INDV 전환 강력 권장")
+    st.markdown("#### 📈 손익분기점 분석")
+    st.write(f"현재 실모객({pax1}명)은 손익분기점({bep_pax1:.1f}명) 미달입니다.")
+    st.markdown("#### ⚠️ 위험 요인")
+    st.write(f"DEPO 유지 시 손실이 {abs(group_prof1):,.0f}원 발생할 수 있습니다.")
+    st.markdown("#### 💰 비용 절감 효과")
+    st.write(f"INDV 전환 시 약 {saved1:,.0f}원의 비용을 절감할 수 있습니다.")
+    st.markdown("#### 💡 액션 플랜")
+    st.write("그룹 블록을 해제하고 INDV 발권을 진행하세요.")
+    st.divider()
+    st.markdown("#### 🌤️ 노선 기후")
+    st.write(climate_comment1)
+    st.markdown("#### 📅 공휴일 반영 전략")
+    st.write(date_comment_str1)
+else:
+    st.success("### 🤖 AI 분석 의견: DEPO 유지 및 그룹 진행 권장")
+    st.markdown("#### 📈 손익분기점 분석")
+    st.write(
+        f"현재 실모객({pax1}명)은 손익분기점({bep_pax1:.1f}명) 이상이거나 INDV 운임이 높습니다."
+    )
+    st.markdown("#### ⚠️ 위험 요인")
+    st.write(
+        f"{depo_seats1}석 전체 운임(-{group_cost1:,.0f}원)을 부담하더라도 그룹 유지가 더 유리합니다."
+    )
+    st.markdown("#### 💰 비용 절감 효과")
+    st.write(f"INDV 전환 대비 약 {saved1:,.0f}원의 비용을 절감할 수 있습니다.")
+    st.markdown("#### 💡 액션 플랜")
+    st.write("DEPO를 납입하여 블록을 유지하고 D-10까지 추가 모객을 진행하세요.")
+    st.divider()
+    st.markdown("#### 🌤️ 노선 기후")
+    st.write(climate_comment1)
+    st.markdown("#### 📅 공휴일 반영 전략")
+    st.write(date_comment_str1)
+       
 # ==========================================================================
 # 📦 [2번 탭] DEPO 후 시뮬레이터 (최소 판매 요청 인원 수동 입력 버전)
 # ==========================================================================
