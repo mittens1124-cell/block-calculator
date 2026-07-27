@@ -1006,74 +1006,74 @@ with tab_sheet2:
                     ]
                 })
                 st.dataframe(style_dataframe(df_b_detail), use_container_width=True, hide_index=True)
-st.markdown("---")
-st.subheader("🤖 AI 종합 전략 리포트 (Comment)")
-
-profit_gap = abs(path_a_net_profit - path_b_ttl_profit)
-
-# -------------------------------
-# Option 1 추천
-# -------------------------------
-if path_a_net_profit > path_b_ttl_profit:
-
-    st.warning("### 🤖 AI 분석 의견 : INDV 발권 전환 강력 권장")
-
-    st.markdown("#### 📈 손익 비교 분석")
-    st.write(
-        f"현재 Option 1 예상 손익(**{path_a_net_profit:,.0f}원**)이 "
-        f"Option 2(**{path_b_ttl_profit:,.0f}원**)보다 우수합니다."
-    )
-
-    st.markdown("#### ⚠️ 위험 요인")
-    st.write(
-        f"그룹 블록을 계속 유지할 경우 GV10 유지 비용 및 DEPO 손실로 "
-        f"약 **{abs(path_b_ttl_profit):,.0f}원**의 부담이 발생할 수 있습니다."
-    )
-
-    st.markdown("#### 💰 비용 절감 효과")
-    st.write(
-        f"INDV 발권으로 전환하면 그룹 유지 대비 "
-        f"약 **{profit_gap:,.0f}원** 손익 개선이 가능합니다."
-    )
-
-    st.markdown("#### 💡 액션 플랜")
-    st.write(
-        "- 그룹 블록을 해제하고 INDV 발권으로 즉시 전환합니다.\n"
-        "- T/A 판매분은 유지하여 추가 수익을 확보합니다.\n"
-        "- 남은 좌석은 개별 판매 중심으로 운영하는 것이 유리합니다."
-    )
-
-# -------------------------------
-# Option 2 추천
-# -------------------------------
-else:
-
-    st.success("### 🤖 AI 분석 의견 : 그룹 블록 유지 권장")
-
-    st.markdown("#### 📈 손익 비교 분석")
-    st.write(
-        f"현재 GV10 그룹 유지가 INDV 전환보다 "
-        f"약 **{profit_gap:,.0f}원** 유리합니다."
-    )
-
-    st.markdown("#### ⚠️ 위험 요인")
-    st.write(
-        f"현재 요청 인원({req_pax}명)을 모두 판매하지 못하면 "
-        "추가 손실이 발생할 수 있습니다."
-    )
-
-    st.markdown("#### 💰 손익분기점(BEP)")
-    st.write(
-        f"요청 인원 **{req_pax}명**을 "
-        f"1인당 **{min_selling_price_b:,.0f}원 이상** 판매하면 "
-        "손실을 모두 상쇄할 수 있습니다."
-    )
-
-    st.markdown("#### 💡 액션 플랜")
-    st.write(
-        "- GV10 그룹 조건을 유지합니다.\n"
-        "- T/A 및 땡처리 채널을 적극 활용합니다.\n"
-        "- 최소 판매 단가 이하로 판매하지 않도록 관리합니다.\n"
-        "- 출발 직전까지 추가 모객을 진행합니다."
-    )
-
+    st.markdown("---")
+    st.subheader("🤖 AI 종합 전략 리포트 (Comment)")
+    
+    profit_gap = abs(path_a_net_profit - path_b_ttl_profit)
+    
+    # -------------------------------
+    # Option 1 추천
+    # -------------------------------
+    if path_a_net_profit > path_b_ttl_profit:
+    
+        st.warning("### 🤖 AI 분석 의견 : INDV 발권 전환 강력 권장")
+    
+        st.markdown("#### 📈 손익 비교 분석")
+        st.write(
+            f"현재 Option 1 예상 손익(**{path_a_net_profit:,.0f}원**)이 "
+            f"Option 2(**{path_b_ttl_profit:,.0f}원**)보다 우수합니다."
+        )
+    
+        st.markdown("#### ⚠️ 위험 요인")
+        st.write(
+            f"그룹 블록을 계속 유지할 경우 GV10 유지 비용 및 DEPO 손실로 "
+            f"약 **{abs(path_b_ttl_profit):,.0f}원**의 부담이 발생할 수 있습니다."
+        )
+    
+        st.markdown("#### 💰 비용 절감 효과")
+        st.write(
+            f"INDV 발권으로 전환하면 그룹 유지 대비 "
+            f"약 **{profit_gap:,.0f}원** 손익 개선이 가능합니다."
+        )
+    
+        st.markdown("#### 💡 액션 플랜")
+        st.write(
+            "- 그룹 블록을 해제하고 INDV 발권으로 즉시 전환합니다.\n"
+            "- T/A 판매분은 유지하여 추가 수익을 확보합니다.\n"
+            "- 남은 좌석은 개별 판매 중심으로 운영하는 것이 유리합니다."
+        )
+    
+    # -------------------------------
+    # Option 2 추천
+    # -------------------------------
+    else:
+    
+        st.success("### 🤖 AI 분석 의견 : 그룹 블록 유지 권장")
+    
+        st.markdown("#### 📈 손익 비교 분석")
+        st.write(
+            f"현재 GV10 그룹 유지가 INDV 전환보다 "
+            f"약 **{profit_gap:,.0f}원** 유리합니다."
+        )
+    
+        st.markdown("#### ⚠️ 위험 요인")
+        st.write(
+            f"현재 요청 인원({req_pax}명)을 모두 판매하지 못하면 "
+            "추가 손실이 발생할 수 있습니다."
+        )
+    
+        st.markdown("#### 💰 손익분기점(BEP)")
+        st.write(
+            f"요청 인원 **{req_pax}명**을 "
+            f"1인당 **{min_selling_price_b:,.0f}원 이상** 판매하면 "
+            "손실을 모두 상쇄할 수 있습니다."
+        )
+    
+        st.markdown("#### 💡 액션 플랜")
+        st.write(
+            "- GV10 그룹 조건을 유지합니다.\n"
+            "- T/A 및 땡처리 채널을 적극 활용합니다.\n"
+            "- 최소 판매 단가 이하로 판매하지 않도록 관리합니다.\n"
+            "- 출발 직전까지 추가 모객을 진행합니다."
+        )
+    
