@@ -385,39 +385,46 @@ with tab_sheet1:
             )
 
         # 5️⃣ DEPO 그룹 조건 (초기값 0)
-        with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
+with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
 
-            def _format_group_net_with_commas(key):
-                raw = st.session_state[key]
-                digits = "".join(ch for ch in raw if ch.isdigit())
-                st.session_state[key] = f"{int(digits):,}" if digits else ""
+    def _format_group_net_with_commas(key):
+        raw = st.session_state[key]
+        
+        # 숫자와 소수점(.)만 남기기 (소수점은 첫 번째만 허용)
+        cleaned = ""
+        has_dot = False
+        for ch in raw:
+            if ch.isdigit():
+                cleaned += ch
+            elif ch == "." and not has_dot:
+                cleaned += ch
+                has_dot = True
 
-            if "gnet1_str" not in st.session_state:
-                st.session_state["gnet1_str"] = ""
+        if cleaned:
+            if "." in cleaned:
+                parts = cleaned.split(".")
+                integer_part = f"{int(parts[0]):,}" if parts[0] else "0"
+                decimal_part = parts[1][:2]  # 소수점 둘째 자리까지 제한
+                st.session_state[key] = f"{integer_part}.{decimal_part}"
+            else:
+                st.session_state[key] = f"{int(cleaned):,}"
+        else:
+            st.session_state[key] = ""
 
-            st.text_input(
-                "그룹 1인당 NET FARE (KRW)",
-                key="gnet1_str",
-                on_change=_format_group_net_with_commas,
-                args=("gnet1_str",),
-                placeholder="예: 1,200,000",
-            )
+    if "gnet1_str" not in st.session_state:
+        st.session_state["gnet1_str"] = ""
 
-            group_net1 = (
-                float(st.session_state["gnet1_str"].replace(",", ""))
-                if st.session_state["gnet1_str"]
-                else 0.0
-            )
+    st.text_input(
+        "그룹 1인당 NET FARE (KRW)",
+        key="gnet1_str",
+        on_change=_format_group_net_with_commas,
+        args=("gnet1_str",),
+        placeholder="예: 1,200,000.00",
+    )
 
-            depo_seats1 = st.number_input(
-                "DEPO 유지/보장 좌석 수",
-                min_value=0,
-                max_value=100,
-                value=0,
-                step=1,
-                key="gseats1",
-            )
-
+    # 문자열에서 쉼표(,)를 제거 후 float 형으로 변환 (소수점 둘째 자리 반올림)
+    raw_val = st.session_state.get("gnet1_str", "").replace(",", "")
+    group_net1 = round(float(raw_val), 2) if raw_val and raw_val != "." else 0.0
     # 연산
     indiv_rev1 = pax1 * selling_price1
     indiv_cost1 = pax1 * indiv_net1
