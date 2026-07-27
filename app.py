@@ -355,29 +355,44 @@ with tab_sheet1:
             )
                 
 # 4️⃣ INDV 발권 조건 (초기값 0)
-        with st.expander("4️⃣ INDV 발권 조건", expanded=True):
+with st.expander("4️⃣ INDV 발권 조건", expanded=True):
 
-            def _format_indiv_net_with_commas(key):
-                raw = st.session_state[key]
-                digits = "".join(ch for ch in raw if ch.isdigit())
-                st.session_state[key] = f"{int(digits):,}" if digits else ""
+    def _format_indiv_net_with_commas(key):
+        raw = st.session_state[key]
+        
+        # 1. 숫자와 소수점(.)만 남기기
+        filtered = "".join(ch for ch in raw if ch.isdigit() or ch == ".")
+        
+        # 2. 소수점이 여러 개 입력된 경우 첫 번째 소수점만 유지
+        parts = filtered.split(".")
+        if len(parts) > 1:
+            # 정수부 + '.' + 소수부(최대 2자리 제한)
+            integer_part = parts[0]
+            decimal_part = "".join(parts[1:])[:2]
+            
+            # 정수부 천 단위 콤마 적용
+            formatted_int = f"{int(integer_part):,}" if integer_part else "0"
+            st.session_state[key] = f"{formatted_int}.{decimal_part}"
+        else:
+            # 소수점이 없는 경우 정수만 콤마 포맷팅
+            st.session_state[key] = f"{int(filtered):,}" if filtered else ""
 
-            if "inet1_str" not in st.session_state:
-                st.session_state["inet1_str"] = ""
+    if "inet1_str" not in st.session_state:
+        st.session_state["inet1_str"] = ""
 
-            st.text_input(
-                "INDV 1인당 NET FARE (KRW)",
-                key="inet1_str",
-                on_change=_format_indiv_net_with_commas,
-                args=("inet1_str",),
-                placeholder="예: 1,500,000",
-            )
+    st.text_input(
+        "INDV 1인당 NET FARE (KRW)",
+        key="inet1_str",
+        on_change=_format_indiv_net_with_commas,
+        args=("inet1_str",),
+        placeholder="예: 1,500,000.00",
+    )
 
-            indiv_net1 = (
-                float(st.session_state["inet1_str"].replace(",", ""))
-                if st.session_state["inet1_str"]
-                else 0.0
-            )
+    indiv_net1 = (
+        float(st.session_state["inet1_str"].replace(",", ""))
+        if st.session_state["inet1_str"]
+        else 0.0
+    )
 
    # 5️⃣ DEPO 그룹 조건 (초기값 0)
         with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
