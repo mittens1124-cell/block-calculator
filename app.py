@@ -329,7 +329,6 @@ with tab_sheet1:
                 "실모객 인원 (PAX)", min_value=0, value=0, step=1, key="pre_pax"
             )
 
-            # 💡 입력 중 자동으로 콤마(,)가 붙는 판매가 입력 필드
             def _format_price_with_commas(key):
                 raw = st.session_state[key]
                 digits = "".join(ch for ch in raw if ch.isdigit())
@@ -602,10 +601,18 @@ with tab_sheet2:
                 "DEPO 전체 인원 (PAX)", min_value=0, value=0, key="dp_pax"
             )
 
+            # 💡 DEPO NET 단가 소수점 둘째 자리 지원 포맷팅 함수
             def _format_depo_net_with_commas(key):
-                raw = st.session_state[key]
-                digits = "".join(ch for ch in raw if ch.isdigit())
-                st.session_state[key] = f"{int(digits):,}" if digits else ""
+                raw = str(st.session_state.get(key, ""))
+                filtered = "".join(ch for ch in raw if ch.isdigit() or ch == ".")
+                if "." in filtered:
+                    parts = filtered.split(".")
+                    integer_part = parts[0]
+                    decimal_part = "".join(parts[1:])[:2]  # 소수점 이하 최대 2자리 제한
+                    formatted_int = f"{int(integer_part):,}" if integer_part else "0"
+                    st.session_state[key] = f"{formatted_int}.{decimal_part}"
+                else:
+                    st.session_state[key] = f"{int(filtered):,}" if filtered else ""
 
             if "dp_net_str" not in st.session_state:
                 st.session_state["dp_net_str"] = ""
@@ -615,7 +622,7 @@ with tab_sheet2:
                 key="dp_net_str",
                 on_change=_format_depo_net_with_commas,
                 args=("dp_net_str",),
-                placeholder="예: 800,000",
+                placeholder="예: 800,000.00",
             )
 
             depo_net = (
