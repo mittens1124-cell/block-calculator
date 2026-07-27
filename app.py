@@ -423,8 +423,7 @@ with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
         if st.session_state["gnet1_str"]
         else 0.0
     )
-    
-            depo_seats1 = st.number_input(
+                depo_seats1 = st.number_input(
                 "DEPO 유지/보장 좌석 수",
                 min_value=0,
                 max_value=100,
