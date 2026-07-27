@@ -262,14 +262,27 @@ tab_sheet1, tab_sheet2 = st.tabs(
 with tab_sheet1:
     col_input1, col_result1 = st.columns([1, 1.2], gap="large")
 
+    # ----------------------------------------------------------------------
+    # 👈 [좌측] 입력 영역
+    # ----------------------------------------------------------------------
     with col_input1:
         st.subheader("📌 [DEPO 전] 조건 입력")
 
         # 1️⃣ 노선 선택
         with st.expander("1️⃣ 노선 선택 (목적지)", expanded=True):
-            route_options = ["PQC (푸꾸옥)", "DAD (다낭)", "CXR (나트랑)", "HAN (하노이)", "HPH (하이퐁)", "SAI (씨엠립)"]
+            route_options = [
+                "PQC (푸꾸옥)",
+                "DAD (다낭)",
+                "CXR (나트랑)",
+                "HAN (하노이)",
+                "HPH (하이퐁)",
+                "SAI (씨엠립)",
+            ]
             selected_route = st.selectbox(
-                "목적지 노선 선택", options=route_options, index=0, key="pre_route"
+                "목적지 노선 선택",
+                options=route_options,
+                index=0,
+                key="pre_route",
             )
             route_code1 = selected_route.split(" ")[0]
 
@@ -281,9 +294,15 @@ with tab_sheet1:
             month1 = flight_date1.month
 
             weekday_num1 = flight_date1.weekday()
-            weekday_kr1 = ["월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"][
-                weekday_num1
-            ]
+            weekday_kr1 = [
+                "월요일",
+                "화요일",
+                "수요일",
+                "목요일",
+                "금요일",
+                "토요일",
+                "일요일",
+            ][weekday_num1]
             is_weekend1 = weekday_num1 in [4, 5, 6]
 
             kr_holidays1 = holidays.KR(years=flight_date1.year)
@@ -304,7 +323,9 @@ with tab_sheet1:
             season_name1, season_desc1 = "", ""
             if route_code1 == "PQC":
                 is_dry1 = month1 in [11, 12, 1, 2, 3, 4]
-                season_name1 = "건기 (최고 성수기)" if is_dry1 else "우기 (비수기)"
+                season_name1 = (
+                    "건기 (최고 성수기)" if is_dry1 else "우기 (비수기)"
+                )
                 season_desc1 = (
                     "휴양지 특성상 건기 시즌 모객 집중도가 매우 높은 노선입니다."
                     if is_dry1
@@ -312,7 +333,9 @@ with tab_sheet1:
                 )
             elif route_code1 in ["CXR", "NHA"]:
                 is_dry1 = month1 in [1, 2, 3, 4, 5, 6, 7, 8]
-                season_name1 = "건기 (성수기)" if is_dry1 else "우기 (우천/태풍 주의)"
+                season_name1 = (
+                    "건기 (성수기)" if is_dry1 else "우기 (우천/태풍 주의)"
+                )
                 season_desc1 = (
                     "가족/휴양 객단가가 안정적으로 형성되는 시즌입니다."
                     if is_dry1
@@ -323,10 +346,14 @@ with tab_sheet1:
                 season_name1 = "건기 시즌" if is_dry1 else "우기 시즌"
                 season_desc1 = "정규 건기/우기 스케줄에 맞춰 대응하세요."
 
-        # 3️⃣ 실모객 및 판매가 설정 (초기값 0)
+        # 3️⃣ 실모객 및 판매가 설정
         with st.expander("3️⃣ 실모객 및 판매가 설정", expanded=True):
             pax1 = st.number_input(
-                "실모객 인원 (PAX)", min_value=0, value=0, step=1, key="pre_pax"
+                "실모객 인원 (PAX)",
+                min_value=0,
+                value=0,
+                step=1,
+                key="pre_pax",
             )
 
             def _format_price_with_commas(key):
@@ -351,20 +378,26 @@ with tab_sheet1:
                 else 0
             )
 
-        # 4️⃣ INDV 발권 조건 (초기값 0)
+        # 4️⃣ INDV 발권 조건
         with st.expander("4️⃣ INDV 발권 조건", expanded=True):
 
             def _format_indiv_net_with_commas(key):
                 raw = str(st.session_state.get(key, ""))
-                filtered = "".join(ch for ch in raw if ch.isdigit() or ch == ".")
+                filtered = "".join(
+                    ch for ch in raw if ch.isdigit() or ch == "."
+                )
                 if "." in filtered:
                     parts = filtered.split(".")
                     integer_part = parts[0]
                     decimal_part = "".join(parts[1:])[:2]
-                    formatted_int = f"{int(integer_part):,}" if integer_part else "0"
+                    formatted_int = (
+                        f"{int(integer_part):,}" if integer_part else "0"
+                    )
                     st.session_state[key] = f"{formatted_int}.{decimal_part}"
                 else:
-                    st.session_state[key] = f"{int(filtered):,}" if filtered else ""
+                    st.session_state[key] = (
+                        f"{int(filtered):,}" if filtered else ""
+                    )
 
             if "inet1_str" not in st.session_state:
                 st.session_state["inet1_str"] = ""
@@ -383,20 +416,26 @@ with tab_sheet1:
                 else 0.0
             )
 
-        # 5️⃣ DEPO 그룹 조건 (초기값 0)
+        # 5️⃣ DEPO 그룹 조건
         with st.expander("5️⃣ DEPO 그룹 조건", expanded=True):
 
             def _format_group_net_with_commas(key):
                 raw = str(st.session_state.get(key, ""))
-                filtered = "".join(ch for ch in raw if ch.isdigit() or ch == ".")
+                filtered = "".join(
+                    ch for ch in raw if ch.isdigit() or ch == "."
+                )
                 if "." in filtered:
                     parts = filtered.split(".")
                     integer_part = parts[0]
                     decimal_part = "".join(parts[1:])[:2]
-                    formatted_int = f"{int(integer_part):,}" if integer_part else "0"
+                    formatted_int = (
+                        f"{int(integer_part):,}" if integer_part else "0"
+                    )
                     st.session_state[key] = f"{formatted_int}.{decimal_part}"
                 else:
-                    st.session_state[key] = f"{int(filtered):,}" if filtered else ""
+                    st.session_state[key] = (
+                        f"{int(filtered):,}" if filtered else ""
+                    )
 
             if "gnet1_str" not in st.session_state:
                 st.session_state["gnet1_str"] = ""
@@ -424,7 +463,9 @@ with tab_sheet1:
                 key="gseats1",
             )
 
-    # 연산
+    # ----------------------------------------------------------------------
+    # 🧮 1번 탭 전용 연산 로직
+    # ----------------------------------------------------------------------
     indiv_rev1 = pax1 * selling_price1
     indiv_cost1 = pax1 * indiv_net1
     indiv_prof1 = indiv_rev1 - indiv_cost1
@@ -433,13 +474,22 @@ with tab_sheet1:
     group_cost1 = depo_seats1 * group_net1
     group_prof1 = group_rev1 - group_cost1
 
-    bep_pax1 = group_cost1 / selling_price1 if selling_price1 > 0 else 0
+    bep_pax1 = (
+        int(group_cost1 / selling_price1)
+        if selling_price1 > 0
+        else 0
+    )
 
+    # ----------------------------------------------------------------------
+    # 👉 [우측] 결과 출력 영역
+    # ----------------------------------------------------------------------
     with col_result1:
         st.subheader(f"📊 [{route_code1}] DEPO 전 손익 비교")
 
         if pax1 == 0 and depo_seats1 == 0:
-            st.warning("👈 왼쪽 입력창에서 **실모객 인원 및 조건**을 입력해주시면 시뮬레이션 결과가 표시됩니다.")
+            st.warning(
+                "👈 왼쪽 입력창에서 **실모객 인원 및 조건**을 입력해주시면 시뮬레이션 결과가 표시됩니다."
+            )
         else:
             if indiv_prof1 > group_prof1:
                 rec1 = "INDV 발권 전환"
@@ -475,21 +525,38 @@ with tab_sheet1:
                 f"**최종 판단:** {rec1} (상대 선택 대비 **약 {saved1:,.0f}원** 손실 절감 가능)"
             )
 
-            df_sum1 = pd.DataFrame({
-                "구분": ["INDV 발권", "DEPO 그룹 유지"],
-                "적용 좌석": [f"{pax1}석", f"{depo_seats1}석"],
-                "총 매출": [f"{indiv_rev1:,.0f}원", f"{group_rev1:,.0f}원"],
-                "총 원가": [f"{indiv_cost1:,.0f}원", f"{group_cost1:,.0f}원"],
-                "최종 손익": [f"{indiv_prof1:,.0f}원", f"{group_prof1:,.0f}원"],
-            })
-            st.dataframe(df_sum1, use_container_width=True, hide_index=True)
+            df_sum1 = pd.DataFrame(
+                {
+                    "구분": ["INDV 발권", "DEPO 그룹 유지"],
+                    "적용 좌석": [f"{pax1}석", f"{depo_seats1}석"],
+                    "총 매출": [
+                        f"{indiv_rev1:,.0f}원",
+                        f"{group_rev1:,.0f}원",
+                    ],
+                    "총 원가": [
+                        f"{indiv_cost1:,.0f}원",
+                        f"{group_cost1:,.0f}원",
+                    ],
+                    "최종 손익": [
+                        f"{indiv_prof1:,.0f}원",
+                        f"{group_prof1:,.0f}원",
+                    ],
+                }
+            )
+            st.dataframe(
+                df_sum1, use_container_width=True, hide_index=True
+            )
 
             st.markdown("---")
-            st.subheader(f"🗺️ [{route_code1} 노선] 기후 및 달력 특성")
+            st.subheader(
+                f"🗺️ [{route_code1} 노선] 기후 및 달력 특성"
+            )
 
             col_d1, col_d2 = st.columns(2)
             with col_d1:
-                st.write(f"🏖️ **노선 기후**: **{season_name1}** ({flight_date1.month}월)")
+                st.write(
+                    f"🏖️ **노선 기후**: **{season_name1}** ({flight_date1.month}월)"
+                )
                 st.caption(f"• {season_desc1}")
 
             with col_d2:
@@ -504,15 +571,19 @@ with tab_sheet1:
                     holiday_tags1.append(f"🇻🇳 {vn_holiday_name1}")
 
                 if holiday_tags1:
-                    st.warning(f"🎉 **공휴일 태그**: {', '.join(holiday_tags1)}")
+                    st.warning(
+                        f"🎉 **공휴일 태그**: {', '.join(holiday_tags1)}"
+                    )
                 elif is_weekend1:
-                    st.info(f"🔥 **주말 패턴**: {weekday_kr1} 운항 (주말 출국 선호)")
+                    st.info(
+                        f"🔥 **주말 패턴**: {weekday_kr1} 운항 (주말 출국 선호)"
+                    )
                 else:
                     st.caption("💼 일반 주중 평일 패턴")
 
             st.markdown("---")
 
-            # 🔗 외부 시스템 바로가기 버튼 2개 나란히 배치
+            # 외부 링크 버튼
             col_link1, col_link2 = st.columns(2)
             naver_url1 = "https://flight.naver.com/"
             vietjet_url1 = "https://agents2.vietjetair.com/booking"
@@ -528,6 +599,50 @@ with tab_sheet1:
                     f'<a href="{vietjet_url1}" target="_blank" class="naver-btn" style="background-color: #E2231A;">✈️ 비엣젯 에이전트 예약 시스템 ↗</a>',
                     unsafe_allow_html=True,
                 )
+
+    # ----------------------------------------------------------------------
+    # 🤖 [1번 탭 전용] AI 종합 전략 리포트 (Comment)
+    # ----------------------------------------------------------------------
+    st.markdown("---")
+    st.subheader("💬 AI 종합 전략 리포트 (Comment)")
+
+    if pax1 == 0 and depo_seats1 == 0:
+        st.info("💡 조건을 입력하시면 1번 탭 전용 AI 분석 리포트가 생성됩니다.")
+    else:
+        # 1번 탭의 변수들만 정확하게 연산에 사용
+        diff_profit1 = abs(indiv_prof1 - group_prof1)
+        shortage_pax1 = max(0, depo_seats1 - pax1)
+
+        if indiv_prof1 > group_prof1:
+            st.success(f"### 🟢 AI 분석 의견: INDV 발권 전환 권장")
+            st.write(
+                f"**📈 손익 비교 분석**\n\n"
+                f"현재 INDV 발권 전환이 DEPO 그룹 유지보다 **약 {diff_profit1:,.0f}원** 유리합니다."
+            )
+        else:
+            st.success(f"### 🟢 AI 분석 의견: DEPO 그룹 블록 유지 권장")
+            st.write(
+                f"**📈 손익 비교 분석**\n\n"
+                f"현재 DEPO 그룹 유지가 INDV 전환보다 **약 {diff_profit1:,.0f}원** 유리합니다."
+            )
+
+        st.write(
+            f"**⚠️ 위험 요인**\n\n"
+            f"현재 미달 인원({shortage_pax1}명)을 모두 판매하지 못할 경우 추가 손실이 발생할 수 있습니다."
+        )
+
+        st.write(
+            f"**🔥 손익분기점 (BEP)**\n\n"
+            f"현재 판매가 기준 그룹 손익분기를 맞추기 위해서는 최소 **{bep_pax1}석** 판매가 필요합니다."
+        )
+
+        st.write(
+            "**💡 액션 플랜**\n\n"
+            f"• **권장 방식**: {rec1}\n"
+            f"• **기후 특성**: {season_name1} - {season_desc1}\n"
+            f"• **운항일 특성**: {weekday_kr1} 운항 패턴 반영 모객 추천\n"
+            f"• 출발 직전까지 미달 좌석인 {shortage_pax1}석에 대한 추가 모객을 추진하세요."
+        )
 
 
 # ==========================================================================
