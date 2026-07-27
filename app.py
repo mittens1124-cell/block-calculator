@@ -556,43 +556,56 @@ with st.expander("4️⃣ INDV 발권 조건", expanded=True):
 
             if indiv_prof1 > group_prof1:
                 comment_text1 = f"""
-**[AI 분석 의견: INDV 전환 강력 권장]**
+st.warning("### 🤖 AI 분석 의견: INDV 전환 강력 권장")
 
-st.warning("📈 **손익분기점 분석**")
+st.markdown("#### 📈 손익분기점 분석")
 st.write(f"현재 실모객({pax1}명)은 손익분기점({bep_pax1:.1f}명) 미달입니다.")
 
-st.warning("⚠️ **위험 요인**")
+st.markdown("#### ⚠️ 위험 요인")
 st.write(f"DEPO 유지 시 손실이 {abs(group_prof1):,.0f}원 발생할 수 있습니다.")
 
-st.success("💰 **비용 절감 효과**")
-st.write(f"INDV 전환 시 약 {saved1:,.0f}원의 손실을 절감할 수 있습니다.")
+st.markdown("#### 💰 비용 절감 효과")
+st.write(f"INDV 전환 시 약 {saved1:,.0f}원의 비용을 절감할 수 있습니다.")
 
-st.info("✅ **액션 플랜**")
+st.markdown("#### 💡 액션 플랜")
 st.write("그룹 블록을 해제하고 INDV 발권을 진행하세요.")
 
 st.divider()
 
----
-st.info("🌤️ **노선 기후**")
+st.markdown("#### 🌤️ 노선 기후")
 st.write(climate_comment1)
 
-st.info("📅 **공휴일 반영 전략**")
+st.markdown("#### 📅 공휴일 반영 전략")
 st.write(date_comment_str1)
 """
                 st.warning(comment_text1)
             else:
                 comment_text1 = f"""
-**[AI 분석 의견: DEPO 유지 및 그룹 진행 권장]**
+st.success("### 🤖 AI 분석 의견: DEPO 유지 및 그룹 진행 권장")
 
-• **손익분기점 분석:** 현재 실모객({pax1}명)이 손익분기점({bep_pax1:.1f}명) 이상이거나, INDV 운임이 매우 비쌉니다.
-• **위험 요인:** {depo_seats1}석 전체 운임(-{group_cost1:,.0f}원)을 부담하더라도 그룹을 끌고 가는 것이 손실을 줄이는 길입니다.
-• **비용 절감 효과:** INDV 전환 대비 **약 {saved1:,.0f}원**의 비용을 절감할 수 있습니다.
-• 💡 **액션 플랜:** DEPO를 납입하여 블록을 유지하고, 남은 D-10(풀페이) 시점까지 추가 모객에 집중하십시오.
+st.markdown("#### 📈 손익분기점 분석")
+st.write(
+    f"현재 실모객({pax1}명)은 손익분기점({bep_pax1:.1f}명) 이상이거나 INDV 운임이 높습니다."
+)
 
----
-**🌤️ 노선 기후 & 🗓️ 공휴일 반영 추가 전략:**
-{climate_comment1}
-{date_comment_str1}
+st.markdown("#### ⚠️ 위험 요인")
+st.write(
+    f"{depo_seats1}석 전체 운임(-{group_cost1:,.0f}원)을 부담하더라도 그룹 유지가 더 유리합니다."
+)
+
+st.markdown("#### 💰 비용 절감 효과")
+st.write(f"INDV 전환 대비 약 {saved1:,.0f}원의 비용을 절감할 수 있습니다.")
+
+st.markdown("#### 💡 액션 플랜")
+st.write("DEPO를 납입하여 블록을 유지하고 D-10까지 추가 모객을 진행하세요.")
+
+st.divider()
+
+st.markdown("#### 🌤️ 노선 기후")
+st.write(climate_comment1)
+
+st.markdown("#### 📅 공휴일 반영 전략")
+st.write(date_comment_str1)
 """
                 st.success(comment_text1)
 
