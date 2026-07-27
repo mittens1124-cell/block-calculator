@@ -244,7 +244,7 @@ components.html(
     width=0,
 )
 
-st.title("✈️ 베트남 노선 그룹 블록 손익 판단 시뮬레이터")
+st.title("✈️ VJ 블록 노선 손익 판단 시뮬레이터")
 st.caption(
     "상단 탭을 통해 DEPO 전 시뮬레이션과 DEPO 후 (GV10 미만) 손익 계산을"
     " 손쉽게 전환하여 확인하세요."
