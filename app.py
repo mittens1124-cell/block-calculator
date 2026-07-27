@@ -601,8 +601,8 @@ with tab_sheet2:
                 "DEPO 전체 인원 (PAX)", min_value=0, value=0, key="dp_pax"
             )
 
-            # 💡 DEPO NET 단가 소수점 둘째 자리 지원 포맷팅 함수
-            def _format_depo_net_with_commas(key):
+            # 💡 소수점 둘째 자리 지원 공통 포맷팅 함수
+            def _format_decimal_with_commas(key):
                 raw = str(st.session_state.get(key, ""))
                 filtered = "".join(ch for ch in raw if ch.isdigit() or ch == ".")
                 if "." in filtered:
@@ -620,7 +620,7 @@ with tab_sheet2:
             st.text_input(
                 "DEPO NET 단가 (KRW)",
                 key="dp_net_str",
-                on_change=_format_depo_net_with_commas,
+                on_change=_format_decimal_with_commas,
                 args=("dp_net_str",),
                 placeholder="예: 800,000.00",
             )
@@ -634,22 +634,43 @@ with tab_sheet2:
         # 2️⃣ Option 1: INDV 발권 전환 조건 & T/A 판매 수입 입력
         with st.expander("2️⃣ [Option 1] INDV 발권 전환 시 조건", expanded=True):
             c_ifare1, c_ifare2, c_ifare3 = st.columns(3)
-            indv_fare = c_ifare1.number_input(
-                "1인당 NET FARE",
-                min_value=0.0,
-                value=0.0,
-                step=100000.0,
-                format="%.0f",
-                key="post_ifare",
+
+            # 💡 1인당 NET FARE (소수점 2자리 적용)
+            if "post_ifare_str" not in st.session_state:
+                st.session_state["post_ifare_str"] = ""
+
+            c_ifare1.text_input(
+                "1인당 NET FARE (KRW)",
+                key="post_ifare_str",
+                on_change=_format_decimal_with_commas,
+                args=("post_ifare_str",),
+                placeholder="예: 500,000.00",
             )
-            indv_baggage = c_ifare2.number_input(
-                "수하물 추가금",
-                min_value=0.0,
-                value=0.0,
-                step=5000.0,
-                format="%.0f",
-                key="post_ibag",
+
+            indv_fare = (
+                float(st.session_state["post_ifare_str"].replace(",", ""))
+                if st.session_state["post_ifare_str"]
+                else 0.0
             )
+
+            # 💡 수하물 추가금 (소수점 2자리 적용)
+            if "post_ibag_str" not in st.session_state:
+                st.session_state["post_ibag_str"] = ""
+
+            c_ifare2.text_input(
+                "수하물 추가금 (KRW)",
+                key="post_ibag_str",
+                on_change=_format_decimal_with_commas,
+                args=("post_ibag_str",),
+                placeholder="예: 50,000.00",
+            )
+
+            indv_baggage = (
+                float(st.session_state["post_ibag_str"].replace(",", ""))
+                if st.session_state["post_ibag_str"]
+                else 0.0
+            )
+
             indv_pax = c_ifare3.number_input(
                 "INDV 발권 PAX", min_value=0, value=0, key="post_ipax"
             )
