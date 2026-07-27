@@ -510,7 +510,7 @@ with tab_sheet1:
                 else:
                     st.caption("💼 일반 주중 평일 패턴")
 
-          st.markdown("---")
+           st.markdown("---")
             
             # 🔗 외부 시스템 바로가기 버튼 2개 나란히 배치
             col_link1, col_link2 = st.columns(2)
